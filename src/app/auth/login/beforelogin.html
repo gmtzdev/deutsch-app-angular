@@ -1,0 +1,188 @@
+<div class="login-wrapper" role="main">
+    <p-card styleClass="login-card">
+        <div class="login-header">
+            <h1 class="login-title">DeutschApp</h1>
+            <p class="login-subtitle">Inicia sesión en tu cuenta</p>
+        </div>
+
+        @if (errorMessage()) {
+        <div class="alert alert--error" role="alert" aria-live="assertive">
+            <span class="pi pi-exclamation-circle alert__icon" aria-hidden="true"></span>
+            <span>{{ errorMessage() }}</span>
+        </div>
+        }
+
+        @if (isLocked() && lockoutRemaining() > 0) {
+        <div class="alert alert--error" role="status" aria-live="polite">
+            <span class="pi pi-lock alert__icon" aria-hidden="true"></span>
+            <span>Cuenta bloqueada. Intenta nuevamente en {{ lockoutRemaining() }}s.</span>
+        </div>
+        }
+
+        @if (showAttemptsWarning()) {
+        <div class="alert alert--warn" role="status" aria-live="polite">
+            <span class="pi pi-info-circle alert__icon" aria-hidden="true"></span>
+            <span>{{ remainingAttempts() }} intento(s) restante(s) antes del bloqueo.</span>
+        </div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="on" novalidate
+            aria-label="Formulario de inicio de sesión" class="login-form">
+            <div class="field">
+                <label for="username" class="field-label">Usuario</label>
+                <input pInputText id="username" type="text" formControlName="username" autocomplete="username"
+                    placeholder="Ingresa tu usuario"
+                    [attr.aria-invalid]="form.controls.username.invalid && form.controls.username.touched ? 'true' : null"
+                    aria-describedby="username-error" class="w-full" />
+                @if (form.controls.username.invalid && form.controls.username.touched) {
+                <small id="username-error" class="field-error" role="alert">
+                    @if (form.controls.username.errors?.['required']) {
+                    El usuario es requerido.
+                    } @else if (form.controls.username.errors?.['minlength']) {
+                    Mínimo 3 caracteres.
+                    } @else if (form.controls.username.errors?.['maxlength']) {
+                    Máximo 50 caracteres.
+                    }
+                </small>
+                }
+            </div>
+
+            <div class="field">
+                <label for="password" class="field-label">Contraseña</label>
+                <p-password inputId="password" formControlName="password" [feedback]="false" [toggleMask]="true"
+                    autocomplete="current-password" placeholder="Ingresa tu contraseña" styleClass="w-full"
+                    inputStyleClass="w-full" aria-describedby="password-error" />
+                @if (form.controls.password.invalid && form.controls.password.touched) {
+                <small id="password-error" class="field-error" role="alert">
+                    @if (form.controls.password.errors?.['required']) {
+                    La contraseña es requerida.
+                    } @else if (form.controls.password.errors?.['minlength']) {
+                    Mínimo 8 caracteres.
+                    } @else if (form.controls.password.errors?.['weakPassword']) {
+                    Debe incluir mayúscula, número y carácter especial.
+                    }
+                </small>
+                }
+            </div>
+
+            <div class="login-hint" role="note">
+                <span class="pi pi-info-circle" aria-hidden="true"></span>
+                Demo &mdash; usuario: <strong>admin</strong> / contraseña:
+                <strong>Admin&#64;1234</strong>
+            </div>
+
+            <p-button type="submit" label="Iniciar Sesión" icon="pi pi-sign-in" [loading]="isLoading()"
+                [disabled]="form.invalid || isLocked() || isLoading()" styleClass="w-full"
+                aria-label="Iniciar sesión en tu cuenta" />
+        </form>
+    </p-card>
+</div>
+
+
+// :host {
+// display: flex;
+// min-height: 100vh;
+// align-items: center;
+// justify-content: center;
+// background: var(--p-surface-ground);
+// padding: 1rem;
+// }
+
+// :host ::ng-deep .login-card {
+// width: 100%;
+// max-width: 440px;
+// box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+// }
+
+// .login-header {
+// text-align: center;
+// margin-bottom: 1.75rem;
+
+// .login-title {
+// font-size: 1.85rem;
+// font-weight: 700;
+// margin: 0 0 0.4rem;
+// color: var(--p-primary-color);
+// letter-spacing: -0.5px;
+// }
+
+// .login-subtitle {
+// margin: 0;
+// color: var(--p-text-muted-color);
+// font-size: 0.9rem;
+// }
+// }
+
+// .alert {
+// display: flex;
+// align-items: flex-start;
+// gap: 0.5rem;
+// padding: 0.75rem 1rem;
+// border-radius: 6px;
+// margin-bottom: 1rem;
+// font-size: 0.875rem;
+// border: 1px solid transparent;
+
+// &__icon {
+// flex-shrink: 0;
+// margin-top: 1px;
+// }
+
+// &--error {
+// background-color: #fff5f5;
+// color: #c53030;
+// border-color: #fed7d7;
+// }
+
+// &--warn {
+// background-color: #fffbeb;
+// color: #92400e;
+// border-color: #fde68a;
+// }
+// }
+
+// .login-form {
+// display: flex;
+// flex-direction: column;
+// }
+
+// .field {
+// margin-bottom: 1.25rem;
+
+// .field-label {
+// display: block;
+// font-weight: 500;
+// margin-bottom: 0.5rem;
+// color: var(--p-text-color);
+// font-size: 0.9rem;
+// }
+
+// .field-error {
+// display: block;
+// margin-top: 0.375rem;
+// color: #c53030;
+// font-size: 0.8rem;
+// }
+// }
+
+// :host ::ng-deep p-password {
+// display: block;
+
+// .p-password {
+// width: 100%;
+// display: block;
+// }
+// }
+
+// .login-hint {
+// display: flex;
+// align-items: center;
+// gap: 0.4rem;
+// margin-bottom: 1.25rem;
+// padding: 0.5rem 0.75rem;
+// background: var(--p-surface-100, #f8f9fa);
+// border-radius: 4px;
+// font-size: 0.8rem;
+// color: var(--p-text-muted-color);
+// border: 1px solid var(--p-surface-200, #e9ecef);
+// }

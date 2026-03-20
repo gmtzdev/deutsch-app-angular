@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+    --color-background: #f3f4f6;
+    --color-card: #fff;
+    --color-title: #111111;
+    --color-subtitle: #111827;
+    --color-indications: #4b5563;
+    --color-text: #1f2937;
+
+    /* Login */
+    --color-login-background: #f3f4f6;
+    --color-login-card: #fff;
+    --color-login-title: #111111;
+    --color-login-subtitle: #111827;
+    --color-login-indications: #4b5563;
+
+    /* Navigation */
+    --box-shadow-nav: 6px 0 20px rgba(0, 0, 0, 0.18);
+
+    /* Table */
+    --color-table-header: #f9fafb;
+    --color-table-header-text: #6b7280;
+    --color-table-row-hover: #f0f9ff;
+    --color-table-header-border: #e5e7eb;
+    --color-table-row-border: #f3f4f6;
+    /* valor por defecto (light) */
+}
+
+.dark {
+    --color-background: #050811;
+    --color-card: #0a0e19;
+    --color-title: #f3f4f6;
+    --color-subtitle: #d1d5db;
+    --color-indications: #d1d5db;
+    --color-text: #fff;
+
+    /* Login */
+    --color-login-background: #1a1a1a;
+    --color-login-card: #0a0e19;
+    --color-login-title: #f3f4f6;
+    --color-login-subtitle: #d1d5db;
+    --color-login-indications: #d1d5db;
+
+    /* Navigation */
+    --box-shadow-nav: 1px 0 20px rgba(255, 255, 255, 0.18);
+
+    /* Table */
+    --color-table-header: #111827;
+    --color-table-header-text: #9ca3af;
+    --color-table-row-hover: #0c1a2e;
+    --color-table-header-border: #1e2d45;
+    --color-table-row-border: #0f1829;
+    /* sobreescribe en dark */
+}
