@@ -1,0 +1,96 @@
+<div class="shell">
+    <app-header />
+
+    <div class="shell-body">
+
+        <!-- ── Sidebar ──────────────────────────────────────────── -->
+        <aside class="sidebar" aria-label="Temas del nivel">
+
+            @if (levelResource.isLoading()) {
+            <div class="sidebar-header skeleton-wrap" aria-busy="true" aria-label="Cargando nivel">
+                <div class="skeleton skeleton--badge"></div>
+                <div class="skeleton skeleton--title"></div>
+            </div>
+            <ul class="topic-list" aria-hidden="true">
+                @for (_ of [1, 2, 3, 4, 5]; track $index) {
+                <li class="topic-item topic-item--skeleton">
+                    <div class="skeleton skeleton--topic-title"></div>
+                    <div class="skeleton skeleton--topic-sub"></div>
+                </li>
+                }
+            </ul>
+            }
+
+            @if (levelResource.error()) {
+            <p class="sidebar-error" role="alert">Error al cargar el nivel.</p>
+            }
+
+            @if (levelResource.value(); as level) {
+            <div class="sidebar-header">
+                <a class="back-link" routerLink="/dashboard" aria-label="Volver al inicio">
+                    ← Niveles
+                </a>
+                <div class="level-meta">
+                    <span class="level-badge">{{ level.tag }}</span>
+                    <h1 class="level-title">{{ level.title }}</h1>
+                </div>
+            </div>
+
+            <nav [attr.aria-label]="'Temas de ' + level.title">
+                <ul class="topic-list" role="list">
+                    @for (topic of level.topics; track topic.id) {
+                    <li class="topic-group" role="listitem">
+
+                        <!-- Topic toggle button -->
+                        <button type="button" class="topic-toggle"
+                            [class.topic-toggle--active]="isTopicActive(topic.id)"
+                            [class.topic-toggle--open]="isExpanded(topic.id)"
+                            [attr.aria-expanded]="isExpanded(topic.id)" [attr.aria-controls]="'subtopics-' + topic.id"
+                            (click)="toggleTopic(topic.id, $event)">
+                            <span class="topic-toggle__text">
+                                {{ topic.title }}
+                                @if (topic.subtitle) {
+                                <span class="topic-toggle__sub">{{ topic.subtitle }}</span>
+                                }
+                            </span>
+                            <span class="topic-toggle__chevron" aria-hidden="true">›</span>
+                        </button>
+
+                        <!-- Subtopics -->
+                        <ul class="subtopic-list" [class.subtopic-list--open]="isExpanded(topic.id)"
+                            [id]="'subtopics-' + topic.id" role="list">
+                            @for (subtopic of topic.subtopics; track subtopic.id) {
+                            <li role="listitem">
+                                <!-- [fragment]="'subtopic-' + subtopic.id"  -->
+                                <a class="subtopic-link" [routerLink]="['topics', topic.id, subtopic.id]"
+                                    [attr.aria-label]="subtopic.title">
+
+                                    @if (subtopic.icon) {
+                                    <span class="subtopic-link__icon" aria-hidden="true">{{ subtopic.icon }}</span>
+                                    }
+                                    <span class="subtopic-link__title">{{ subtopic.title }}</span>
+                                </a>
+                            </li>
+                            }
+
+                            <!-- New subtopic inline form -->
+                            <app-create-subtopic-form [topic]="topic"></app-create-subtopic-form>
+                        </ul>
+
+                    </li>
+                    }
+                </ul>
+            </nav>
+
+            <app-create-topic-form [levelId]="levelId()" (submited)="onTopicSubmited($event)" />
+            }
+
+        </aside>
+
+        <!-- ── Main content ─────────────────────────────────────── -->
+        <main class="main-content" id="main-content" tabindex="-1">
+            <router-outlet />
+        </main>
+
+    </div>
+</div>

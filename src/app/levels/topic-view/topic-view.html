@@ -1,0 +1,105 @@
+<div class="topic-view">
+
+    <!-- ── Topic header ─────────────────────────────────────────── -->
+    @if (topicResource.value(); as topic) {
+    <header class="topic-header">
+        <h1 class="topic-header__title">{{ topic.title }}</h1>
+        @if (topic.subtitle) {
+        <p class="topic-header__subtitle">{{ topic.subtitle }}</p>
+        }
+    </header>
+    }
+
+    <!-- ── Subtopic content ─────────────────────────────────────── -->
+    @if (subtopicResource.isLoading()) {
+    <div class="topic-card topic-card--skeleton" aria-busy="true" aria-label="Cargando lecciones">
+        <div class="skeleton skeleton--heading"></div>
+        <div class="skeleton skeleton--sub"></div>
+        <div class="subtopic-skeleton">
+            @for (_ of [1, 2, 3]; track $index) {
+            <div class="skeleton skeleton--block"></div>
+            }
+        </div>
+    </div>
+    }
+
+    @if (subtopicResource.error()) {
+    <div class="state-error" role="alert">
+        <span aria-hidden="true">⚠️</span>
+        <p>No se pudo cargar el contenido. Intenta de nuevo.</p>
+        <button type="button" class="retry-btn" (click)="subtopicResource.reload()">
+            Reintentar
+        </button>
+    </div>
+    }
+
+    @if (subtopicResource.value(); as subtopic) {
+    <article class="topic-card" [attr.aria-labelledby]="'subtopic-' + subtopic.id">
+
+        <header class="topic-card__header">
+            <h2 class="topic-card__title" [id]="'subtopic-' + subtopic.id">
+                @if (subtopic.icon) {
+                <span class="subtopic__icon" aria-hidden="true">{{ subtopic.icon }}</span>
+                }
+                {{ subtopic.title }}
+            </h2>
+        </header>
+
+        <!-- <div class="topic-card__body">
+            @if (!subtopic.lesson || subtopic.lesson.length === 0) {
+            <p class="empty-msg">Este subtema aún no tiene lecciones disponibles.</p>
+            } @else {
+            <ul class="lesson-list" role="list">
+                @for (lesson of subtopic.lessons; track lesson.id; let i = $index) {
+                <li class="lesson-item" role="listitem">
+                    <span class="lesson-item__num" aria-hidden="true">{{ i + 1 }}</span>
+                    <div class="lesson-item__info">
+                        <span class="lesson-item__title">Lección {{ lesson.id }}</span>
+                        @if (lesson.type) {
+                        <span class="lesson-item__badge">{{ lesson.type }}</span>
+                        }
+                    </div>
+                    <span class="lesson-item__status" [class.lesson-item__status--done]="lesson.completed"
+                        [attr.aria-label]="lesson.completed ? 'Completada' : 'Pendiente'">
+                        {{ lesson.completed ? '✓' : '○' }}
+                    </span>
+                </li>
+                }
+            </ul>
+            }
+        </div> -->
+
+
+
+        <!-- ── Lesson elements ─────────────────────────────────── -->
+        @if (subtopic.lesson.elements?.length) {
+        <div class="lesson-elements">
+            @for (element of subtopic.lesson.elements; track element.id) {
+            @switch (element.type) {
+
+            @case ('title') {
+            <app-lesson-title [element]="element" />
+            }
+
+            @case ('subtitle') {
+            <app-lesson-subtitle [element]="element" />
+            }
+
+            @case ('unorderedList') {
+            <app-lesson-unordered-list [element]="element" />
+            }
+
+            @default {
+            <!-- 'element' and 'listItem' at top level render as plain paragraph -->
+            <app-lesson-paragraph [element]="element" />
+            }
+
+            }
+            }
+        </div>
+        }
+
+    </article>
+    }
+
+</div>

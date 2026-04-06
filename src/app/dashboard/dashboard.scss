@@ -1,0 +1,225 @@
+* {
+    box-sizing: border-box;
+}
+
+.page {
+    min-height: 100vh;
+
+    font-family:
+        system-ui,
+        -apple-system,
+        Segoe UI,
+        Roboto,
+        sans-serif;
+}
+
+.hero {
+    text-align: center;
+    padding: 3rem 1.5rem 2rem;
+}
+
+.hero h1 {
+    margin: 0 0 0.6rem;
+    font-size: 2rem;
+    /* color: #111827; */
+}
+
+.hero p {
+    margin: 0 auto;
+    max-width: 520px;
+    color: #4b5563;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.grid-section {
+    padding: 0 1.5rem 4rem;
+}
+
+.levels-grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.2rem;
+}
+
+.level-card {
+    border-radius: 14px;
+    padding: 1.35rem;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 6%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    border-top: 4px solid var(--accent);
+    transition:
+        transform 0.18s,
+        box-shadow 0.18s;
+}
+
+.level-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgb(0 0 0 / 10%);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.level-icon {
+    width: 2rem;
+    height: 2rem;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.level-badge {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+}
+
+.level-title {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.level-desc {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.5;
+    flex: 1;
+}
+
+.card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.4rem;
+}
+
+.lessons-count {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+.start-btn {
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.4rem 0.85rem;
+    border-radius: 7px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    transition: opacity 0.15s;
+}
+
+.start-btn:hover {
+    opacity: 0.85;
+}
+
+@media (max-width: 500px) {
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+
+    .levels-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+// ── Skeleton ───────────────────────────────────────────────────
+
+@keyframes shimmer {
+    0% {
+        background-position: -400px 0;
+    }
+
+    100% {
+        background-position: 400px 0;
+    }
+}
+
+.level-card--skeleton {
+    pointer-events: none;
+}
+
+.skeleton {
+    border-radius: 6px;
+    background: linear-gradient(90deg,
+            #e5e7eb 25%,
+            #f3f4f6 50%,
+            #e5e7eb 75%);
+    background-size: 800px 100%;
+    animation: shimmer 1.4s infinite linear;
+
+    &--badge {
+        width: 56px;
+        height: 26px;
+        border-radius: 20px;
+    }
+
+    &--title {
+        width: 70%;
+        height: 18px;
+        margin-top: 0.2rem;
+    }
+
+    &--desc {
+        width: 100%;
+        height: 12px;
+    }
+
+    &--short {
+        width: 60%;
+    }
+}
+
+// ── State messages ─────────────────────────────────────────────
+
+.state-message {
+    max-width: 480px;
+    margin: 2rem auto;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.95rem;
+
+    p {
+        margin: 0.4rem 0;
+    }
+
+    &--error {
+        color: #dc2626;
+    }
+}
+
+.retry-btn {
+    margin-top: 0.75rem;
+    padding: 0.45rem 1.1rem;
+    border: 1px solid currentColor;
+    border-radius: 7px;
+    background: transparent;
+    color: #dc2626;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+        background: #dc2626;
+        color: #fff;
+    }
+
+    &:focus-visible {
+        outline: 2px solid #dc2626;
+        outline-offset: 2px;
+    }
+}

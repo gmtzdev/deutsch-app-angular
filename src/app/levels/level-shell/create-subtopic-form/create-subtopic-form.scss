@@ -1,0 +1,117 @@
+// ── Add subtopic row ─────────────────────────────────────────
+.add-item-row {
+    list-style: none;
+}
+
+.add-item-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px 4px 18px;
+    background: none;
+    border: none;
+    border-radius: 5px;
+    font-size: 12px;
+    color: var(--color-indications, #9b9a97);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    width: 100%;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: var(--color-text, #37352f);
+    }
+
+    &:focus-visible {
+        outline: 2px solid #4a90d9;
+        outline-offset: -1px;
+        border-radius: 5px;
+    }
+}
+
+// ── Inline form ──────────────────────────────────────────────
+.inline-form-row {
+    list-style: none;
+}
+
+.inline-form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 6px 8px;
+
+    &--topic {
+        padding: 6px 10px;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 4px;
+    }
+}
+
+.inline-input {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid rgba(74, 144, 217, 0.5);
+    border-radius: 5px;
+    font-size: 13px;
+    color: var(--color-text, #37352f);
+    background: var(--color-card, #fff);
+    outline: none;
+    transition: border-color 0.15s;
+
+    &:focus {
+        border-color: #4a90d9;
+        box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    &::placeholder {
+        color: var(--color-indications, #9b9a97);
+    }
+}
+
+.inline-btn {
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.12s, opacity 0.12s;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &:focus-visible {
+        outline: 2px solid #4a90d9;
+        outline-offset: 1px;
+    }
+
+    &--confirm {
+        background: #4a90d9;
+        color: #fff;
+
+        &:hover:not(:disabled) {
+            background: #357abd;
+        }
+    }
+
+    &--cancel {
+        background: none;
+        color: var(--color-indications, #9b9a97);
+        border-color: rgba(0, 0, 0, 0.12);
+
+        &:hover:not(:disabled) {
+            background: rgba(0, 0, 0, 0.06);
+            color: var(--color-text, #37352f);
+        }
+    }
+}

@@ -1,0 +1,70 @@
+<div class="page bg-background">
+    <app-header></app-header>
+
+    <section class="hero">
+        <h1 class="text-title">Elige tu nivel</h1>
+        <p>
+            Selecciona el nivel que corresponde a tu conocimiento actual de
+            alemán y comienza a aprender.
+        </p>
+    </section>
+
+    <section class="grid-section">
+
+        @if (levelsResource.isLoading()) {
+        <div class="levels-grid" aria-busy="true" aria-label="Cargando niveles">
+            @for (_ of [1, 2, 3, 4, 5, 6]; track $index) {
+            <div class="level-card level-card--skeleton bg-card" aria-hidden="true">
+                <div class="skeleton skeleton--badge"></div>
+                <div class="skeleton skeleton--title"></div>
+                <div class="skeleton skeleton--desc"></div>
+                <div class="skeleton skeleton--desc skeleton--short"></div>
+            </div>
+            }
+        </div>
+        }
+
+        @if (levelsResource.error()) {
+        <div class="state-message state-message--error" role="alert">
+            <span aria-hidden="true">⚠️</span>
+            <p>No se pudieron cargar los niveles. Intenta de nuevo más tarde.</p>
+            <button type="button" class="retry-btn" (click)="levelsResource.reload()">
+                Reintentar
+            </button>
+        </div>
+        }
+
+        @if (levelsResource.value(); as levels) {
+        @if (levels.length === 0) {
+        <div class="state-message" role="status">
+            <p>No hay niveles disponibles por el momento.</p>
+        </div>
+        } @else {
+        <div class="levels-grid" role="list">
+            @for (level of levels; track level.id) {
+            <article class="level-card bg-card" style="--accent: #22c55e">
+                <div class="card-header">
+                    <svg class="level-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={level.icon}></svg>
+                    <span class="level-badge">{{level.tag}}</span>
+                </div>
+                <h2 class="level-title text-subtitle">
+                    {{level.title}}
+                </h2>
+                <p class="level-desc">{{level.description}}</p>
+                <div class="card-footer">
+                    <span class="lessons-count">
+                        📚 {{level.lessonNumber}} lecciones
+                    </span>
+                    <a [routerLink]="['/levels', level.id]" class="start-btn">
+                        Comenzar →
+                    </a>
+                </div>
+            </article>
+            }
+        </div>
+        }
+        }
+
+    </section>
+</div>
