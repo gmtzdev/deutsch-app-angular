@@ -26,6 +26,7 @@ export class CreateTopicForm {
     protected readonly creating = signal<CreatingState>({ type: 'none' });
     protected readonly saving = signal(false);
     protected readonly title = signal('');
+    protected readonly subtitle = signal('');
 
     private readonly doc = inject(DOCUMENT);
     private readonly curriculumService = inject(CurriculumService);
@@ -37,9 +38,11 @@ export class CreateTopicForm {
     protected onSubmit(event: Event): void {
         event.preventDefault();
         const value = this.title().trim();
+        const subtitle = this.subtitle().trim();
         if (!value || this.saving()) return;
-        this.submitTopic(value);
+        this.submitTopic(value, subtitle);
         this.title.set('');
+        this.subtitle.set('');
     }
 
 
@@ -62,16 +65,17 @@ export class CreateTopicForm {
 
     protected cancelCreating(): void {
         this.title.set('');
+        this.subtitle.set('');
         this.creating.set({ type: 'none' });
     }
 
-    protected async submitTopic(title: string): Promise<void> {
+    protected async submitTopic(title: string, subtitle: string): Promise<void> {
         if (!title || this.saving()) return;
 
         this.saving.set(true);
         try {
             const topic = await firstValueFrom(
-                this.curriculumService.createTopic(this.levelId(), title)
+                this.curriculumService.createTopic(this.levelId(), title, subtitle)
             );
             this.submited.emit(topic);
 

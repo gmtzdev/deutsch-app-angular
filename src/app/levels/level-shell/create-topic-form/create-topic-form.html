@@ -5,6 +5,9 @@
         <input id="new-topic-input" class="inline-input" type="text" placeholder="Nombre del tema" [value]="title()"
             (input)="title.set($any($event.target).value)" [disabled]="saving()" aria-label="Nombre del nuevo tema"
             required />
+        <input id="new-topic-input-subtitle" class="inline-input" type="text" placeholder="Subtítulo del tema"
+            [value]="subtitle()" (input)="subtitle.set($any($event.target).value)" [disabled]="saving()"
+            aria-label="Subtítulo del nuevo tema" />
 
         <div class="inline-form__actions">
             <button type="submit" class="inline-btn inline-btn--confirm" [disabled]="saving()" aria-label="Confirmar">
