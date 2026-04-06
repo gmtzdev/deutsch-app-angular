@@ -42,19 +42,16 @@
         } @else {
         <div class="levels-grid" role="list">
             @for (level of levels; track level.id) {
-            <article class="level-card bg-card" style="--accent: #22c55e">
+            <article class="level-card bg-card" [style.--accent]="level.color">
                 <div class="card-header">
-                    <svg class="level-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={level.icon}></svg>
-                    <span class="level-badge">{{level.tag}}</span>
+                    <span class="level-icon" aria-hidden="true" [innerHTML]="level.icon"></span>
+                    <span class="level-badge">{{ level.tag }}</span>
                 </div>
-                <h2 class="level-title text-subtitle">
-                    {{level.title}}
-                </h2>
-                <p class="level-desc">{{level.description}}</p>
+                <h2 class="level-title text-subtitle">{{ level.title }}</h2>
+                <p class="level-desc">{{ level.description }}</p>
                 <div class="card-footer">
                     <span class="lessons-count">
-                        📚 {{level.lessonNumber}} lecciones
+                        📚 {{ level.lessonNumber }} lecciones
                     </span>
                     <a [routerLink]="['/levels', level.id]" class="start-btn">
                         Comenzar →

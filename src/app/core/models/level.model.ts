@@ -9,6 +9,7 @@ export class Level {
     tag: string;
 
     lessonNumber: number;
+    color: string;
 
     topics: Topic[];
 
@@ -20,6 +21,7 @@ export class Level {
         this.icon = level.icon;
         this.tag = level.tag;
         this.lessonNumber = level.lessonNumber;
+        this.color = level.color;
         this.topics = level.topics;
     }
 }

@@ -31,10 +31,6 @@ export class Dashboard {
     loader: () => firstValueFrom(this.curriculumService.getLevels()),
   });
 
-  protected levelAccent(code: string): string {
-    return LEVEL_ACCENTS[code.toUpperCase()] ?? '#6b7280';
-  }
-
   logout(): void {
     this.authService.logout();
   }
