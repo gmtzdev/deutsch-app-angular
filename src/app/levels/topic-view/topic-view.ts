@@ -22,11 +22,12 @@ import { LessonUnorderedList } from './elements/lesson-unordered-list';
 import { LessonTable } from './elements/lesson-table';
 import { LessonTip } from './elements/lesson-tip';
 import { LessonTag } from './elements/lesson-tag';
+import { LessonConjugation } from './elements/lesson-conjugation';
 import { LessonEditor } from './lesson-editor/lesson-editor';
 
 @Component({
     selector: 'app-topic-view',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonEditor],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonEditor],
     templateUrl: './topic-view.html',
     styleUrls: ['./topic-view.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

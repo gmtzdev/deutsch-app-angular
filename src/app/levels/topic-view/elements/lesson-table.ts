@@ -6,21 +6,21 @@ import { Table } from '../../../core/models/elements/table.model';
     selector: 'app-lesson-table',
     template: `
         <div class="le-table-wrapper" role="region" [attr.aria-label]="caption()">
-            <table class="le-table">
+            <table class="vocab-table">
                 @if (headers().length) {
                 <thead>
                     <tr>
                         @for (header of headers(); track $index) {
-                        <th class="le-table__th" scope="col">{{ header }}</th>
+                        <th scope="col">{{ header }}</th>
                         }
                     </tr>
                 </thead>
                 }
                 <tbody>
                     @for (row of rows(); track row.id) {
-                    <tr class="le-table__tr">
+                    <tr>
                         @for (cell of row.cells; track $index) {
-                        <td class="le-table__td">{{ cell }}</td>
+                        <td>{{ cell }}</td>
                         }
                     </tr>
                     }
@@ -36,41 +36,36 @@ import { Table } from '../../../core/models/elements/table.model';
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .le-table {
+        .vocab-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9rem;
         }
 
-        .le-table__th {
-            padding: 8px 12px;
+        .vocab-table th {
             text-align: left;
-            font-size: 0.8rem;
+            padding: 0.3rem 0.6rem;
+            background: var(--color-table-header);
+            color: var(--color-table-header-text);
             font-weight: 600;
-            color: var(--color-indications, #9b9a97);
-            letter-spacing: 0.04em;
+            font-size: 0.78rem;
             text-transform: uppercase;
-            background: rgba(0, 0, 0, 0.03);
-            border-bottom: 1.5px solid rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid var(--color-table-header-border);
         }
 
-        .le-table__tr {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-
-            &:last-child {
-                border-bottom: none;
-            }
-
-            &:nth-child(even) {
-                background: rgba(0, 0, 0, 0.015);
-            }
+        .vocab-table td {
+            padding: 0.4rem 0.6rem;
+            border-bottom: 1px solid var(--color-table-row-border);
+            color: var(--color-text);
         }
 
-        .le-table__td {
-            padding: 8px 12px;
-            color: var(--color-text, #37352f);
-            line-height: 1.5;
-            vertical-align: top;
+        .vocab-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .vocab-table tr:hover td {
+            background: var(--color-table-row-hover);
         }
     `],
     changeDetection: ChangeDetectionStrategy.OnPush,

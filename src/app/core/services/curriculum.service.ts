@@ -14,6 +14,10 @@ import { UnorderedList } from '../models/elements/unorderedlist.model';
 import { CreateTitleDto } from '../dto/elements/dto/title/create-title.dto';
 import { CreateSubtitleDto } from '../dto/elements/dto/subtitle/create-title.dto';
 import { CreateUnorderedListDto } from '../dto/elements/dto/unorderedlist/create-title.dto';
+import { CreateTableDto } from '../dto/elements/dto/table/create-table.dto';
+import { Table } from '../models/elements/table.model';
+import { CreateConjugationDto } from '../dto/elements/dto/conjugation/create-conjugation.dto';
+import { Conjugation } from '../models/elements/conjugation.model';
 
 const API_BASE = 'http://localhost:3000/api';
 
@@ -142,6 +146,32 @@ export class CurriculumService {
                         lesson: { id: Number(lessonId) } as Lesson,
                         delete: el.delete
                     } as CreateElementDto)
+                    break;
+                case 'table':
+                    const aux = el as Table;
+                    elements.push({
+                        id: aux.id,
+                        text: aux.text,
+                        style: aux.style,
+                        type: 'table',
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: aux.delete,
+                        baseStyle: aux.baseStyle,
+                        headers: aux.headers,
+                        rows: aux.rows
+                    } as CreateTableDto)
+                    break;
+                case 'conjugation':
+                    const auxc = el as Conjugation;
+                    elements.push({
+                        id: auxc.id,
+                        text: auxc.text,
+                        style: auxc.style,
+                        type: auxc.type,
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: auxc.delete,
+                        verbs: auxc.verbs,
+                    } as CreateConjugationDto)
                     break;
                 default:
                     console.warn(`Element type ${el.type} is not supported for creation yet.`);

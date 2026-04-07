@@ -24,6 +24,7 @@
                 @case ('table') { <app-lesson-table [element]="element" /> }
                 @case ('tip') { <app-lesson-tip [element]="element" /> }
                 @case ('tag') { <app-lesson-tag [element]="element" /> }
+                @case ('conjugation') { <app-lesson-conjugation [element]="element" /> }
                 @default { <app-lesson-paragraph [element]="element" /> }
                 }
                 <div class="pending-element__actions">
@@ -198,6 +199,75 @@
                     (input)="inputText.set($any($event.target).value)" aria-label="Texto de la etiqueta" maxlength="40"
                     required />
                 <p class="tag-form__hint">Máximo 3 palabras</p>
+            </div>
+
+            } @else if (activeType() === 'conjugation') {
+            <!-- Conjugation editor -->
+            <div class="conj-editor" role="group" aria-label="Editor de conjugación">
+
+                <!-- Verb tabs -->
+                <div class="conj-editor__tabs" role="tablist" aria-label="Verbos">
+                    @for (verb of conjVerbs(); track $index; let vi = $index) {
+                    <button type="button" class="conj-editor__tab" role="tab"
+                        [class.conj-editor__tab--active]="conjActiveVerb() === vi"
+                        [attr.aria-selected]="conjActiveVerb() === vi" (click)="conjActiveVerb.set(vi)">
+                        {{ verb.name || ('Verbo ' + (vi + 1)) }}
+                    </button>
+                    }
+                    <button type="button" class="conj-editor__add-verb" (click)="addConjVerb()"
+                        aria-label="Añadir verbo">
+                        + Verbo
+                    </button>
+                </div>
+
+                <!-- Active verb panel -->
+                @for (verb of conjVerbs(); track $index; let vi = $index) {
+                @if (conjActiveVerb() === vi) {
+                <div class="conj-editor__panel" role="tabpanel">
+                    <div class="conj-editor__verb-header">
+                        <input class="editor-main-input editor-main-input--sm" type="text"
+                            [placeholder]="'Nombre del verbo (ej. sein)'" [value]="verb.name"
+                            (input)="setConjVerbName(vi, $any($event.target).value)"
+                            [attr.aria-label]="'Nombre del verbo ' + (vi + 1)" />
+                        @if (conjVerbs().length > 1) {
+                        <button type="button" class="conj-editor__remove-verb" (click)="removeConjVerb(vi)"
+                            [attr.aria-label]="'Eliminar verbo ' + (vi + 1)">&#x2715;</button>
+                        }
+                    </div>
+
+                    <div class="conj-editor__scroll">
+                        <table class="conj-editor__table" aria-label="Filas de conjugación">
+                            <thead>
+                                <tr>
+                                    <th>Pronomen</th>
+                                    <th>Verb</th>
+                                    <th>Endung</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (row of verb.rows; track $index; let ri = $index) {
+                                <tr>
+                                    <td class="conj-editor__pronoun-cell">{{ row.pronoun }}</td>
+                                    <td>
+                                        <input class="conj-editor__input" type="text"
+                                            [placeholder]="row.pronoun + ' ...'" [value]="row.verb"
+                                            (input)="setConjCell(vi, ri, 'verb', $any($event.target).value)"
+                                            [attr.aria-label]="'Verbo para ' + row.pronoun" />
+                                    </td>
+                                    <td>
+                                        <input class="conj-editor__input conj-editor__input--ending" type="text"
+                                            placeholder="-e, -st..." [value]="row.ending"
+                                            (input)="setConjCell(vi, ri, 'ending', $any($event.target).value)"
+                                            [attr.aria-label]="'Terminación para ' + row.pronoun" />
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                }
+                }
             </div>
 
             } @else {

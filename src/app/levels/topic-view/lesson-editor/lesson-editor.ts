@@ -25,8 +25,12 @@ import { LessonTable } from '../elements/lesson-table';
 import { LessonTip } from '../elements/lesson-tip';
 import { LessonTag } from '../elements/lesson-tag';
 import { Tag } from '../../../core/models/elements/tag.model';
+import { LessonConjugation } from '../elements/lesson-conjugation';
+import { Conjugation } from '../../../core/models/elements/conjugation.model';
+import { VerbData } from '../../../core/models/elements/verb-data.model';
+import { ConjugationRow } from '../../../core/models/elements/conjugation-row.model';
 
-type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag';
+type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
 type TagColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'gray';
 
@@ -60,6 +64,7 @@ const BLOCK_OPTIONS: BlockOption[] = [
     { type: 'table', label: 'Tabla', icon: '⊞', description: 'Tabla con filas y columnas' },
     { type: 'tip', label: 'Consejo', icon: '💡', description: 'Bloque de consejo o nota' },
     { type: 'tag', label: 'Etiqueta', icon: '🏷', description: 'Etiqueta corta de 1 a 3 palabras' },
+    { type: 'conjugation', label: 'Conjugación', icon: '📝', description: 'Tabla de conjugación verbal (alemán)' },
 ];
 
 const TIP_COLOR_OPTIONS: TipColorOption[] = [
@@ -82,7 +87,7 @@ const TAG_COLOR_OPTIONS: TagColorOption[] = [
     selector: 'app-lesson-editor',
     templateUrl: './lesson-editor.html',
     styleUrl: './lesson-editor.scss',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LessonEditor {
@@ -108,6 +113,10 @@ export class LessonEditor {
     protected readonly tipColor = signal<TipColor>('info');
     protected readonly tagColor = signal<TagColor>('blue');
 
+    // ── Conjugation signals ─────────────────────────────────
+    protected readonly conjVerbs = signal<VerbData[]>([{ name: '', rows: this.defaultConjRows() }]);
+    protected readonly conjActiveVerb = signal(0);
+
     protected readonly tipColorOptions = TIP_COLOR_OPTIONS;
     protected readonly tagColorOptions = TAG_COLOR_OPTIONS;
 
@@ -126,6 +135,8 @@ export class LessonEditor {
         this.tipTitle.set('');
         this.tipColor.set('info');
         this.tagColor.set('blue');
+        this.conjVerbs.set([{ name: '', rows: this.defaultConjRows() }]);
+        this.conjActiveVerb.set(0);
         this.editingIndex.set(null);
     }
 
@@ -148,6 +159,8 @@ export class LessonEditor {
         this.tipTitle.set('');
         this.tipColor.set('info');
         this.tagColor.set('blue');
+        this.conjVerbs.set([{ name: '', rows: this.defaultConjRows() }]);
+        this.conjActiveVerb.set(0);
         this.editingIndex.set(null);
     }
 
@@ -171,6 +184,13 @@ export class LessonEditor {
         } else if (type === 'tag') {
             this.inputText.set(element.text);
             this.tagColor.set((element.style || 'blue') as TagColor);
+        } else if (type === 'conjugation') {
+            const conj = element as Conjugation;
+            this.conjVerbs.set(conj.verbs.map((v) => ({
+                name: v.name,
+                rows: v.rows.map((r) => ({ ...r })),
+            })));
+            this.conjActiveVerb.set(0);
         } else {
             this.inputText.set(element.text);
         }
@@ -206,6 +226,50 @@ export class LessonEditor {
             event.preventDefault();
             this.removeListItem(index);
         }
+    }
+
+    // ── Conjugation management ────────────────────────────────
+
+    private defaultConjRows(): ConjugationRow[] {
+        return [
+            { pronoun: 'ich', verb: '', ending: '' },
+            { pronoun: 'du', verb: '', ending: '' },
+            { pronoun: 'er/sie/es', verb: '', ending: '' },
+            { pronoun: 'wir', verb: '', ending: '' },
+            { pronoun: 'ihr', verb: '', ending: '' },
+            { pronoun: 'sie/Sie', verb: '', ending: '' },
+        ];
+    }
+
+    protected setConjVerbName(verbIdx: number, name: string): void {
+        this.conjVerbs.update((verbs) => {
+            const next = verbs.map((v) => ({ ...v, rows: [...v.rows] }));
+            next[verbIdx] = { ...next[verbIdx], name };
+            return next;
+        });
+    }
+
+    protected setConjCell(verbIdx: number, rowIdx: number, field: keyof ConjugationRow, value: string): void {
+        this.conjVerbs.update((verbs) => {
+            const next = verbs.map((v) => ({ ...v, rows: v.rows.map((r) => ({ ...r })) }));
+            (next[verbIdx].rows[rowIdx] as Record<string, string>)[field] = value;
+            return next;
+        });
+    }
+
+    protected addConjVerb(): void {
+        this.conjVerbs.update((verbs) => [
+            ...verbs,
+            { name: '', rows: this.defaultConjRows() },
+        ]);
+        this.conjActiveVerb.set(this.conjVerbs().length - 1);
+    }
+
+    protected removeConjVerb(verbIdx: number): void {
+        if (this.conjVerbs().length <= 1) return;
+        this.conjVerbs.update((verbs) => verbs.filter((_, i) => i !== verbIdx));
+        const cur = this.conjActiveVerb();
+        if (cur >= this.conjVerbs().length) this.conjActiveVerb.set(this.conjVerbs().length - 1);
     }
 
     // ── Table management ──────────────────────────────────────
@@ -314,6 +378,18 @@ export class LessonEditor {
                 lesson: null!,
                 tipTitle: this.tipTitle().trim(),
                 delete: false,
+            });
+        } else if (type === 'conjugation') {
+            const verbs = this.conjVerbs().filter((v) => v.name.trim());
+            if (!verbs.length) return;
+            draft = new Conjugation({
+                id: -Date.now(),
+                text: '',
+                style: '',
+                type: 'conjugation',
+                lesson: null!,
+                delete: false,
+                verbs,
             });
         } else {
             const text = this.inputText().trim();
