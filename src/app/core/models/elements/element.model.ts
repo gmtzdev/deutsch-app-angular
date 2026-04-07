@@ -8,6 +8,7 @@ export class Element {
     style: string;
     type: ElementType;
     lesson: Lesson;
+    delete: boolean = false;
 
     constructor(element: Element) {
         this.id = element.id;
