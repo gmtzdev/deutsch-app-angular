@@ -9,10 +9,11 @@ import { Subtitle } from "../models/elements/subtitle.model";
 import { Title } from "../models/elements/title.model";
 import { UnorderedList } from "../models/elements/unorderedlist.model";
 import { Table } from "../models/elements/table.model";
+import { Tip } from "../models/elements/tip.model";
 
 export type LessonElementDto = CreateElementDto | CreateTitleDto | CreateSubtitleDto | CreateListItemDto | CreateUnorderedListDto;
 
-export type ElementType = 'element' | 'title' | 'subtitle' | 'listItem' | 'unorderedList' | 'table';
-export type ElementTypeObj = Element | Title | Subtitle | ListItem | UnorderedList | Table;
+export type ElementType = 'element' | 'title' | 'subtitle' | 'listItem' | 'unorderedList' | 'table' | 'tip';
+export type ElementTypeObj = Element | Title | Subtitle | ListItem | UnorderedList | Table | Tip;
 
-export const elementTypes: ElementType[] = ['element', 'title', 'subtitle', 'listItem', 'unorderedList', 'table'];
+export const elementTypes: ElementType[] = ['element', 'title', 'subtitle', 'listItem', 'unorderedList', 'table', 'tip'];
