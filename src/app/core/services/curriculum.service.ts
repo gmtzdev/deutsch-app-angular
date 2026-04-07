@@ -13,6 +13,7 @@ import { CreateBodyLessonDto } from '../dto/elements/dto/create-body-lesson.dto'
 import { UnorderedList } from '../models/elements/unorderedlist.model';
 import { CreateTitleDto } from '../dto/elements/dto/title/create-title.dto';
 import { CreateSubtitleDto } from '../dto/elements/dto/subtitle/create-title.dto';
+import { CreateUnorderedListDto } from '../dto/elements/dto/unorderedlist/create-title.dto';
 
 const API_BASE = 'http://localhost:3000/api';
 
@@ -73,9 +74,11 @@ export class CurriculumService {
     /** Crea un elemento de texto (title, subtitle, paragraph) en una lección. */
     createElement(lessonId: number | string, type: 'title' | 'subtitle' | 'element', text: string): Observable<ElementTypeObj> {
         const payload: CreateElementDto = {
+            id: 0,
             text,
             type,
             lesson: { id: Number(lessonId) } as Lesson,
+            delete: false
         };
         return this.http.post<ElementTypeObj>(`${API_BASE}/elements`, payload);
     }
@@ -83,28 +86,54 @@ export class CurriculumService {
 
 
     /** Crea una lista no ordenada con sus ítems en una lección. */
-    createLesson(lessonId: number | string, preview: LessonElementDto[]): Observable<ElementTypeObj> {
+    createLesson(lessonId: number | string, preview: ElementTypeObj[]): Observable<ElementTypeObj> {
         let elements: LessonElementDto[] = [];
         for (const el of preview) {
             switch (el.type) {
                 case 'title':
                     elements.push({
+                        id: el.id,
                         text: el.text,
                         style: '',
                         type: 'title',
                         lesson: { id: Number(lessonId) } as Lesson,
-                        baseStyle: ''
+                        baseStyle: '',
+                        delete: el.delete
                     } as CreateTitleDto)
                     break;
                 case 'subtitle':
                     elements.push({
+                        id: el.id,
                         text: el.text,
                         style: '',
                         type: 'subtitle',
                         lesson: { id: Number(lessonId) } as Lesson,
-                        baseStyle: ''
+                        baseStyle: '',
+                        delete: el.delete
                     } as CreateSubtitleDto)
                     break;
+                case 'unorderedList':
+                    const lis = (el as UnorderedList).list.map((li, i): CreateElementDto => ({
+                        id: li.id,
+                        text: li.text,
+                        style: '',
+                        type: 'listItem',
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: li.delete,
+                    }));
+
+                    elements.push({
+                        id: el.id,
+                        text: '',
+                        style: '',
+                        type: 'unorderedList',
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        baseStyle: 'ul',
+                        list: lis,
+                        delete: el.delete
+                    } as CreateUnorderedListDto)
+                    break;
+
                 default:
                     console.warn(`Element type ${el.type} is not supported for creation yet.`);
                     break;
