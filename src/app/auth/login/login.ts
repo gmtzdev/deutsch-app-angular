@@ -18,8 +18,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
-import { Button } from 'primeng/button';
-import { Card } from 'primeng/card';
+
 
 function passwordStrengthValidator(
     control: AbstractControl,
@@ -36,7 +35,7 @@ function passwordStrengthValidator(
 
 @Component({
     selector: 'app-login',
-    imports: [ReactiveFormsModule, InputText, Password, Button, Card],
+    imports: [ReactiveFormsModule, InputText, Password],
     templateUrl: './login.html',
     styleUrl: './login.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
