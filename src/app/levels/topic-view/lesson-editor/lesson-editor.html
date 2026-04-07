@@ -1,5 +1,39 @@
 <div class="lesson-editor">
 
+    <!-- ── Pending elements preview ──────────────────────── -->
+    @if (hasPending()) {
+    <div class="pending-section" role="region" aria-label="Cambios pendientes">
+        <p class="pending-section__label">
+            <span aria-hidden="true">✏️</span>
+            {{ pendingElements().length }} bloque(s) pendiente(s) por guardar
+        </p>
+        <div class="pending-elements">
+            @for (element of pendingElements(); track element.id; let idx = $index) {
+            <div class="pending-element">
+                @switch (element.type) {
+                @case ('title') { <app-lesson-title [element]="element" /> }
+                @case ('subtitle') { <app-lesson-subtitle [element]="element" /> }
+                @case ('unorderedList') { <app-lesson-unordered-list [element]="element" /> }
+                @case ('table') { <app-lesson-table [element]="element" /> }
+                @case ('tip') { <app-lesson-tip [element]="element" /> }
+                @default { <app-lesson-paragraph [element]="element" /> }
+                }
+                <div class="pending-element__actions">
+                    <button type="button" class="pending-element__btn pending-element__btn--edit"
+                        (click)="startEdit(idx, element)" aria-label="Editar bloque">
+                        ✏️
+                    </button>
+                    <button type="button" class="pending-element__btn pending-element__btn--remove"
+                        (click)="elementRemoved.emit(idx)" aria-label="Eliminar bloque">
+                        ✕
+                    </button>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    }
+
     @if (!pickerOpen()) {
     <!-- ── Add block trigger ────────────────────────────────── -->
     <button type="button" class="add-block-btn" (click)="openPicker()" aria-label="Añadir bloque">
@@ -34,9 +68,13 @@
         <!-- ── Block input form ──────────────────────────────── -->
         <form (submit)="submit($event)">
             <div class="editor-form-header">
+                @if (editingIndex() !== null) {
+                <p class="editor-edit-indicator">✏️ Editando bloque</p>
+                } @else {
                 <button type="button" class="back-btn" (click)="backToPicker()" aria-label="Volver al selector">
                     ← Volver
                 </button>
+                }
             </div>
 
             @if (activeType() === 'unorderedList') {
@@ -145,7 +183,7 @@
             <div class="editor-panel__footer">
                 <button type="button" class="cancel-btn" (click)="closePicker()">Cancelar</button>
                 <button type="submit" class="confirm-btn">
-                    Guardar bloque
+                    {{ editingIndex() !== null ? 'Guardar cambios' : 'Guardar bloque' }}
                 </button>
             </div>
         </form>

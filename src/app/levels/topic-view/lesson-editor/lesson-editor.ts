@@ -2,8 +2,10 @@ import {
     Component,
     ChangeDetectionStrategy,
     inject,
+    input,
     output,
     signal,
+    computed,
     DOCUMENT,
 } from '@angular/core';
 import { ElementTypeObj } from '../../../core/types';
@@ -12,6 +14,15 @@ import { ListItem } from '../../../core/models/elements/listitem.model';
 import { Table } from '../../../core/models/elements/table.model';
 import { TableRow } from '../../../core/models/elements/table-row.model';
 import { Tip } from '../../../core/models/elements/tip.model';
+import { Title } from '../../../core/models/elements/title.model';
+import { Subtitle } from '../../../core/models/elements/subtitle.model';
+import { Element } from '../../../core/models/elements/element.model';
+import { LessonTitle } from '../elements/lesson-title';
+import { LessonSubtitle } from '../elements/lesson-subtitle';
+import { LessonParagraph } from '../elements/lesson-paragraph';
+import { LessonUnorderedList } from '../elements/lesson-unordered-list';
+import { LessonTable } from '../elements/lesson-table';
+import { LessonTip } from '../elements/lesson-tip';
 
 type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
@@ -50,10 +61,17 @@ const TIP_COLOR_OPTIONS: TipColorOption[] = [
     selector: 'app-lesson-editor',
     templateUrl: './lesson-editor.html',
     styleUrl: './lesson-editor.scss',
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LessonEditor {
+    readonly pendingElements = input<ElementTypeObj[]>([]);
     readonly elementAdded = output<ElementTypeObj>();
+    readonly elementEdited = output<{ index: number; element: ElementTypeObj }>();
+    readonly elementRemoved = output<number>();
+
+    protected readonly hasPending = computed(() => this.pendingElements().length > 0);
+    protected readonly editingIndex = signal<number | null>(null);
 
     private readonly doc = inject(DOCUMENT);
 
@@ -84,6 +102,7 @@ export class LessonEditor {
         this.tableRows.set([['', '']]);
         this.tipTitle.set('');
         this.tipColor.set('info');
+        this.editingIndex.set(null);
     }
 
     protected selectType(type: BlockType): void {
@@ -104,6 +123,29 @@ export class LessonEditor {
         this.tableRows.set([['', '']]);
         this.tipTitle.set('');
         this.tipColor.set('info');
+        this.editingIndex.set(null);
+    }
+
+    protected startEdit(index: number, element: ElementTypeObj): void {
+        this.editingIndex.set(index);
+        this.pickerOpen.set(true);
+        const type = element.type as BlockType;
+        this.activeType.set(type);
+        if (type === 'unorderedList') {
+            const ul = element as UnorderedList;
+            this.listItems.set(ul.list.map((item) => item.text));
+        } else if (type === 'table') {
+            const table = element as Table;
+            this.tableHeaders.set([...table.headers]);
+            this.tableRows.set(table.rows.map((row) => [...row.cells]));
+        } else if (type === 'tip') {
+            const tip = element as Tip;
+            this.inputText.set(tip.text);
+            this.tipTitle.set(tip.tipTitle);
+            this.tipColor.set(tip.style as TipColor);
+        } else {
+            this.inputText.set(element.text);
+        }
     }
 
     // ── List item management ──────────────────────────────────
@@ -238,10 +280,45 @@ export class LessonEditor {
         } else {
             const text = this.inputText().trim();
             if (!text) return;
-            draft = { id: -Date.now(), text, style: '', type, lesson: null! } as unknown as ElementTypeObj;
-        }
+            switch (type) {
+                case 'title':
+                    draft = new Title({
+                        id: -Date.now(),
+                        text,
+                        style: '',
+                        type,
+                        lesson: null!,
+                        baseStyle: '',
+                    });
+                    break;
+                case 'subtitle':
+                    draft = new Subtitle({
+                        id: -Date.now(),
+                        text,
+                        style: '',
+                        type,
+                        lesson: null!,
+                        baseStyle: '',
+                    });
+                    break;
+                case 'element':
+                    draft = new Element({
+                        id: -Date.now(),
+                        text,
+                        style: '',
+                        type,
+                        lesson: null!,
+                    });
+                    break;
+            }
 
-        this.elementAdded.emit(draft);
-        this.closePicker();
+            const idx = this.editingIndex();
+            if (idx !== null) {
+                this.elementEdited.emit({ index: idx, element: draft });
+            } else {
+                this.elementAdded.emit(draft);
+            }
+            this.closePicker();
+        }
     }
 }

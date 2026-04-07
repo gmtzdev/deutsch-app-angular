@@ -43,8 +43,10 @@
                 }
                 {{ subtopic.title }}
             </h2>
+
+
             <button type="button" class="edit-toggle-btn" [class.edit-toggle-btn--active]="editMode()"
-                (click)="editMode.set(!editMode())" [attr.aria-pressed]="editMode()" aria-label="Editar contenido">
+                (click)="enableEditMode()" [attr.aria-pressed]="editMode()" aria-label="Editar contenido">
                 <i class="pi pi-pencil" aria-hidden="true"></i>
                 {{ editMode() ? 'Editar' : 'Editar' }}
             </button>
@@ -53,7 +55,7 @@
 
 
         <!-- ── Lesson elements ─────────────────────────────────── -->
-        @if (subtopic.lesson.elements) {
+        @if (subtopic.lesson.elements && !editMode()) {
         <div class="lesson-elements">
             @for (element of subtopic.lesson.elements; track element.id) {
             @switch (element.type) {
@@ -89,34 +91,11 @@
         </div>
         }
 
-        <!-- ── Pending elements preview ─────────────────────────────── -->
-        @if (hasPending()) {
-        <div class="pending-section" role="region" aria-label="Cambios pendientes">
-            <p class="pending-section__label">
-                <span aria-hidden="true">✏️</span>
-                {{ pendingElements().length }} bloque(s) pendiente(s) por guardar
-            </p>
-            <div class="pending-elements">
-                @for (element of pendingElements(); track element.id) {
-                <div class="pending-element">
-                    @switch (element.type) {
-                    @case ('title') { <app-lesson-title [element]="element" /> }
-                    @case ('subtitle') { <app-lesson-subtitle [element]="element" /> }
-                    @case ('unorderedList') { <app-lesson-unordered-list [element]="element" /> }
-                    @case ('table') { <app-lesson-table [element]="element" /> }
-                    @case ('tip') { <app-lesson-tip [element]="element" /> }
-                    @default { <app-lesson-paragraph [element]="element" /> }
-                    }
-                </div>
-                }
-            </div>
-        </div>
-        }
-
         <!-- ── Edit footer (editor + confirm bar) ───────────────────── -->
         @if (editMode()) {
         <div class="edit-footer">
-            <app-lesson-editor (elementAdded)="onElementAdded($event)" />
+            <app-lesson-editor [pendingElements]="pendingElements()" (elementAdded)="onElementAdded($event)"
+                (elementEdited)="onElementEdited($event)" (elementRemoved)="onElementRemoved($event)" />
 
             @if (hasPending()) {
             <div class="confirm-bar" role="toolbar" aria-label="Guardar cambios">

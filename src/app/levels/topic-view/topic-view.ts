@@ -36,10 +36,20 @@ export class TopicView {
 
     private readonly curriculumService = inject(CurriculumService);
 
+
+    /***** Variables to Pending Elements *****/
     protected readonly editMode = signal(false);
     protected readonly pendingElements = signal<ElementTypeObj[]>([]);
     protected readonly confirming = signal(false);
     protected readonly hasPending = computed(() => this.pendingElements().length > 0);
+
+    protected enableEditMode(): void {
+        this.editMode.set(!this.editMode())
+        this.pendingElements.set(this.subtopicResource.value()?.lesson?.elements ?? []);
+    }
+
+
+
 
     protected readonly topicResource = resource<TopicWithSubtopics, string>({
         params: () => this.topicId(),
@@ -55,6 +65,18 @@ export class TopicView {
         this.pendingElements.update((prev) => [...prev, element]);
     }
 
+    protected onElementEdited(event: { index: number; element: ElementTypeObj }): void {
+        this.pendingElements.update((elements) => {
+            const next = [...elements];
+            next[event.index] = event.element;
+            return next;
+        });
+    }
+
+    protected onElementRemoved(index: number): void {
+        this.pendingElements.update((elements) => elements.filter((_, i) => i !== index));
+    }
+
     protected discardChanges(): void {
         this.pendingElements.set([]);
     }
@@ -65,22 +87,23 @@ export class TopicView {
 
         this.confirming.set(true);
         try {
-            for (const el of this.pendingElements()) {
-                if (el.type === 'unorderedList') {
-                    const items = (el as unknown as UnorderedList).list?.map((i) => i.text) ?? [];
-                    await firstValueFrom(this.curriculumService.createUnorderedList(lessonId, items));
-                } else if (el.type === 'table') {
-                    const table = el as unknown as Table;
-                    await firstValueFrom(this.curriculumService.createTable(lessonId, table.headers, table.rows));
-                } else if (el.type === 'tip') {
-                    const tip = el as unknown as Tip;
-                    await firstValueFrom(this.curriculumService.createTip(lessonId, tip.tipTitle, tip.text, tip.style));
-                } else {
-                    await firstValueFrom(
-                        this.curriculumService.createElement(lessonId, el.type as 'title' | 'subtitle' | 'element', el.text)
-                    );
-                }
-            }
+            const response = await firstValueFrom(this.curriculumService.createLesson(lessonId, this.pendingElements()));
+            // for (const el of this.pendingElements()) {
+            // if (el.type === 'unorderedList') {
+            //     const items = (el as unknown as UnorderedList).list?.map((i) => i.text) ?? [];
+            //     await firstValueFrom(this.curriculumService.createUnorderedList(lessonId, items));
+            // } else if (el.type === 'table') {
+            //     const table = el as unknown as Table;
+            //     await firstValueFrom(this.curriculumService.createTable(lessonId, table.headers, table.rows));
+            // } else if (el.type === 'tip') {
+            //     const tip = el as unknown as Tip;
+            //     await firstValueFrom(this.curriculumService.createTip(lessonId, tip.tipTitle, tip.text, tip.style));
+            // } else {
+            //     await firstValueFrom(
+            //         this.curriculumService.createElement(lessonId, el.type as 'title' | 'subtitle' | 'element', el.text)
+            //     );
+            // }
+            // }
             this.pendingElements.set([]);
             this.subtopicResource.reload();
         } catch {

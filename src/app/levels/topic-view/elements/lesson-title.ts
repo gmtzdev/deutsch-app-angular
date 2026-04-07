@@ -8,7 +8,6 @@ import { ElementTypeObj } from '../../../core/types';
         .le-title {
             font-size: 1.7rem;
             font-weight: 700;
-            color: var(--color-title, #1a1a1a);
             margin: 0;
             margin: 1.25rem 0 0.5rem;
             line-height: 1.3;

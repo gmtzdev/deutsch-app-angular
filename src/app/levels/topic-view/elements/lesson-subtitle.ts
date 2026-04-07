@@ -3,13 +3,13 @@ import { ElementTypeObj } from '../../../core/types';
 
 @Component({
     selector: 'app-lesson-subtitle',
-    template: `<h3 class="le-subtitle">{{ element().text }}</h3>`,
+    template: `<h3 class="le-subtitle text-indications">{{ element().text }}</h3>`,
     styles: [`
         .le-subtitle {
             font-size: 1.05rem;
             font-weight: 600;
-            color: var(--color-text, #37352f);
-            margin: 1rem 0 0.35rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
             line-height: 1.4;
         }
     `],

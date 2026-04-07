@@ -5,10 +5,14 @@ import { Level, LevelWithTopics } from '../models/level.model';
 import { Topic, TopicWithSubtopics } from '../models/topic.model';
 import { Subtopic, SubtopicWithLessons } from '../models/subtopic.models';
 import { Lesson } from '../models/lesson.model';
-import { ElementTypeObj } from '../types';
+import { ElementTypeObj, LessonElementDto } from '../types';
 import { CreateTopicDto } from '../dto/topic/create-topic.dto';
 import { CreateSubtopicDto } from '../dto/subtopic/create-subtopic.dto';
 import { CreateElementDto } from '../dto/elements/dto/create-element.dto';
+import { CreateBodyLessonDto } from '../dto/elements/dto/create-body-lesson.dto';
+import { UnorderedList } from '../models/elements/unorderedlist.model';
+import { CreateTitleDto } from '../dto/elements/dto/title/create-title.dto';
+import { CreateSubtitleDto } from '../dto/elements/dto/subtitle/create-title.dto';
 
 const API_BASE = 'http://localhost:3000/api';
 
@@ -76,36 +80,43 @@ export class CurriculumService {
         return this.http.post<ElementTypeObj>(`${API_BASE}/elements`, payload);
     }
 
+
+
     /** Crea una lista no ordenada con sus ítems en una lección. */
-    createUnorderedList(lessonId: number | string, items: string[]): Observable<ElementTypeObj> {
-        const payload = {
-            type: 'unorderedList',
+    createLesson(lessonId: number | string, preview: LessonElementDto[]): Observable<ElementTypeObj> {
+        let elements: LessonElementDto[] = [];
+        for (const el of preview) {
+            switch (el.type) {
+                case 'title':
+                    elements.push({
+                        text: el.text,
+                        style: '',
+                        type: 'title',
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        baseStyle: ''
+                    } as CreateTitleDto)
+                    break;
+                case 'subtitle':
+                    elements.push({
+                        text: el.text,
+                        style: '',
+                        type: 'subtitle',
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        baseStyle: ''
+                    } as CreateSubtitleDto)
+                    break;
+                default:
+                    console.warn(`Element type ${el.type} is not supported for creation yet.`);
+                    break;
+            }
+        }
+
+        const payload: CreateBodyLessonDto = {
             lesson: { id: Number(lessonId) } as Lesson,
-            list: items.map((text) => ({ text, type: 'listItem' })),
+            elements: elements
         };
-        return this.http.post<ElementTypeObj>(`${API_BASE}/elements`, payload);
+        console.log(payload);
+        return this.http.post<ElementTypeObj>(`${API_BASE}/elements/create-lesson`, payload);
     }
 
-    /** Crea una tabla con encabezados y filas en una lección. */
-    createTable(lessonId: number | string, headers: string[], rows: { cells: string[] }[]): Observable<ElementTypeObj> {
-        const payload = {
-            type: 'table',
-            lesson: { id: Number(lessonId) } as Lesson,
-            headers,
-            rows,
-        };
-        return this.http.post<ElementTypeObj>(`${API_BASE}/elements`, payload);
-    }
-
-    /** Crea un bloque de consejo (tip) en una lección. */
-    createTip(lessonId: number | string, tipTitle: string, text: string, style: string): Observable<ElementTypeObj> {
-        const payload = {
-            type: 'tip',
-            lesson: { id: Number(lessonId) } as Lesson,
-            text,
-            style,
-            tipTitle,
-        };
-        return this.http.post<ElementTypeObj>(`${API_BASE}/elements`, payload);
-    }
 }
