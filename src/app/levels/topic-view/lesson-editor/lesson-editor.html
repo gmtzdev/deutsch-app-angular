@@ -25,6 +25,7 @@
                 @case ('tip') { <app-lesson-tip [element]="element" /> }
                 @case ('tag') { <app-lesson-tag [element]="element" /> }
                 @case ('conjugation') { <app-lesson-conjugation [element]="element" /> }
+                @case ('quiz') { <app-lesson-quiz [element]="element" /> }
                 @default { <app-lesson-paragraph [element]="element" /> }
                 }
                 <div class="pending-element__actions">
@@ -268,6 +269,35 @@
                 </div>
                 }
                 }
+            </div>
+
+            } @else if (activeType() === 'quiz') {
+            <!-- Quiz editor -->
+            <div class="quiz-editor" role="group" aria-label="Editor de quiz">
+                @for (q of quizQuestions(); track $index; let qi = $index) {
+                <div class="quiz-editor__row">
+                    <div class="quiz-editor__row-header">
+                        <span class="quiz-editor__row-num">{{ qi + 1 }}</span>
+                        @if (quizQuestions().length > 1) {
+                        <button type="button" class="remove-item-btn" (click)="removeQuizQuestion(qi)"
+                            [attr.aria-label]="'Eliminar pregunta ' + (qi + 1)">&#x2715;</button>
+                        }
+                    </div>
+                    <input class="editor-main-input editor-main-input--sm" type="text" placeholder="Pregunta..."
+                        [value]="q.question" (input)="setQuizField(qi, 'question', $any($event.target).value)"
+                        [attr.aria-label]="'Pregunta ' + (qi + 1)" required />
+                    <input class="editor-main-input editor-main-input--sm" type="text"
+                        placeholder="Respuesta correcta..." [value]="q.answer"
+                        (input)="setQuizField(qi, 'answer', $any($event.target).value)"
+                        [attr.aria-label]="'Respuesta correcta ' + (qi + 1)" required />
+                    <input class="editor-main-input editor-main-input--sm" type="text" placeholder="Pista (opcional)..."
+                        [value]="q.hint" (input)="setQuizField(qi, 'hint', $any($event.target).value)"
+                        [attr.aria-label]="'Pista para pregunta ' + (qi + 1)" />
+                </div>
+                }
+                <button type="button" class="add-item-btn" (click)="addQuizQuestion()">
+                    + Añadir pregunta
+                </button>
             </div>
 
             } @else {

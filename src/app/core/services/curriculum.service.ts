@@ -18,6 +18,8 @@ import { CreateTableDto } from '../dto/elements/dto/table/create-table.dto';
 import { Table } from '../models/elements/table.model';
 import { CreateConjugationDto } from '../dto/elements/dto/conjugation/create-conjugation.dto';
 import { Conjugation } from '../models/elements/conjugation.model';
+import { CreateQuizDto } from '../dto/elements/dto/quiz/create-quiz.dto';
+import { Quiz } from '../models/elements/quiz.model';
 
 const API_BASE = 'http://localhost:3000/api';
 
@@ -172,6 +174,18 @@ export class CurriculumService {
                         delete: auxc.delete,
                         verbs: auxc.verbs,
                     } as CreateConjugationDto)
+                    break;
+                case 'quiz':
+                    const auxq = el as Quiz;
+                    elements.push({
+                        id: auxq.id,
+                        text: auxq.text,
+                        style: auxq.style,
+                        type: auxq.type,
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: auxq.delete,
+                        questions: auxq.questions,
+                    } as CreateQuizDto)
                     break;
                 default:
                     console.warn(`Element type ${el.type} is not supported for creation yet.`);

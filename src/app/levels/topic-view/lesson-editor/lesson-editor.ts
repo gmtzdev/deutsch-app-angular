@@ -29,8 +29,11 @@ import { LessonConjugation } from '../elements/lesson-conjugation';
 import { Conjugation } from '../../../core/models/elements/conjugation.model';
 import { VerbData } from '../../../core/models/elements/verb-data.model';
 import { ConjugationRow } from '../../../core/models/elements/conjugation-row.model';
+import { LessonQuiz } from '../elements/lesson-quiz';
+import { Quiz } from '../../../core/models/elements/quiz.model';
+import { QuizQuestion } from '../../../core/models/elements/quiz-question.model';
 
-type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation';
+type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
 type TagColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'gray';
 
@@ -65,6 +68,7 @@ const BLOCK_OPTIONS: BlockOption[] = [
     { type: 'tip', label: 'Consejo', icon: '💡', description: 'Bloque de consejo o nota' },
     { type: 'tag', label: 'Etiqueta', icon: '🏷', description: 'Etiqueta corta de 1 a 3 palabras' },
     { type: 'conjugation', label: 'Conjugación', icon: '📝', description: 'Tabla de conjugación verbal (alemán)' },
+    { type: 'quiz', label: 'Quiz', icon: '❓', description: 'Preguntas de comprensión' },
 ];
 
 const TIP_COLOR_OPTIONS: TipColorOption[] = [
@@ -87,7 +91,7 @@ const TAG_COLOR_OPTIONS: TagColorOption[] = [
     selector: 'app-lesson-editor',
     templateUrl: './lesson-editor.html',
     styleUrl: './lesson-editor.scss',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LessonEditor {
@@ -117,6 +121,9 @@ export class LessonEditor {
     protected readonly conjVerbs = signal<VerbData[]>([{ name: '', rows: this.defaultConjRows() }]);
     protected readonly conjActiveVerb = signal(0);
 
+    // ── Quiz signals ──────────────────────────────────────────
+    protected readonly quizQuestions = signal<QuizQuestion[]>([{ id: 1, question: '', answer: '', hint: '' }]);
+
     protected readonly tipColorOptions = TIP_COLOR_OPTIONS;
     protected readonly tagColorOptions = TAG_COLOR_OPTIONS;
 
@@ -137,6 +144,7 @@ export class LessonEditor {
         this.tagColor.set('blue');
         this.conjVerbs.set([{ name: '', rows: this.defaultConjRows() }]);
         this.conjActiveVerb.set(0);
+        this.quizQuestions.set([{ id: 1, question: '', answer: '', hint: '' }]);
         this.editingIndex.set(null);
     }
 
@@ -161,6 +169,7 @@ export class LessonEditor {
         this.tagColor.set('blue');
         this.conjVerbs.set([{ name: '', rows: this.defaultConjRows() }]);
         this.conjActiveVerb.set(0);
+        this.quizQuestions.set([{ id: 1, question: '', answer: '', hint: '' }]);
         this.editingIndex.set(null);
     }
 
@@ -191,6 +200,9 @@ export class LessonEditor {
                 rows: v.rows.map((r) => ({ ...r })),
             })));
             this.conjActiveVerb.set(0);
+        } else if (type === 'quiz') {
+            const quiz = element as Quiz;
+            this.quizQuestions.set(quiz.questions.map((q) => ({ ...q })));
         } else {
             this.inputText.set(element.text);
         }
@@ -270,6 +282,28 @@ export class LessonEditor {
         this.conjVerbs.update((verbs) => verbs.filter((_, i) => i !== verbIdx));
         const cur = this.conjActiveVerb();
         if (cur >= this.conjVerbs().length) this.conjActiveVerb.set(this.conjVerbs().length - 1);
+    }
+
+    // ── Quiz management ───────────────────────────────────
+
+    protected setQuizField(idx: number, field: keyof QuizQuestion, value: string | number): void {
+        this.quizQuestions.update((qs) => {
+            const next = [...qs];
+            next[idx] = { ...next[idx], [field]: value };
+            return next;
+        });
+    }
+
+    protected addQuizQuestion(): void {
+        this.quizQuestions.update((qs) => [
+            ...qs,
+            { id: qs.length + 1, question: '', answer: '', hint: '' },
+        ]);
+    }
+
+    protected removeQuizQuestion(idx: number): void {
+        if (this.quizQuestions().length <= 1) return;
+        this.quizQuestions.update((qs) => qs.filter((_, i) => i !== idx));
     }
 
     // ── Table management ──────────────────────────────────────
@@ -390,6 +424,18 @@ export class LessonEditor {
                 lesson: null!,
                 delete: false,
                 verbs,
+            });
+        } else if (type === 'quiz') {
+            const questions = this.quizQuestions().filter((q) => q.question.trim() && q.answer.trim());
+            if (!questions.length) return;
+            draft = new Quiz({
+                id: -Date.now(),
+                text: '',
+                style: '',
+                type: 'quiz',
+                lesson: null!,
+                delete: false,
+                questions,
             });
         } else {
             const text = this.inputText().trim();

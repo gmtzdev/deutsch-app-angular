@@ -88,6 +88,10 @@
             <app-lesson-conjugation [element]="element" />
             }
 
+            @case ('quiz') {
+            <app-lesson-quiz [element]="element" />
+            }
+
             @default {
             <!-- 'element' and 'listItem' at top level render as plain paragraph -->
             <app-lesson-paragraph [element]="element" />
