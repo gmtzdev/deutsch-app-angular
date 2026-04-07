@@ -1,0 +1,157 @@
+<div class="lesson-editor">
+
+    @if (!pickerOpen()) {
+    <!-- ── Add block trigger ────────────────────────────────── -->
+    <button type="button" class="add-block-btn" (click)="openPicker()" aria-label="Añadir bloque">
+        <span class="add-block-btn__icon" aria-hidden="true">+</span>
+        <span class="add-block-btn__label">Añadir bloque</span>
+    </button>
+    } @else {
+
+    <div class="editor-panel" role="dialog" aria-label="Editor de bloque" (keydown.escape)="closePicker()">
+
+        @if (activeType() === null) {
+        <!-- ── Block type picker ─────────────────────────────── -->
+        <p class="editor-panel__hint">Elige un tipo de bloque</p>
+        <div class="block-picker" role="listbox" aria-label="Tipos de bloque">
+            @for (opt of blockOptions; track opt.type) {
+            <button type="button" class="block-option" role="option" [attr.aria-selected]="false"
+                (click)="selectType(opt.type)">
+                <span class="block-option__icon" aria-hidden="true">{{ opt.icon }}</span>
+                <span class="block-option__info">
+                    <span class="block-option__label">{{ opt.label }}</span>
+                    <span class="block-option__desc">{{ opt.description }}</span>
+                </span>
+            </button>
+            }
+        </div>
+        <div class="editor-panel__footer">
+            <button type="button" class="cancel-btn" (click)="closePicker()">Cancelar</button>
+        </div>
+
+        } @else {
+
+        <!-- ── Block input form ──────────────────────────────── -->
+        <form (submit)="submit($event)">
+            <div class="editor-form-header">
+                <button type="button" class="back-btn" (click)="backToPicker()" aria-label="Volver al selector">
+                    ← Volver
+                </button>
+            </div>
+
+            @if (activeType() === 'unorderedList') {
+            <!-- List items -->
+            <div class="list-items-wrapper">
+                @for (item of listItems(); track $index; let idx = $index) {
+                <div class="list-item-row">
+                    <span class="list-bullet" aria-hidden="true">•</span>
+                    <input class="editor-list-input" type="text" placeholder="Ítem {{ idx + 1 }}" [value]="item"
+                        (input)="setListItem(idx, $any($event.target).value)" (keydown)="onListItemKeydown($event, idx)"
+                        [attr.aria-label]="'Ítem ' + (idx + 1)" />
+                    @if (listItems().length > 1) {
+                    <button type="button" class="remove-item-btn" (click)="removeListItem(idx)"
+                        [attr.aria-label]="'Eliminar ítem ' + (idx + 1)">✕</button>
+                    }
+                </div>
+                }
+                <button type="button" class="add-item-btn" (click)="addListItem()">
+                    + Añadir ítem
+                </button>
+            </div>
+
+            } @else if (activeType() === 'table') {
+            <!-- Table editor -->
+            <div class="table-editor" role="group" aria-label="Editor de tabla">
+                <div class="table-editor__scroll">
+                    <table class="table-editor__table" aria-label="Vista previa de la tabla">
+                        <thead>
+                            <tr>
+                                @for (header of tableHeaders(); track $index; let col = $index) {
+                                <th class="table-editor__header-cell">
+                                    <input class="table-editor__input table-editor__input--header" type="text"
+                                        [placeholder]="'Columna ' + (col + 1)" [value]="header"
+                                        (input)="setTableHeader(col, $any($event.target).value)"
+                                        [attr.aria-label]="'Encabezado columna ' + (col + 1)" />
+                                    @if (tableHeaders().length > 1) {
+                                    <button type="button" class="table-editor__remove-col"
+                                        (click)="removeTableColumn(col)"
+                                        [attr.aria-label]="'Eliminar columna ' + (col + 1)">✕</button>
+                                    }
+                                </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (row of tableRows(); track $index; let rowIdx = $index) {
+                            <tr class="table-editor__row">
+                                @for (cell of row; track $index; let colIdx = $index) {
+                                <td class="table-editor__cell">
+                                    <input class="table-editor__input" type="text"
+                                        [placeholder]="'Celda ' + (rowIdx + 1) + '-' + (colIdx + 1)" [value]="cell"
+                                        (input)="setTableCell(rowIdx, colIdx, $any($event.target).value)"
+                                        [attr.aria-label]="'Fila ' + (rowIdx + 1) + ', columna ' + (colIdx + 1)" />
+                                </td>
+                                }
+                                <td class="table-editor__cell table-editor__cell--action">
+                                    @if (tableRows().length > 1) {
+                                    <button type="button" class="table-editor__remove-row"
+                                        (click)="removeTableRow(rowIdx)"
+                                        [attr.aria-label]="'Eliminar fila ' + (rowIdx + 1)">✕</button>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-editor__controls">
+                    <button type="button" class="table-editor__add-btn" (click)="addTableRow()">
+                        + Añadir fila
+                    </button>
+                    <button type="button" class="table-editor__add-btn" (click)="addTableColumn()">
+                        + Añadir columna
+                    </button>
+                </div>
+            </div>
+
+            } @else if (activeType() === 'tip') {
+            <!-- Tip block -->
+            <div class="tip-form" role="group" aria-label="Editor de consejo">
+                <div class="tip-form__colors" role="group" aria-label="Color del bloque">
+                    @for (c of tipColorOptions; track c.value) {
+                    <button type="button" class="tip-form__swatch"
+                        [class.tip-form__swatch--active]="tipColor() === c.value" [style.background]="c.bg"
+                        [style.border-color]="c.border" (click)="tipColor.set(c.value)" [attr.aria-label]="c.label"
+                        [attr.aria-pressed]="tipColor() === c.value">
+                    </button>
+                    }
+                </div>
+                <input id="editor-tip-title" class="editor-main-input editor-main-input--sm" type="text"
+                    placeholder="Título del consejo (opcional)" [value]="tipTitle()"
+                    (input)="tipTitle.set($any($event.target).value)" aria-label="Título del consejo" />
+                <textarea class="editor-tip-textarea" placeholder="Escribe el contenido del consejo..."
+                    [value]="inputText()" (input)="inputText.set($any($event.target).value)"
+                    aria-label="Contenido del consejo" rows="3" required></textarea>
+            </div>
+
+            } @else {
+            <!-- Single text input -->
+            <input id="editor-main-input" class="editor-main-input" type="text" [placeholder]="activeType() === 'title' ? 'Título de la sección...' :
+                               activeType() === 'subtitle' ? 'Subtítulo...' : 'Escribe el párrafo...'"
+                [value]="inputText()" (input)="inputText.set($any($event.target).value)"
+                aria-label="Contenido del bloque" required />
+            }
+
+            <div class="editor-panel__footer">
+                <button type="button" class="cancel-btn" (click)="closePicker()">Cancelar</button>
+                <button type="submit" class="confirm-btn">
+                    Guardar bloque
+                </button>
+            </div>
+        </form>
+
+        }
+    </div>
+
+    }
+</div>

@@ -43,36 +43,17 @@
                 }
                 {{ subtopic.title }}
             </h2>
+            <button type="button" class="edit-toggle-btn" [class.edit-toggle-btn--active]="editMode()"
+                (click)="editMode.set(!editMode())" [attr.aria-pressed]="editMode()" aria-label="Editar contenido">
+                <i class="pi pi-pencil" aria-hidden="true"></i>
+                {{ editMode() ? 'Editar' : 'Editar' }}
+            </button>
         </header>
-
-        <!-- <div class="topic-card__body">
-            @if (!subtopic.lesson || subtopic.lesson.length === 0) {
-            <p class="empty-msg">Este subtema aún no tiene lecciones disponibles.</p>
-            } @else {
-            <ul class="lesson-list" role="list">
-                @for (lesson of subtopic.lessons; track lesson.id; let i = $index) {
-                <li class="lesson-item" role="listitem">
-                    <span class="lesson-item__num" aria-hidden="true">{{ i + 1 }}</span>
-                    <div class="lesson-item__info">
-                        <span class="lesson-item__title">Lección {{ lesson.id }}</span>
-                        @if (lesson.type) {
-                        <span class="lesson-item__badge">{{ lesson.type }}</span>
-                        }
-                    </div>
-                    <span class="lesson-item__status" [class.lesson-item__status--done]="lesson.completed"
-                        [attr.aria-label]="lesson.completed ? 'Completada' : 'Pendiente'">
-                        {{ lesson.completed ? '✓' : '○' }}
-                    </span>
-                </li>
-                }
-            </ul>
-            }
-        </div> -->
 
 
 
         <!-- ── Lesson elements ─────────────────────────────────── -->
-        @if (subtopic.lesson.elements?.length) {
+        @if (subtopic.lesson.elements) {
         <div class="lesson-elements">
             @for (element of subtopic.lesson.elements; track element.id) {
             @switch (element.type) {
@@ -89,12 +70,69 @@
             <app-lesson-unordered-list [element]="element" />
             }
 
+            @case ('table') {
+            <app-lesson-table [element]="element" />
+            }
+
+            @case ('tip') {
+            <app-lesson-tip [element]="element" />
+            }
+
             @default {
             <!-- 'element' and 'listItem' at top level render as plain paragraph -->
             <app-lesson-paragraph [element]="element" />
             }
 
             }
+            }
+
+        </div>
+        }
+
+        <!-- ── Pending elements preview ─────────────────────────────── -->
+        @if (hasPending()) {
+        <div class="pending-section" role="region" aria-label="Cambios pendientes">
+            <p class="pending-section__label">
+                <span aria-hidden="true">✏️</span>
+                {{ pendingElements().length }} bloque(s) pendiente(s) por guardar
+            </p>
+            <div class="pending-elements">
+                @for (element of pendingElements(); track element.id) {
+                <div class="pending-element">
+                    @switch (element.type) {
+                    @case ('title') { <app-lesson-title [element]="element" /> }
+                    @case ('subtitle') { <app-lesson-subtitle [element]="element" /> }
+                    @case ('unorderedList') { <app-lesson-unordered-list [element]="element" /> }
+                    @case ('table') { <app-lesson-table [element]="element" /> }
+                    @case ('tip') { <app-lesson-tip [element]="element" /> }
+                    @default { <app-lesson-paragraph [element]="element" /> }
+                    }
+                </div>
+                }
+            </div>
+        </div>
+        }
+
+        <!-- ── Edit footer (editor + confirm bar) ───────────────────── -->
+        @if (editMode()) {
+        <div class="edit-footer">
+            <app-lesson-editor (elementAdded)="onElementAdded($event)" />
+
+            @if (hasPending()) {
+            <div class="confirm-bar" role="toolbar" aria-label="Guardar cambios">
+                <button type="button" class="discard-btn" (click)="discardChanges()" [disabled]="confirming()"
+                    aria-label="Descartar cambios pendientes">
+                    Descartar
+                </button>
+                <button type="button" class="confirm-btn" (click)="confirmChanges()" [disabled]="confirming()"
+                    aria-label="Confirmar y guardar todos los cambios">
+                    @if (confirming()) {
+                    Guardando...
+                    } @else {
+                    Confirmar cambios ({{ pendingElements().length }})
+                    }
+                </button>
+            </div>
             }
         </div>
         }

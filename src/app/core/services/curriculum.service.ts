@@ -5,8 +5,10 @@ import { Level, LevelWithTopics } from '../models/level.model';
 import { Topic, TopicWithSubtopics } from '../models/topic.model';
 import { Subtopic, SubtopicWithLessons } from '../models/subtopic.models';
 import { Lesson } from '../models/lesson.model';
+import { ElementTypeObj } from '../types';
 import { CreateTopicDto } from '../dto/topic/create-topic.dto';
 import { CreateSubtopicDto } from '../dto/subtopic/create-subtopic.dto';
+import { CreateElementDto } from '../dto/elements/dto/create-element.dto';
 
 const API_BASE = 'http://localhost:3000/api';
 
@@ -62,5 +64,48 @@ export class CurriculumService {
             topic: { id: Number(topicId) } as Topic,
         };
         return this.http.post<Subtopic>(`${API_BASE}/subtopics`, payload);
+    }
+
+    /** Crea un elemento de texto (title, subtitle, paragraph) en una lección. */
+    createElement(lessonId: number | string, type: 'title' | 'subtitle' | 'element', text: string): Observable<ElementTypeObj> {
+        const payload: CreateElementDto = {
+            text,
+            type,
+            lesson: { id: Number(lessonId) } as Lesson,
+        };
+        return this.http.post<ElementTypeObj>(`${API_BASE}/elements`, payload);
+    }
+
+    /** Crea una lista no ordenada con sus ítems en una lección. */
+    createUnorderedList(lessonId: number | string, items: string[]): Observable<ElementTypeObj> {
+        const payload = {
+            type: 'unorderedList',
+            lesson: { id: Number(lessonId) } as Lesson,
+            list: items.map((text) => ({ text, type: 'listItem' })),
+        };
+        return this.http.post<ElementTypeObj>(`${API_BASE}/elements`, payload);
+    }
+
+    /** Crea una tabla con encabezados y filas en una lección. */
+    createTable(lessonId: number | string, headers: string[], rows: { cells: string[] }[]): Observable<ElementTypeObj> {
+        const payload = {
+            type: 'table',
+            lesson: { id: Number(lessonId) } as Lesson,
+            headers,
+            rows,
+        };
+        return this.http.post<ElementTypeObj>(`${API_BASE}/elements`, payload);
+    }
+
+    /** Crea un bloque de consejo (tip) en una lección. */
+    createTip(lessonId: number | string, tipTitle: string, text: string, style: string): Observable<ElementTypeObj> {
+        const payload = {
+            type: 'tip',
+            lesson: { id: Number(lessonId) } as Lesson,
+            text,
+            style,
+            tipTitle,
+        };
+        return this.http.post<ElementTypeObj>(`${API_BASE}/elements`, payload);
     }
 }
