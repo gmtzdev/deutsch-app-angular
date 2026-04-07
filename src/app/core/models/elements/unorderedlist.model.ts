@@ -10,6 +10,6 @@ export class UnorderedList extends Element {
     constructor(element: UnorderedList) {
         super(element);
         this.baseStyle = 'ul';
-        this.list = [];
+        this.list = element.list || [];
     }
 }
