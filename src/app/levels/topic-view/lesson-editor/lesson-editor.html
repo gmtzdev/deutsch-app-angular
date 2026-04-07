@@ -10,12 +10,20 @@
         <div class="pending-elements">
             @for (element of pendingElements(); track element.id; let idx = $index) {
             <div class="pending-element">
+                @if(element.delete) {
+                <div class="pending-element__overlay" aria-hidden="true">
+                    <span class="pending-element__delete-label">Eliminado</span>
+                </div>
+                }@else {
+
+
                 @switch (element.type) {
                 @case ('title') { <app-lesson-title [element]="element" /> }
                 @case ('subtitle') { <app-lesson-subtitle [element]="element" /> }
                 @case ('unorderedList') { <app-lesson-unordered-list [element]="element" /> }
                 @case ('table') { <app-lesson-table [element]="element" /> }
                 @case ('tip') { <app-lesson-tip [element]="element" /> }
+                @case ('tag') { <app-lesson-tag [element]="element" /> }
                 @default { <app-lesson-paragraph [element]="element" /> }
                 }
                 <div class="pending-element__actions">
@@ -28,6 +36,7 @@
                         ✕
                     </button>
                 </div>
+                }
             </div>
             }
         </div>
@@ -170,6 +179,25 @@
                 <textarea class="editor-tip-textarea" placeholder="Escribe el contenido del consejo..."
                     [value]="inputText()" (input)="inputText.set($any($event.target).value)"
                     aria-label="Contenido del consejo" rows="3" required></textarea>
+            </div>
+
+            } @else if (activeType() === 'tag') {
+            <!-- Tag input -->
+            <div class="tag-form" role="group" aria-label="Editor de etiqueta">
+                <div class="tag-form__colors" role="group" aria-label="Color de la etiqueta">
+                    @for (c of tagColorOptions; track c.value) {
+                    <button type="button" class="tag-form__swatch"
+                        [class.tag-form__swatch--active]="tagColor() === c.value" [style.background]="c.bg"
+                        [style.border-color]="c.border" (click)="tagColor.set(c.value)" [attr.aria-label]="c.label"
+                        [attr.aria-pressed]="tagColor() === c.value">
+                    </button>
+                    }
+                </div>
+                <input id="editor-main-input" class="editor-main-input editor-main-input--tag" type="text"
+                    placeholder="Ej: Nominativo, Verbo reflexivo..." [value]="inputText()"
+                    (input)="inputText.set($any($event.target).value)" aria-label="Texto de la etiqueta" maxlength="40"
+                    required />
+                <p class="tag-form__hint">Máximo 3 palabras</p>
             </div>
 
             } @else {

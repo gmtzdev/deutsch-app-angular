@@ -133,7 +133,16 @@ export class CurriculumService {
                         delete: el.delete
                     } as CreateUnorderedListDto)
                     break;
-
+                case 'tag':
+                    elements.push({
+                        id: el.id,
+                        text: el.text,
+                        style: el.style,
+                        type: 'tag',
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: el.delete
+                    } as CreateElementDto)
+                    break;
                 default:
                     console.warn(`Element type ${el.type} is not supported for creation yet.`);
                     break;

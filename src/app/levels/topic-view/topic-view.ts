@@ -7,7 +7,7 @@ import {
     signal,
     computed,
 } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, tap } from 'rxjs';
 import { CurriculumService } from '../../core/services/curriculum.service';
 import { TopicWithSubtopics } from '../../core/models/topic.model';
 import { SubtopicWithLessons } from '../../core/models/subtopic.models';
@@ -21,11 +21,12 @@ import { LessonParagraph } from './elements/lesson-paragraph';
 import { LessonUnorderedList } from './elements/lesson-unordered-list';
 import { LessonTable } from './elements/lesson-table';
 import { LessonTip } from './elements/lesson-tip';
+import { LessonTag } from './elements/lesson-tag';
 import { LessonEditor } from './lesson-editor/lesson-editor';
 
 @Component({
     selector: 'app-topic-view',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonEditor],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonEditor],
     templateUrl: './topic-view.html',
     styleUrls: ['./topic-view.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,23 +59,34 @@ export class TopicView {
 
     protected readonly subtopicResource = resource<SubtopicWithLessons, string>({
         params: () => this.subtopicId(),
-        loader: ({ params }) => firstValueFrom(this.curriculumService.getSubtopicWithLessons(params)),
+        loader: ({ params }) => firstValueFrom(this.curriculumService.getSubtopicWithLessons(params).pipe(
+            tap(subtopic => { console.log(subtopic) })
+        )),
     });
 
     protected onElementAdded(element: ElementTypeObj): void {
         this.pendingElements.update((prev) => [...prev, element]);
+        console.log(this.pendingElements());
     }
 
     protected onElementEdited(event: { index: number; element: ElementTypeObj }): void {
         this.pendingElements.update((elements) => {
             const next = [...elements];
+            const aux = next[event.index];
+            event.element.id = aux.id; // preserve id for existing elements so they can be updated instead of created
             next[event.index] = event.element;
             return next;
         });
     }
 
     protected onElementRemoved(index: number): void {
-        this.pendingElements.update((elements) => elements.filter((_, i) => i !== index));
+        this.pendingElements.update((elements) => {
+            const next = [...elements];
+            const aux = next[index];
+            aux.delete = true; // mark element for deletion
+            next[index] = aux;
+            return next;
+        });
     }
 
     protected discardChanges(): void {
@@ -87,29 +99,15 @@ export class TopicView {
 
         this.confirming.set(true);
         try {
+            console.log(this.pendingElements());
             const response = await firstValueFrom(this.curriculumService.createLesson(lessonId, this.pendingElements()));
-            // for (const el of this.pendingElements()) {
-            // if (el.type === 'unorderedList') {
-            //     const items = (el as unknown as UnorderedList).list?.map((i) => i.text) ?? [];
-            //     await firstValueFrom(this.curriculumService.createUnorderedList(lessonId, items));
-            // } else if (el.type === 'table') {
-            //     const table = el as unknown as Table;
-            //     await firstValueFrom(this.curriculumService.createTable(lessonId, table.headers, table.rows));
-            // } else if (el.type === 'tip') {
-            //     const tip = el as unknown as Tip;
-            //     await firstValueFrom(this.curriculumService.createTip(lessonId, tip.tipTitle, tip.text, tip.style));
-            // } else {
-            //     await firstValueFrom(
-            //         this.curriculumService.createElement(lessonId, el.type as 'title' | 'subtitle' | 'element', el.text)
-            //     );
-            // }
-            // }
             this.pendingElements.set([]);
             this.subtopicResource.reload();
         } catch {
             // keep pending on error so user can retry
         } finally {
             this.confirming.set(false);
+            this.editMode.set(false);
         }
     }
 }

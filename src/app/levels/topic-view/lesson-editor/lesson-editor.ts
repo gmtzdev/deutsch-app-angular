@@ -23,15 +23,26 @@ import { LessonParagraph } from '../elements/lesson-paragraph';
 import { LessonUnorderedList } from '../elements/lesson-unordered-list';
 import { LessonTable } from '../elements/lesson-table';
 import { LessonTip } from '../elements/lesson-tip';
+import { LessonTag } from '../elements/lesson-tag';
+import { Tag } from '../../../core/models/elements/tag.model';
 
-type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip';
+type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
+type TagColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'gray';
 
 interface TipColorOption {
     value: TipColor;
     label: string;
     bg: string;
     border: string;
+}
+
+interface TagColorOption {
+    value: TagColor;
+    label: string;
+    bg: string;
+    border: string;
+    color: string;
 }
 
 interface BlockOption {
@@ -48,6 +59,7 @@ const BLOCK_OPTIONS: BlockOption[] = [
     { type: 'unorderedList', label: 'Lista', icon: '≡', description: 'Lista de ítems' },
     { type: 'table', label: 'Tabla', icon: '⊞', description: 'Tabla con filas y columnas' },
     { type: 'tip', label: 'Consejo', icon: '💡', description: 'Bloque de consejo o nota' },
+    { type: 'tag', label: 'Etiqueta', icon: '🏷', description: 'Etiqueta corta de 1 a 3 palabras' },
 ];
 
 const TIP_COLOR_OPTIONS: TipColorOption[] = [
@@ -57,11 +69,20 @@ const TIP_COLOR_OPTIONS: TipColorOption[] = [
     { value: 'danger', label: 'Importante', bg: 'rgba(239, 68, 68, 0.15)', border: '#ef4444' },
 ];
 
+const TAG_COLOR_OPTIONS: TagColorOption[] = [
+    { value: 'blue', label: 'Azul', bg: 'rgba(74, 144, 217, 0.15)', border: '#4a90d9', color: '#1d4ed8' },
+    { value: 'green', label: 'Verde', bg: 'rgba(34, 197, 94, 0.15)', border: '#22c55e', color: '#15803d' },
+    { value: 'purple', label: 'Morado', bg: 'rgba(168, 85, 247, 0.15)', border: '#a855f7', color: '#7e22ce' },
+    { value: 'orange', label: 'Naranja', bg: 'rgba(249, 115, 22, 0.15)', border: '#f97316', color: '#c2410c' },
+    { value: 'red', label: 'Rojo', bg: 'rgba(239, 68, 68, 0.15)', border: '#ef4444', color: '#b91c1c' },
+    { value: 'gray', label: 'Gris', bg: 'rgba(107, 114, 128, 0.12)', border: '#6b7280', color: '#374151' },
+];
+
 @Component({
     selector: 'app-lesson-editor',
     templateUrl: './lesson-editor.html',
     styleUrl: './lesson-editor.scss',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LessonEditor {
@@ -85,8 +106,10 @@ export class LessonEditor {
     protected readonly tableRows = signal<string[][]>([['', '']]);
     protected readonly tipTitle = signal('');
     protected readonly tipColor = signal<TipColor>('info');
+    protected readonly tagColor = signal<TagColor>('blue');
 
     protected readonly tipColorOptions = TIP_COLOR_OPTIONS;
+    protected readonly tagColorOptions = TAG_COLOR_OPTIONS;
 
     protected openPicker(): void {
         this.pickerOpen.set(true);
@@ -102,6 +125,7 @@ export class LessonEditor {
         this.tableRows.set([['', '']]);
         this.tipTitle.set('');
         this.tipColor.set('info');
+        this.tagColor.set('blue');
         this.editingIndex.set(null);
     }
 
@@ -123,6 +147,7 @@ export class LessonEditor {
         this.tableRows.set([['', '']]);
         this.tipTitle.set('');
         this.tipColor.set('info');
+        this.tagColor.set('blue');
         this.editingIndex.set(null);
     }
 
@@ -143,6 +168,9 @@ export class LessonEditor {
             this.inputText.set(tip.text);
             this.tipTitle.set(tip.tipTitle);
             this.tipColor.set(tip.style as TipColor);
+        } else if (type === 'tag') {
+            this.inputText.set(element.text);
+            this.tagColor.set((element.style || 'blue') as TagColor);
         } else {
             this.inputText.set(element.text);
         }
@@ -226,11 +254,25 @@ export class LessonEditor {
         const type = this.activeType();
         if (!type) return;
 
+        console.log("Llega aqui");
+        console.log(type);
+
         let draft: ElementTypeObj;
 
         if (type === 'unorderedList') {
             const items = this.listItems().map((t) => t.trim()).filter(Boolean);
             if (!items.length) return;
+            const lis = items.map((text, i): ListItem => ({
+                id: -(i + 1),
+                text,
+                style: '',
+                type: 'listItem',
+                lesson: null!,
+                baseStyle: 'li',
+                ul: null!,
+                delete: false,
+            }));
+            console.log(lis);
             const ul = new UnorderedList({
                 id: -Date.now(),
                 text: '',
@@ -238,17 +280,11 @@ export class LessonEditor {
                 type: 'unorderedList',
                 lesson: null!,
                 baseStyle: 'ul',
-                list: items.map((text, i): ListItem => ({
-                    id: -(i + 1),
-                    text,
-                    style: '',
-                    type: 'listItem',
-                    lesson: null!,
-                    baseStyle: 'li',
-                    ul: null!,
-                })),
+                delete: false,
+                list: lis,
             });
             draft = ul;
+            console.log(draft);
         } else if (type === 'table') {
             const headers = this.tableHeaders().map((h) => h.trim());
             const rows: TableRow[] = this.tableRows().map((cells, i) => ({
@@ -265,6 +301,7 @@ export class LessonEditor {
                 baseStyle: 'table',
                 headers,
                 rows,
+                delete: false,
             });
         } else if (type === 'tip') {
             const text = this.inputText().trim();
@@ -276,6 +313,7 @@ export class LessonEditor {
                 type: 'tip',
                 lesson: null!,
                 tipTitle: this.tipTitle().trim(),
+                delete: false,
             });
         } else {
             const text = this.inputText().trim();
@@ -289,6 +327,7 @@ export class LessonEditor {
                         type,
                         lesson: null!,
                         baseStyle: '',
+                        delete: false,
                     });
                     break;
                 case 'subtitle':
@@ -299,6 +338,7 @@ export class LessonEditor {
                         type,
                         lesson: null!,
                         baseStyle: '',
+                        delete: false,
                     });
                     break;
                 case 'element':
@@ -308,17 +348,33 @@ export class LessonEditor {
                         style: '',
                         type,
                         lesson: null!,
+                        delete: false,
                     });
                     break;
+                case 'tag': {
+                    const wordCount = text.split(/\s+/).filter(Boolean).length;
+                    if (wordCount > 3) return;
+                    draft = new Tag({
+                        id: -Date.now(),
+                        text,
+                        style: this.tagColor(),
+                        type,
+                        lesson: null!,
+                        delete: false,
+                    });
+                    break;
+                }
             }
 
-            const idx = this.editingIndex();
-            if (idx !== null) {
-                this.elementEdited.emit({ index: idx, element: draft });
-            } else {
-                this.elementAdded.emit(draft);
-            }
-            this.closePicker();
+
         }
+
+        const idx = this.editingIndex();
+        if (idx !== null) {
+            this.elementEdited.emit({ index: idx, element: draft });
+        } else {
+            this.elementAdded.emit(draft);
+        }
+        this.closePicker();
     }
 }

@@ -554,6 +554,55 @@
     padding: 6px 10px;
 }
 
+.editor-main-input--tag {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 10px;
+    letter-spacing: 0.02em;
+}
+
+.tag-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &__colors {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    &__swatch {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        cursor: pointer;
+        padding: 0;
+        transition: transform 0.12s, box-shadow 0.12s;
+
+        &:hover {
+            transform: scale(1.15);
+        }
+
+        &--active {
+            transform: scale(1.2);
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px currentColor;
+        }
+
+        &:focus-visible {
+            outline: 2px solid #4a90d9;
+            outline-offset: 2px;
+        }
+    }
+
+    &__hint {
+        margin: 0;
+        font-size: 11px;
+        color: var(--color-indications, #9b9a97);
+    }
+}
+
 .editor-tip-textarea {
     width: 100%;
     padding: 8px 10px;

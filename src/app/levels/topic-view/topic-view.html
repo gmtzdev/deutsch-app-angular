@@ -80,6 +80,10 @@
             <app-lesson-tip [element]="element" />
             }
 
+            @case ('tag') {
+            <app-lesson-tag [element]="element" />
+            }
+
             @default {
             <!-- 'element' and 'listItem' at top level render as plain paragraph -->
             <app-lesson-paragraph [element]="element" />
