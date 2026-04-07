@@ -5,26 +5,42 @@ import { UnorderedList } from '../../../core/models/elements/unorderedlist.model
 @Component({
     selector: 'app-lesson-unordered-list',
     template: `
-        <ul class="le-ul" role="list">
+        <ul class="obj-list" role="list">
             @for (item of items(); track item.id) {
-            <li class="le-li">{{ item.text }}</li>
+            
+            <li>
+                <span class="dot dot-blue"></span>
+                {{ item.text }}
+            </li>
             }
         </ul>
     `,
     styles: [`
-        .le-ul {
-            margin: 0.5rem 0 0.5rem 1.25rem;
+        .obj-list {
+            list-style: none;
             padding: 0;
-            list-style: disc;
+            margin: 0;
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.5rem;
         }
-        .le-li {
+
+        .obj-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
             font-size: 0.95rem;
-            color: var(--color-text, #37352f);
-            line-height: 1.6;
-            padding-left: 0.25rem;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot-blue {
+            background: #3b82f6;
         }
     `],
     changeDetection: ChangeDetectionStrategy.OnPush,
