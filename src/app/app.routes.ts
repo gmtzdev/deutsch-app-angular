@@ -36,13 +36,6 @@ export const routes: Routes = [
         ],
     },
     {
-        path: 'create',
-        loadComponent: () =>
-            import('./notion-page/notion-page').then((m) => m.NotionPage),
-        // canActivate: [authGuard],
-        title: 'Nueva página — DeutschApp',
-    },
-    {
         path: '**',
         redirectTo: 'dashboard',
     },
