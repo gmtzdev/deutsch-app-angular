@@ -1,0 +1,25 @@
+<div class="sidebar-footer">
+    @if (isCreatingTopic()) {
+    <form class="inline-form inline-form--topic" (ngSubmit)="onSubmit($event)" (keydown.escape)="cancelCreating()"
+        aria-label="Nuevo tema">
+        <input id="new-topic-input" class="inline-input" type="text" placeholder="Nombre del tema" [value]="title()"
+            (input)="title.set($any($event.target).value)" [disabled]="saving()" aria-label="Nombre del nuevo tema"
+            required />
+        <input id="new-topic-input-subtitle" class="inline-input" type="text" placeholder="Subtítulo del tema"
+            [value]="subtitle()" (input)="subtitle.set($any($event.target).value)" [disabled]="saving()"
+            aria-label="Subtítulo del nuevo tema" />
+
+        <div class="inline-form__actions">
+            <button type="submit" class="inline-btn inline-btn--confirm" [disabled]="saving()" aria-label="Confirmar">
+                {{ saving() ? '...' : '✓' }}
+            </button>
+            <button type="button" class="inline-btn inline-btn--cancel" (click)="cancelCreating()"
+                aria-label="Cancelar">✕</button>
+        </div>
+    </form>
+    } @else {
+    <button type="button" class="add-topic-btn" (click)="startCreatingTopic()" aria-label="Añadir tema">
+        <span aria-hidden="true">+</span> Añadir tema
+    </button>
+    }
+</div>

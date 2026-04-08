@@ -1,0 +1,24 @@
+@if (isCreatingSubtopic(topic().id)) {
+<li class="inline-form-row" role="listitem">
+    <form class="inline-form" (ngSubmit)="submitSubtopic($event, topic().id)" (keydown.escape)="cancelCreating()"
+        aria-label="Nuevo subtema">
+        <input [id]="'new-subtopic-input-' + topic().id" class="inline-input" type="text"
+            placeholder="Nombre del subtema" [disabled]="saving()" aria-label="Nombre del nuevo subtema"
+            [value]="title()" (input)="title.set($any($event.target).value)" required />
+        <div class="inline-form__actions">
+            <button type="submit" class="inline-btn inline-btn--confirm" [disabled]="saving()" aria-label="Confirmar">
+                {{ saving() ? '...' : '✓' }}
+            </button>
+            <button type="button" class="inline-btn inline-btn--cancel" (click)="cancelCreating()"
+                aria-label="Cancelar">✕</button>
+        </div>
+    </form>
+</li>
+} @else {
+<li class="add-item-row" role="listitem">
+    <button type="button" class="add-item-btn" (click)="startCreatingSubtopic(topic().id)"
+        [attr.aria-label]="'Añadir subtema a ' + topic().title">
+        <span aria-hidden="true">+</span> Añadir subtema
+    </button>
+</li>
+}

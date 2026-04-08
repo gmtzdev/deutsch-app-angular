@@ -1,0 +1,374 @@
+<div class="lesson-editor">
+
+    <!-- ── Pending elements preview ──────────────────────── -->
+    @if (hasPending()) {
+    <div class="pending-section" role="region" aria-label="Cambios pendientes">
+        <p class="pending-section__label">
+            <span aria-hidden="true">✏️</span>
+            {{ pendingElements().length }} bloque(s) pendiente(s) por guardar
+        </p>
+        <div class="pending-elements">
+            @for (element of pendingElements(); track element.id; let idx = $index) {
+            <div class="pending-element">
+                @if(element.delete) {
+                <div class="pending-element__overlay" aria-hidden="true">
+                    <span class="pending-element__delete-label">Eliminado</span>
+                </div>
+                }@else {
+
+
+                @switch (element.type) {
+                @case ('title') { <app-lesson-title [element]="element" /> }
+                @case ('subtitle') { <app-lesson-subtitle [element]="element" /> }
+                @case ('unorderedList') { <app-lesson-unordered-list [element]="element" /> }
+                @case ('table') { <app-lesson-table [element]="element" /> }
+                @case ('tip') { <app-lesson-tip [element]="element" /> }
+                @case ('tag') { <app-lesson-tag [element]="element" /> }
+                @case ('conjugation') { <app-lesson-conjugation [element]="element" /> }
+                @case ('quiz') { <app-lesson-quiz [element]="element" /> }
+                @case ('image') { <app-lesson-image [element]="element" /> }
+                @default { <app-lesson-paragraph [element]="element" /> }
+                }
+                <div class="pending-element__actions">
+                    <button type="button" class="pending-element__btn pending-element__btn--edit"
+                        (click)="startEdit(idx, element)" aria-label="Editar bloque">
+                        ✏️
+                    </button>
+                    <button type="button" class="pending-element__btn pending-element__btn--remove"
+                        (click)="elementRemoved.emit(idx)" aria-label="Eliminar bloque">
+                        ✕
+                    </button>
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+    }
+
+    @if (!pickerOpen()) {
+    <!-- ── Add block trigger ────────────────────────────────── -->
+    <button type="button" class="add-block-btn" (click)="openPicker()" aria-label="Añadir bloque">
+        <span class="add-block-btn__icon" aria-hidden="true">+</span>
+        <span class="add-block-btn__label">Añadir bloque</span>
+    </button>
+    } @else {
+
+    <div class="editor-panel" role="dialog" aria-label="Editor de bloque" (keydown.escape)="closePicker()">
+
+        @if (activeType() === null) {
+        <!-- ── Block type picker ─────────────────────────────── -->
+        <p class="editor-panel__hint">Elige un tipo de bloque</p>
+        <div class="block-picker" role="listbox" aria-label="Tipos de bloque">
+            @for (opt of blockOptions; track opt.type) {
+            <button type="button" class="block-option" role="option" [attr.aria-selected]="false"
+                (click)="selectType(opt.type)">
+                <span class="block-option__icon" aria-hidden="true">{{ opt.icon }}</span>
+                <span class="block-option__info">
+                    <span class="block-option__label">{{ opt.label }}</span>
+                    <span class="block-option__desc">{{ opt.description }}</span>
+                </span>
+            </button>
+            }
+        </div>
+        <div class="editor-panel__footer">
+            <button type="button" class="cancel-btn" (click)="closePicker()">Cancelar</button>
+        </div>
+
+        } @else {
+
+        <!-- ── Block input form ──────────────────────────────── -->
+        <form (submit)="submit($event)">
+            <div class="editor-form-header">
+                @if (editingIndex() !== null) {
+                <p class="editor-edit-indicator">✏️ Editando bloque</p>
+                } @else {
+                <button type="button" class="back-btn" (click)="backToPicker()" aria-label="Volver al selector">
+                    ← Volver
+                </button>
+                }
+            </div>
+
+            @if (activeType() === 'unorderedList') {
+            <!-- List items -->
+            <div class="list-items-wrapper">
+                @for (item of listItems(); track $index; let idx = $index) {
+                <div class="list-item-row">
+                    <span class="list-bullet" aria-hidden="true">•</span>
+                    <input class="editor-list-input" type="text" placeholder="Ítem {{ idx + 1 }}" [value]="item"
+                        (input)="setListItem(idx, $any($event.target).value)" (keydown)="onListItemKeydown($event, idx)"
+                        [attr.aria-label]="'Ítem ' + (idx + 1)" />
+                    @if (listItems().length > 1) {
+                    <button type="button" class="remove-item-btn" (click)="removeListItem(idx)"
+                        [attr.aria-label]="'Eliminar ítem ' + (idx + 1)">✕</button>
+                    }
+                </div>
+                }
+                <button type="button" class="add-item-btn" (click)="addListItem()">
+                    + Añadir ítem
+                </button>
+            </div>
+
+            } @else if (activeType() === 'table') {
+            <!-- Table editor -->
+            <div class="table-editor" role="group" aria-label="Editor de tabla">
+                <div class="table-editor__scroll">
+                    <table class="table-editor__table" aria-label="Vista previa de la tabla">
+                        <thead>
+                            <tr>
+                                @for (header of tableHeaders(); track $index; let col = $index) {
+                                <th class="table-editor__header-cell">
+                                    <input class="table-editor__input table-editor__input--header" type="text"
+                                        [placeholder]="'Columna ' + (col + 1)" [value]="header"
+                                        (input)="setTableHeader(col, $any($event.target).value)"
+                                        [attr.aria-label]="'Encabezado columna ' + (col + 1)" />
+                                    @if (tableHeaders().length > 1) {
+                                    <button type="button" class="table-editor__remove-col"
+                                        (click)="removeTableColumn(col)"
+                                        [attr.aria-label]="'Eliminar columna ' + (col + 1)">✕</button>
+                                    }
+                                </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (row of tableRows(); track $index; let rowIdx = $index) {
+                            <tr class="table-editor__row">
+                                @for (cell of row; track $index; let colIdx = $index) {
+                                <td class="table-editor__cell">
+                                    <input class="table-editor__input" type="text"
+                                        [placeholder]="'Celda ' + (rowIdx + 1) + '-' + (colIdx + 1)" [value]="cell"
+                                        (input)="setTableCell(rowIdx, colIdx, $any($event.target).value)"
+                                        [attr.aria-label]="'Fila ' + (rowIdx + 1) + ', columna ' + (colIdx + 1)" />
+                                </td>
+                                }
+                                <td class="table-editor__cell table-editor__cell--action">
+                                    @if (tableRows().length > 1) {
+                                    <button type="button" class="table-editor__remove-row"
+                                        (click)="removeTableRow(rowIdx)"
+                                        [attr.aria-label]="'Eliminar fila ' + (rowIdx + 1)">✕</button>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-editor__controls">
+                    <button type="button" class="table-editor__add-btn" (click)="addTableRow()">
+                        + Añadir fila
+                    </button>
+                    <button type="button" class="table-editor__add-btn" (click)="addTableColumn()">
+                        + Añadir columna
+                    </button>
+                </div>
+            </div>
+
+            } @else if (activeType() === 'tip') {
+            <!-- Tip block -->
+            <div class="tip-form" role="group" aria-label="Editor de consejo">
+                <div class="tip-form__colors" role="group" aria-label="Color del bloque">
+                    @for (c of tipColorOptions; track c.value) {
+                    <button type="button" class="tip-form__swatch"
+                        [class.tip-form__swatch--active]="tipColor() === c.value" [style.background]="c.bg"
+                        [style.border-color]="c.border" (click)="tipColor.set(c.value)" [attr.aria-label]="c.label"
+                        [attr.aria-pressed]="tipColor() === c.value">
+                    </button>
+                    }
+                </div>
+                <input id="editor-tip-title" class="editor-main-input editor-main-input--sm" type="text"
+                    placeholder="Título del consejo (opcional)" [value]="tipTitle()"
+                    (input)="tipTitle.set($any($event.target).value)" aria-label="Título del consejo" />
+                <textarea class="editor-tip-textarea" placeholder="Escribe el contenido del consejo..."
+                    [value]="inputText()" (input)="inputText.set($any($event.target).value)"
+                    aria-label="Contenido del consejo" rows="3" required></textarea>
+            </div>
+
+            } @else if (activeType() === 'tag') {
+            <!-- Tag input -->
+            <div class="tag-form" role="group" aria-label="Editor de etiqueta">
+                <div class="tag-form__colors" role="group" aria-label="Color de la etiqueta">
+                    @for (c of tagColorOptions; track c.value) {
+                    <button type="button" class="tag-form__swatch"
+                        [class.tag-form__swatch--active]="tagColor() === c.value" [style.background]="c.bg"
+                        [style.border-color]="c.border" (click)="tagColor.set(c.value)" [attr.aria-label]="c.label"
+                        [attr.aria-pressed]="tagColor() === c.value">
+                    </button>
+                    }
+                </div>
+                <input id="editor-main-input" class="editor-main-input editor-main-input--tag" type="text"
+                    placeholder="Ej: Nominativo, Verbo reflexivo..." [value]="inputText()"
+                    (input)="inputText.set($any($event.target).value)" aria-label="Texto de la etiqueta" maxlength="40"
+                    required />
+                <p class="tag-form__hint">Máximo 3 palabras</p>
+            </div>
+
+            } @else if (activeType() === 'conjugation') {
+            <!-- Conjugation editor -->
+            <div class="conj-editor" role="group" aria-label="Editor de conjugación">
+
+                <!-- Verb tabs -->
+                <div class="conj-editor__tabs" role="tablist" aria-label="Verbos">
+                    @for (verb of conjVerbs(); track $index; let vi = $index) {
+                    <button type="button" class="conj-editor__tab" role="tab"
+                        [class.conj-editor__tab--active]="conjActiveVerb() === vi"
+                        [attr.aria-selected]="conjActiveVerb() === vi" (click)="conjActiveVerb.set(vi)">
+                        {{ verb.name || ('Verbo ' + (vi + 1)) }}
+                    </button>
+                    }
+                    <button type="button" class="conj-editor__add-verb" (click)="addConjVerb()"
+                        aria-label="Añadir verbo">
+                        + Verbo
+                    </button>
+                </div>
+
+                <!-- Active verb panel -->
+                @for (verb of conjVerbs(); track $index; let vi = $index) {
+                @if (conjActiveVerb() === vi) {
+                <div class="conj-editor__panel" role="tabpanel">
+                    <div class="conj-editor__verb-header">
+                        <input class="editor-main-input editor-main-input--sm" type="text"
+                            [placeholder]="'Nombre del verbo (ej. sein)'" [value]="verb.name"
+                            (input)="setConjVerbName(vi, $any($event.target).value)"
+                            [attr.aria-label]="'Nombre del verbo ' + (vi + 1)" />
+                        @if (conjVerbs().length > 1) {
+                        <button type="button" class="conj-editor__remove-verb" (click)="removeConjVerb(vi)"
+                            [attr.aria-label]="'Eliminar verbo ' + (vi + 1)">&#x2715;</button>
+                        }
+                    </div>
+
+                    <div class="conj-editor__scroll">
+                        <table class="conj-editor__table" aria-label="Filas de conjugación">
+                            <thead>
+                                <tr>
+                                    <th>Pronomen</th>
+                                    <th>Verb</th>
+                                    <th>Endung</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (row of verb.rows; track $index; let ri = $index) {
+                                <tr>
+                                    <td class="conj-editor__pronoun-cell">{{ row.pronoun }}</td>
+                                    <td>
+                                        <input class="conj-editor__input" type="text"
+                                            [placeholder]="row.pronoun + ' ...'" [value]="row.verb"
+                                            (input)="setConjCell(vi, ri, 'verb', $any($event.target).value)"
+                                            [attr.aria-label]="'Verbo para ' + row.pronoun" />
+                                    </td>
+                                    <td>
+                                        <input class="conj-editor__input conj-editor__input--ending" type="text"
+                                            placeholder="-e, -st..." [value]="row.ending"
+                                            (input)="setConjCell(vi, ri, 'ending', $any($event.target).value)"
+                                            [attr.aria-label]="'Terminación para ' + row.pronoun" />
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                }
+                }
+            </div>
+
+            } @else if (activeType() === 'quiz') {
+            <!-- Quiz editor -->
+            <div class="quiz-editor" role="group" aria-label="Editor de quiz">
+                @for (q of quizQuestions(); track $index; let qi = $index) {
+                <div class="quiz-editor__row">
+                    <div class="quiz-editor__row-header">
+                        <span class="quiz-editor__row-num">{{ qi + 1 }}</span>
+                        @if (quizQuestions().length > 1) {
+                        <button type="button" class="remove-item-btn" (click)="removeQuizQuestion(qi)"
+                            [attr.aria-label]="'Eliminar pregunta ' + (qi + 1)">&#x2715;</button>
+                        }
+                    </div>
+                    <input class="editor-main-input editor-main-input--sm" type="text" placeholder="Pregunta..."
+                        [value]="q.question" (input)="setQuizField(qi, 'question', $any($event.target).value)"
+                        [attr.aria-label]="'Pregunta ' + (qi + 1)" required />
+                    <input class="editor-main-input editor-main-input--sm" type="text"
+                        placeholder="Respuesta correcta..." [value]="q.answer"
+                        (input)="setQuizField(qi, 'answer', $any($event.target).value)"
+                        [attr.aria-label]="'Respuesta correcta ' + (qi + 1)" required />
+                    <input class="editor-main-input editor-main-input--sm" type="text" placeholder="Pista (opcional)..."
+                        [value]="q.hint" (input)="setQuizField(qi, 'hint', $any($event.target).value)"
+                        [attr.aria-label]="'Pista para pregunta ' + (qi + 1)" />
+                </div>
+                }
+                <button type="button" class="add-item-btn" (click)="addQuizQuestion()">
+                    + Añadir pregunta
+                </button>
+            </div>
+
+            } @else if (activeType() === 'image') {
+            <!-- Image editor -->
+            <div class="image-form" role="group" aria-label="Editor de imagen">
+                <!-- Mode tabs -->
+                <div class="image-form__tabs" role="group" aria-label="Modo de imagen">
+                    <button type="button" class="image-form__tab"
+                        [class.image-form__tab--active]="imageMode() === 'url'" (click)="imageMode.set('url')">🔗
+                        URL</button>
+                    <button type="button" class="image-form__tab"
+                        [class.image-form__tab--active]="imageMode() === 'file'" (click)="imageMode.set('file')">📤
+                        Subir archivo</button>
+                </div>
+
+                @if (imageMode() === 'url') {
+                <input id="editor-main-input" class="editor-main-input" type="url"
+                    placeholder="URL de la imagen (https://...)" [value]="imageUrl()"
+                    (input)="imageUrl.set($any($event.target).value)" aria-label="URL de la imagen" />
+                } @else {
+                <div class="image-form__upload-zone" [class.image-form__upload-zone--loading]="imageUploading()">
+                    @if (imageUploading()) {
+                    <div class="image-form__upload-label" aria-busy="true">
+                        <span class="image-form__spinner" aria-hidden="true"></span>
+                        <span>Subiendo imagen...</span>
+                    </div>
+                    } @else {
+                    <label class="image-form__upload-label" for="image-file-input">
+                        <span class="image-form__upload-icon" aria-hidden="true">📁</span>
+                        @if (imageFileName()) {
+                        <span class="image-form__upload-filename">{{ imageFileName() }}</span>
+                        } @else {
+                        <span>Hacer clic para seleccionar imagen</span>
+                        <span class="image-form__upload-hint">JPG, PNG, GIF, WebP</span>
+                        }
+                    </label>
+                    <input id="image-file-input" type="file" accept="image/*" class="image-form__file-input"
+                        (change)="onImageFileSelected($event)" aria-label="Seleccionar imagen" />
+                    }
+                </div>
+                }
+
+                @if (imageUrl()) {
+                <div class="image-form__preview">
+                    <img class="image-form__preview-img" [src]="imageUrl()" alt="Vista previa" />
+                </div>
+                }
+                <input class="editor-main-input editor-main-input--sm" type="text"
+                    placeholder="Texto alternativo (descripción)" [value]="imageAlt()"
+                    (input)="imageAlt.set($any($event.target).value)" aria-label="Texto alternativo" />
+            </div>
+
+            } @else {
+            <!-- Single text input -->
+            <input id="editor-main-input" class="editor-main-input" type="text" [placeholder]="activeType() === 'title' ? 'Título de la sección...' :
+                               activeType() === 'subtitle' ? 'Subtítulo...' : 'Escribe el párrafo...'"
+                [value]="inputText()" (input)="inputText.set($any($event.target).value)"
+                aria-label="Contenido del bloque" required />
+            }
+
+            <div class="editor-panel__footer">
+                <button type="button" class="cancel-btn" (click)="closePicker()">Cancelar</button>
+                <button type="submit" class="confirm-btn" [disabled]="imageUploading()">
+                    {{ editingIndex() !== null ? 'Guardar cambios' : 'Guardar bloque' }}
+                </button>
+            </div>
+        </form>
+
+        }
+    </div>
+
+    }
+</div>

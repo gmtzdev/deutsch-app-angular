@@ -1,0 +1,69 @@
+.header {
+    background: #111827;
+    background: #151a2d;
+    color: #fff;
+    padding: 0 1.5rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-inner {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.flag {
+    font-size: 1.4rem;
+}
+
+.brand-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-greeting {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.logout-btn {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid #374151;
+    border-radius: 6px;
+    background: transparent;
+    color: #d1d5db;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.logout-btn:hover {
+    background: #1f2937;
+    color: #fff;
+}
