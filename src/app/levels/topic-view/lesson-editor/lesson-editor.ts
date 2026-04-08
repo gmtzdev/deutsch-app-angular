@@ -103,9 +103,14 @@ export class LessonEditor {
     readonly elementAdded = output<ElementTypeObj>();
     readonly elementEdited = output<{ index: number; element: ElementTypeObj }>();
     readonly elementRemoved = output<number>();
+    readonly elementReordered = output<{ from: number; to: number }>();
 
     protected readonly hasPending = computed(() => this.pendingElements().length > 0);
     protected readonly editingIndex = signal<number | null>(null);
+
+    // ── Drag-and-drop state ─────────────────────────────────
+    protected readonly dragFromIndex = signal<number | null>(null);
+    protected readonly dragOverIndex = signal<number | null>(null);
 
     private readonly doc = inject(DOCUMENT);
     private readonly curriculumService = inject(CurriculumService);
@@ -142,6 +147,41 @@ export class LessonEditor {
     protected openPicker(): void {
         this.pickerOpen.set(true);
         this.activeType.set(null);
+    }
+
+    // ── Drag-and-drop handlers ─────────────────────────────
+
+    protected onDragStart(event: DragEvent, index: number): void {
+        this.dragFromIndex.set(index);
+        event.dataTransfer!.effectAllowed = 'move';
+    }
+
+    protected onDragOver(event: DragEvent, index: number): void {
+        event.preventDefault();
+        event.dataTransfer!.dropEffect = 'move';
+        this.dragOverIndex.set(index);
+    }
+
+    protected onDragLeave(index: number): void {
+        if (this.dragOverIndex() === index) this.dragOverIndex.set(null);
+    }
+
+    protected onDrop(event: DragEvent, toIndex: number): void {
+        event.preventDefault();
+        const fromIndex = this.dragFromIndex();
+        if (fromIndex === null || fromIndex === toIndex) {
+            this.dragFromIndex.set(null);
+            this.dragOverIndex.set(null);
+            return;
+        }
+        this.elementReordered.emit({ from: fromIndex, to: toIndex });
+        this.dragFromIndex.set(null);
+        this.dragOverIndex.set(null);
+    }
+
+    protected onDragEnd(): void {
+        this.dragFromIndex.set(null);
+        this.dragOverIndex.set(null);
     }
 
     protected closePicker(): void {

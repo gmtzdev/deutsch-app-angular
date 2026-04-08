@@ -9,7 +9,10 @@
         </p>
         <div class="pending-elements">
             @for (element of pendingElements(); track element.id; let idx = $index) {
-            <div class="pending-element">
+            <div class="pending-element" [class.pending-element--dragging]="dragFromIndex() === idx"
+                [class.pending-element--drag-over]="dragOverIndex() === idx && dragFromIndex() !== idx" draggable="true"
+                (dragstart)="onDragStart($event, idx)" (dragover)="onDragOver($event, idx)"
+                (dragleave)="onDragLeave(idx)" (drop)="onDrop($event, idx)" (dragend)="onDragEnd()">
                 @if(element.delete) {
                 <div class="pending-element__overlay" aria-hidden="true">
                     <span class="pending-element__delete-label">Eliminado</span>
@@ -30,6 +33,8 @@
                 @default { <app-lesson-paragraph [element]="element" /> }
                 }
                 <div class="pending-element__actions">
+                    <span class="pending-element__drag-handle" aria-hidden="true"
+                        title="Arrastrar para reordenar">↕</span>
                     <button type="button" class="pending-element__btn pending-element__btn--edit"
                         (click)="startEdit(idx, element)" aria-label="Editar bloque">
                         ✏️

@@ -92,6 +92,15 @@ export class TopicView {
         });
     }
 
+    protected onElementReordered(event: { from: number; to: number }): void {
+        this.pendingElements.update((elements) => {
+            const next = [...elements];
+            const [moved] = next.splice(event.from, 1);
+            next.splice(event.to, 0, moved);
+            return next;
+        });
+    }
+
     protected discardChanges(): void {
         this.pendingElements.set([]);
     }
