@@ -102,7 +102,12 @@ export class TopicView {
 
         this.confirming.set(true);
         try {
+            this.pendingElements().forEach((element, index) => {
+                element.order = index; // update order based on current position in array
+            });
             console.log(this.pendingElements());
+
+            // return;
             const response = await firstValueFrom(this.curriculumService.createLesson(lessonId, this.pendingElements()));
             this.pendingElements.set([]);
             this.subtopicResource.reload();

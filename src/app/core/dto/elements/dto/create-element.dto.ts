@@ -7,6 +7,7 @@ export interface CreateElementDto {
     text?: string;
     style?: string;
     type: ElementType;
+    order: number;
     lesson: Lesson;
     delete: boolean;
 }

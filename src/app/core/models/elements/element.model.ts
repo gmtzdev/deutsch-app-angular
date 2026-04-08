@@ -7,6 +7,7 @@ export class Element {
     text: string;
     style: string;
     type: ElementType;
+    order: number;
     lesson: Lesson;
     delete: boolean = false;
 
@@ -15,6 +16,7 @@ export class Element {
         this.text = element.text;
         this.style = element.style;
         this.type = element.type;
+        this.order = element.order;
         this.lesson = element.lesson;
     }
 }
