@@ -307,18 +307,17 @@
                 <!-- Mode tabs -->
                 <div class="image-form__tabs" role="group" aria-label="Modo de imagen">
                     <button type="button" class="image-form__tab"
-                        [class.image-form__tab--active]="imageMode() === 'url'"
-                        (click)="imageMode.set('url')">🔗 URL</button>
+                        [class.image-form__tab--active]="imageMode() === 'url'" (click)="imageMode.set('url')">🔗
+                        URL</button>
                     <button type="button" class="image-form__tab"
-                        [class.image-form__tab--active]="imageMode() === 'file'"
-                        (click)="imageMode.set('file')">📤 Subir archivo</button>
+                        [class.image-form__tab--active]="imageMode() === 'file'" (click)="imageMode.set('file')">📤
+                        Subir archivo</button>
                 </div>
 
                 @if (imageMode() === 'url') {
                 <input id="editor-main-input" class="editor-main-input" type="url"
                     placeholder="URL de la imagen (https://...)" [value]="imageUrl()"
-                    (input)="imageUrl.set($any($event.target).value)"
-                    aria-label="URL de la imagen" />
+                    (input)="imageUrl.set($any($event.target).value)" aria-label="URL de la imagen" />
                 } @else {
                 <div class="image-form__upload-zone" [class.image-form__upload-zone--loading]="imageUploading()">
                     @if (imageUploading()) {
@@ -336,10 +335,8 @@
                         <span class="image-form__upload-hint">JPG, PNG, GIF, WebP</span>
                         }
                     </label>
-                    <input id="image-file-input" type="file" accept="image/*"
-                        class="image-form__file-input"
-                        (change)="onImageFileSelected($event)"
-                        aria-label="Seleccionar imagen" />
+                    <input id="image-file-input" type="file" accept="image/*" class="image-form__file-input"
+                        (change)="onImageFileSelected($event)" aria-label="Seleccionar imagen" />
                     }
                 </div>
                 }
@@ -351,8 +348,7 @@
                 }
                 <input class="editor-main-input editor-main-input--sm" type="text"
                     placeholder="Texto alternativo (descripción)" [value]="imageAlt()"
-                    (input)="imageAlt.set($any($event.target).value)"
-                    aria-label="Texto alternativo" />
+                    (input)="imageAlt.set($any($event.target).value)" aria-label="Texto alternativo" />
             </div>
 
             } @else {
