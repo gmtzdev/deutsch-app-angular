@@ -1,3 +1,37 @@
+// ── Shared button patterns ───────────────────────────────────
+%_ghost-add {
+    background: none;
+    border: none;
+    font-size: 12px;
+    font-weight: 500;
+    color: #4a90d9;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.12s;
+
+    &:hover {
+        background: rgba(74, 144, 217, 0.08);
+    }
+}
+
+%_icon-rm {
+    background: none;
+    border: none;
+    color: var(--color-indications, #9b9a97);
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: color 0.12s, background 0.12s;
+
+    &:hover {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
+    }
+}
+
 :host {
     display: block;
     margin-top: 1.5rem;
@@ -330,21 +364,10 @@
 }
 
 .add-item-btn {
+    @extend %_ghost-add;
     align-self: flex-start;
     margin-top: 2px;
     padding: 4px 10px;
-    background: none;
-    border: none;
-    font-size: 12px;
-    font-weight: 500;
-    color: #4a90d9;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.12s;
-
-    &:hover {
-        background: rgba(74, 144, 217, 0.08);
-    }
 }
 
 // ── Action buttons ────────────────────────────────────────────
@@ -468,25 +491,11 @@
 
     &__remove-col,
     &__remove-row {
-        background: none;
-        border: none;
-        color: var(--color-indications, #9b9a97);
+        @extend %_icon-rm;
         font-size: 10px;
         width: 18px;
         height: 18px;
         border-radius: 3px;
-        cursor: pointer;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        transition: color 0.12s, background 0.12s;
-
-        &:hover {
-            color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
-        }
     }
 
     &__controls {
@@ -495,19 +504,8 @@
     }
 
     &__add-btn {
+        @extend %_ghost-add;
         padding: 4px 10px;
-        background: none;
-        border: none;
-        font-size: 12px;
-        font-weight: 500;
-        color: #4a90d9;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background 0.12s;
-
-        &:hover {
-            background: rgba(74, 144, 217, 0.08);
-        }
     }
 }
 
@@ -669,19 +667,8 @@
     }
 
     &__add-verb {
+        @extend %_ghost-add;
         padding: 3px 10px;
-        background: none;
-        border: none;
-        font-size: 12px;
-        font-weight: 500;
-        color: #4a90d9;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background 0.12s;
-
-        &:hover {
-            background: rgba(74, 144, 217, 0.08);
-        }
     }
 
     &__panel {
@@ -697,25 +684,11 @@
     }
 
     &__remove-verb {
-        background: none;
-        border: none;
-        color: var(--color-indications, #9b9a97);
+        @extend %_icon-rm;
         font-size: 11px;
         width: 22px;
         height: 22px;
         border-radius: 4px;
-        cursor: pointer;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        transition: color 0.12s, background 0.12s;
-
-        &:hover {
-            color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
-        }
     }
 
     &__scroll {
