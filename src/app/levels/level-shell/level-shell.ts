@@ -40,6 +40,7 @@ export class LevelShell {
     private readonly curriculumService = inject(CurriculumService);
     private readonly router = inject(Router);
     private readonly route = inject(ActivatedRoute);
+    private readonly doc = inject(DOCUMENT);
 
 
     protected readonly levelResource = resource<LevelWithTopics, string>({
@@ -49,6 +50,18 @@ export class LevelShell {
     });
 
     protected readonly expandedTopics = signal<Set<number>>(new Set());
+
+    // ── Topic edit/delete state ───────────────────────────────
+    protected readonly editingTopicId = signal<number | null>(null);
+    protected readonly editTitle = signal('');
+    protected readonly editSubtitle = signal('');
+    protected readonly editSaving = signal(false);
+
+    // ── Subtopic edit/delete state ────────────────────────────
+    protected readonly editingSubtopicId = signal<number | null>(null);
+    protected readonly editSubtopicTitle = signal('');
+    protected readonly editSubtopicIcon = signal('');
+    protected readonly editSubtopicSaving = signal(false);
 
 
 
@@ -117,6 +130,120 @@ export class LevelShell {
         });
     }
 
+    protected startEditTopic(topic: Topic): void {
+        this.editingTopicId.set(topic.id);
+        this.editTitle.set(topic.title);
+        this.editSubtitle.set(topic.subtitle ?? '');
+    }
 
+    protected cancelEditTopic(): void {
+        this.editingTopicId.set(null);
+        this.editTitle.set('');
+        this.editSubtitle.set('');
+    }
+
+    protected async confirmEditTopic(event: Event, topicId: number): Promise<void> {
+        event.preventDefault();
+        const title = this.editTitle().trim();
+        if (!title || this.editSaving()) return;
+        this.editSaving.set(true);
+        try {
+            const updated = await firstValueFrom(
+                this.curriculumService.updateTopic(topicId, title, this.editSubtitle().trim())
+            );
+            this.levelResource.value.update((level) => {
+                if (!level) return level;
+                return {
+                    ...level,
+                    topics: level.topics.map((t) => t.id === topicId ? { ...t, ...updated } : t),
+                };
+            });
+            this.cancelEditTopic();
+        } catch {
+            // keep form open on error
+        } finally {
+            this.editSaving.set(false);
+        }
+    }
+
+    protected async deleteTopicById(topicId: number): Promise<void> {
+        const ok = this.doc.defaultView?.confirm('¿Eliminar este tema? Esta acción no se puede deshacer.');
+        if (!ok) return;
+        try {
+            await firstValueFrom(this.curriculumService.deleteTopic(topicId));
+            this.levelResource.value.update((level) => {
+                if (!level) return level;
+                return {
+                    ...level,
+                    topics: level.topics.filter((t) => t.id !== topicId),
+                };
+            });
+        } catch {
+            // silent
+        }
+    }
+
+    // ── Subtopic edit/delete ──────────────────────────────────
+
+    protected startEditSubtopic(subtopic: Subtopic): void {
+        this.editingSubtopicId.set(subtopic.id);
+        this.editSubtopicTitle.set(subtopic.title);
+        this.editSubtopicIcon.set(subtopic.icon ?? '');
+    }
+
+    protected cancelEditSubtopic(): void {
+        this.editingSubtopicId.set(null);
+        this.editSubtopicTitle.set('');
+        this.editSubtopicIcon.set('');
+    }
+
+    protected async confirmEditSubtopic(event: Event, topicId: number, subtopicId: number): Promise<void> {
+        event.preventDefault();
+        const title = this.editSubtopicTitle().trim();
+        if (!title || this.editSubtopicSaving()) return;
+        this.editSubtopicSaving.set(true);
+        try {
+            const updated = await firstValueFrom(
+                this.curriculumService.updateSubtopic(subtopicId, title, this.editSubtopicIcon().trim())
+            );
+            this.levelResource.value.update((level) => {
+                if (!level) return level;
+                return {
+                    ...level,
+                    topics: level.topics.map((t) =>
+                        t.id === topicId
+                            ? { ...t, subtopics: t.subtopics.map((s) => s.id === subtopicId ? { ...s, ...updated } : s) }
+                            : t
+                    ),
+                };
+            });
+            this.cancelEditSubtopic();
+        } catch {
+            // keep form open on error
+        } finally {
+            this.editSubtopicSaving.set(false);
+        }
+    }
+
+    protected async deleteSubtopicById(topicId: number, subtopicId: number): Promise<void> {
+        const ok = this.doc.defaultView?.confirm('¿Eliminar este subtema? Esta acción no se puede deshacer.');
+        if (!ok) return;
+        try {
+            await firstValueFrom(this.curriculumService.deleteSubtopic(subtopicId));
+            this.levelResource.value.update((level) => {
+                if (!level) return level;
+                return {
+                    ...level,
+                    topics: level.topics.map((t) =>
+                        t.id === topicId
+                            ? { ...t, subtopics: t.subtopics.filter((s) => s.id !== subtopicId) }
+                            : t
+                    ),
+                };
+            });
+        } catch {
+            // silent
+        }
+    }
 
 }

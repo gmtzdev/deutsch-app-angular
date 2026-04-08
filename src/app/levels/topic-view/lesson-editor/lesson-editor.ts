@@ -32,8 +32,11 @@ import { ConjugationRow } from '../../../core/models/elements/conjugation-row.mo
 import { LessonQuiz } from '../elements/lesson-quiz';
 import { Quiz } from '../../../core/models/elements/quiz.model';
 import { QuizQuestion } from '../../../core/models/elements/quiz-question.model';
+import { LessonImage } from '../elements/lesson-image';
+import { ImageBlock } from '../../../core/models/elements/image-block.model';
+import { CurriculumService } from '../../../core/services/curriculum.service';
 
-type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz';
+type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
 type TagColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'gray';
 
@@ -69,6 +72,7 @@ const BLOCK_OPTIONS: BlockOption[] = [
     { type: 'tag', label: 'Etiqueta', icon: '🏷', description: 'Etiqueta corta de 1 a 3 palabras' },
     { type: 'conjugation', label: 'Conjugación', icon: '📝', description: 'Tabla de conjugación verbal (alemán)' },
     { type: 'quiz', label: 'Quiz', icon: '❓', description: 'Preguntas de comprensión' },
+    { type: 'image', label: 'Imagen', icon: '🖼', description: 'Imagen desde una URL' },
 ];
 
 const TIP_COLOR_OPTIONS: TipColorOption[] = [
@@ -91,7 +95,7 @@ const TAG_COLOR_OPTIONS: TagColorOption[] = [
     selector: 'app-lesson-editor',
     templateUrl: './lesson-editor.html',
     styleUrl: './lesson-editor.scss',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LessonEditor {
@@ -104,6 +108,7 @@ export class LessonEditor {
     protected readonly editingIndex = signal<number | null>(null);
 
     private readonly doc = inject(DOCUMENT);
+    private readonly curriculumService = inject(CurriculumService);
 
     protected readonly blockOptions = BLOCK_OPTIONS;
 
@@ -123,6 +128,13 @@ export class LessonEditor {
 
     // ── Quiz signals ──────────────────────────────────────────
     protected readonly quizQuestions = signal<QuizQuestion[]>([{ id: 1, question: '', answer: '', hint: '' }]);
+
+    // ── Image signals ─────────────────────────────────────────
+    protected readonly imageUrl = signal('');
+    protected readonly imageAlt = signal('');
+    protected readonly imageMode = signal<'url' | 'file'>('url');
+    protected readonly imageFileName = signal('');
+    protected readonly imageUploading = signal(false);
 
     protected readonly tipColorOptions = TIP_COLOR_OPTIONS;
     protected readonly tagColorOptions = TAG_COLOR_OPTIONS;
@@ -145,6 +157,11 @@ export class LessonEditor {
         this.conjVerbs.set([{ name: '', rows: this.defaultConjRows() }]);
         this.conjActiveVerb.set(0);
         this.quizQuestions.set([{ id: 1, question: '', answer: '', hint: '' }]);
+        this.imageUrl.set('');
+        this.imageAlt.set('');
+        this.imageMode.set('url');
+        this.imageFileName.set('');
+        this.imageUploading.set(false);
         this.editingIndex.set(null);
     }
 
@@ -170,6 +187,11 @@ export class LessonEditor {
         this.conjVerbs.set([{ name: '', rows: this.defaultConjRows() }]);
         this.conjActiveVerb.set(0);
         this.quizQuestions.set([{ id: 1, question: '', answer: '', hint: '' }]);
+        this.imageUrl.set('');
+        this.imageAlt.set('');
+        this.imageMode.set('url');
+        this.imageFileName.set('');
+        this.imageUploading.set(false);
         this.editingIndex.set(null);
     }
 
@@ -203,6 +225,11 @@ export class LessonEditor {
         } else if (type === 'quiz') {
             const quiz = element as Quiz;
             this.quizQuestions.set(quiz.questions.map((q) => ({ ...q })));
+        } else if (type === 'image') {
+            this.imageUrl.set(element.text);
+            this.imageAlt.set(element.style);
+            this.imageMode.set('url');
+            this.imageFileName.set('');
         } else {
             this.inputText.set(element.text);
         }
@@ -345,6 +372,26 @@ export class LessonEditor {
         this.tableRows.update((rows) => rows.filter((_, i) => i !== row));
     }
 
+    // ── Image file upload ─────────────────────────────────────
+
+    protected onImageFileSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (!file) return;
+        this.imageFileName.set(file.name);
+        this.imageUploading.set(true);
+        this.curriculumService.uploadImage(file).subscribe({
+            next: (result) => {
+                this.imageUrl.set(`http://localhost:3000/${result.path}`);
+                this.imageUploading.set(false);
+            },
+            error: () => {
+                this.imageFileName.set('');
+                this.imageUploading.set(false);
+            },
+        });
+    }
+
     // ── Submit — builds a local draft, no API call ────────────
 
     protected submit(event: Event): void {
@@ -436,6 +483,17 @@ export class LessonEditor {
                 lesson: null!,
                 delete: false,
                 questions,
+            });
+        } else if (type === 'image') {
+            const url = this.imageUrl().trim();
+            if (!url) return;
+            draft = new ImageBlock({
+                id: -Date.now(),
+                text: url,
+                style: this.imageAlt().trim(),
+                type: 'image',
+                lesson: null!,
+                delete: false,
             });
         } else {
             const text = this.inputText().trim();

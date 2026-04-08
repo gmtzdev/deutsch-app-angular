@@ -41,35 +41,93 @@
                     @for (topic of level.topics; track topic.id) {
                     <li class="topic-group" role="listitem">
 
-                        <!-- Topic toggle button -->
-                        <button type="button" class="topic-toggle"
-                            [class.topic-toggle--active]="isTopicActive(topic.id)"
-                            [class.topic-toggle--open]="isExpanded(topic.id)"
-                            [attr.aria-expanded]="isExpanded(topic.id)" [attr.aria-controls]="'subtopics-' + topic.id"
-                            (click)="toggleTopic(topic.id, $event)">
-                            <span class="topic-toggle__text">
-                                {{ topic.title }}
-                                @if (topic.subtitle) {
-                                <span class="topic-toggle__sub">{{ topic.subtitle }}</span>
-                                }
-                            </span>
-                            <span class="topic-toggle__chevron" aria-hidden="true">›</span>
-                        </button>
+                        @if (editingTopicId() === topic.id) {
+                        <!-- Inline edit form -->
+                        <form class="topic-edit-form" (submit)="confirmEditTopic($event, topic.id)">
+                            <input class="topic-edit-input" type="text" placeholder="Título del tema"
+                                [value]="editTitle()" (input)="editTitle.set($any($event.target).value)" required
+                                aria-label="Título del tema" />
+                            <input class="topic-edit-input topic-edit-input--sm" type="text"
+                                placeholder="Subtítulo (opcional)" [value]="editSubtitle()"
+                                (input)="editSubtitle.set($any($event.target).value)" aria-label="Subtítulo del tema" />
+                            <div class="topic-edit-actions">
+                                <button type="submit" class="topic-edit-btn topic-edit-btn--save"
+                                    [disabled]="editSaving()">Guardar</button>
+                                <button type="button" class="topic-edit-btn topic-edit-btn--cancel"
+                                    (click)="cancelEditTopic()">Cancelar</button>
+                            </div>
+                        </form>
+                        } @else {
+                        <!-- Topic toggle + action buttons -->
+                        <div class="topic-header">
+                            <button type="button" class="topic-toggle"
+                                [class.topic-toggle--active]="isTopicActive(topic.id)"
+                                [class.topic-toggle--open]="isExpanded(topic.id)"
+                                [attr.aria-expanded]="isExpanded(topic.id)"
+                                [attr.aria-controls]="'subtopics-' + topic.id" (click)="toggleTopic(topic.id, $event)">
+                                <span class="topic-toggle__text">
+                                    {{ topic.title }}
+                                    @if (topic.subtitle) {
+                                    <span class="topic-toggle__sub">{{ topic.subtitle }}</span>
+                                    }
+                                </span>
+                                <span class="topic-toggle__chevron" aria-hidden="true">›</span>
+                            </button>
+                            <div class="topic-actions">
+                                <button type="button" class="topic-action-btn" (click)="startEditTopic(topic)"
+                                    aria-label="Editar tema">✏️</button>
+                                <button type="button" class="topic-action-btn topic-action-btn--delete"
+                                    (click)="deleteTopicById(topic.id)" aria-label="Eliminar tema">🗑</button>
+                            </div>
+                        </div>
+                        }
 
                         <!-- Subtopics -->
                         <ul class="subtopic-list" [class.subtopic-list--open]="isExpanded(topic.id)"
                             [id]="'subtopics-' + topic.id" role="list">
                             @for (subtopic of topic.subtopics; track subtopic.id) {
                             <li role="listitem">
-                                <!-- [fragment]="'subtopic-' + subtopic.id"  -->
-                                <a class="subtopic-link" [routerLink]="['topics', topic.id, subtopic.id]"
-                                    [attr.aria-label]="subtopic.title">
-
-                                    @if (subtopic.icon) {
-                                    <span class="subtopic-link__icon" aria-hidden="true">{{ subtopic.icon }}</span>
-                                    }
-                                    <span class="subtopic-link__title">{{ subtopic.title }}</span>
-                                </a>
+                                @if (editingSubtopicId() === subtopic.id) {
+                                <!-- Inline subtopic edit form -->
+                                <form class="subtopic-edit-form"
+                                    (submit)="confirmEditSubtopic($event, topic.id, subtopic.id)">
+                                    <div class="subtopic-edit-row">
+                                        <input class="subtopic-edit-input subtopic-edit-input--icon" type="text"
+                                            placeholder="🌟" [value]="editSubtopicIcon()"
+                                            (input)="editSubtopicIcon.set($any($event.target).value)"
+                                            aria-label="Ícono del subtema" maxlength="4" />
+                                        <input class="subtopic-edit-input" type="text" placeholder="Título del subtema"
+                                            [value]="editSubtopicTitle()"
+                                            (input)="editSubtopicTitle.set($any($event.target).value)" required
+                                            aria-label="Título del subtema" />
+                                    </div>
+                                    <div class="subtopic-edit-actions">
+                                        <button type="submit" class="subtopic-edit-btn subtopic-edit-btn--save"
+                                            [disabled]="editSubtopicSaving()">Guardar</button>
+                                        <button type="button" class="subtopic-edit-btn subtopic-edit-btn--cancel"
+                                            (click)="cancelEditSubtopic()">Cancelar</button>
+                                    </div>
+                                </form>
+                                } @else {
+                                <!-- Subtopic link + action buttons -->
+                                <div class="subtopic-item">
+                                    <a class="subtopic-link" [routerLink]="['topics', topic.id, subtopic.id]"
+                                        [attr.aria-label]="subtopic.title">
+                                        @if (subtopic.icon) {
+                                        <span class="subtopic-link__icon" aria-hidden="true">{{ subtopic.icon }}</span>
+                                        }
+                                        <span class="subtopic-link__title">{{ subtopic.title }}</span>
+                                    </a>
+                                    <div class="subtopic-actions">
+                                        <button type="button" class="subtopic-action-btn"
+                                            (click)="startEditSubtopic(subtopic)"
+                                            aria-label="Editar subtema">✏️</button>
+                                        <button type="button" class="subtopic-action-btn subtopic-action-btn--delete"
+                                            (click)="deleteSubtopicById(topic.id, subtopic.id)"
+                                            aria-label="Eliminar subtema">🗑</button>
+                                    </div>
+                                </div>
+                                }
                             </li>
                             }
 

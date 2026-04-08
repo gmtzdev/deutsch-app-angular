@@ -26,6 +26,7 @@
                 @case ('tag') { <app-lesson-tag [element]="element" /> }
                 @case ('conjugation') { <app-lesson-conjugation [element]="element" /> }
                 @case ('quiz') { <app-lesson-quiz [element]="element" /> }
+                @case ('image') { <app-lesson-image [element]="element" /> }
                 @default { <app-lesson-paragraph [element]="element" /> }
                 }
                 <div class="pending-element__actions">
@@ -300,6 +301,60 @@
                 </button>
             </div>
 
+            } @else if (activeType() === 'image') {
+            <!-- Image editor -->
+            <div class="image-form" role="group" aria-label="Editor de imagen">
+                <!-- Mode tabs -->
+                <div class="image-form__tabs" role="group" aria-label="Modo de imagen">
+                    <button type="button" class="image-form__tab"
+                        [class.image-form__tab--active]="imageMode() === 'url'"
+                        (click)="imageMode.set('url')">🔗 URL</button>
+                    <button type="button" class="image-form__tab"
+                        [class.image-form__tab--active]="imageMode() === 'file'"
+                        (click)="imageMode.set('file')">📤 Subir archivo</button>
+                </div>
+
+                @if (imageMode() === 'url') {
+                <input id="editor-main-input" class="editor-main-input" type="url"
+                    placeholder="URL de la imagen (https://...)" [value]="imageUrl()"
+                    (input)="imageUrl.set($any($event.target).value)"
+                    aria-label="URL de la imagen" />
+                } @else {
+                <div class="image-form__upload-zone" [class.image-form__upload-zone--loading]="imageUploading()">
+                    @if (imageUploading()) {
+                    <div class="image-form__upload-label" aria-busy="true">
+                        <span class="image-form__spinner" aria-hidden="true"></span>
+                        <span>Subiendo imagen...</span>
+                    </div>
+                    } @else {
+                    <label class="image-form__upload-label" for="image-file-input">
+                        <span class="image-form__upload-icon" aria-hidden="true">📁</span>
+                        @if (imageFileName()) {
+                        <span class="image-form__upload-filename">{{ imageFileName() }}</span>
+                        } @else {
+                        <span>Hacer clic para seleccionar imagen</span>
+                        <span class="image-form__upload-hint">JPG, PNG, GIF, WebP</span>
+                        }
+                    </label>
+                    <input id="image-file-input" type="file" accept="image/*"
+                        class="image-form__file-input"
+                        (change)="onImageFileSelected($event)"
+                        aria-label="Seleccionar imagen" />
+                    }
+                </div>
+                }
+
+                @if (imageUrl()) {
+                <div class="image-form__preview">
+                    <img class="image-form__preview-img" [src]="imageUrl()" alt="Vista previa" />
+                </div>
+                }
+                <input class="editor-main-input editor-main-input--sm" type="text"
+                    placeholder="Texto alternativo (descripción)" [value]="imageAlt()"
+                    (input)="imageAlt.set($any($event.target).value)"
+                    aria-label="Texto alternativo" />
+            </div>
+
             } @else {
             <!-- Single text input -->
             <input id="editor-main-input" class="editor-main-input" type="text" [placeholder]="activeType() === 'title' ? 'Título de la sección...' :
@@ -310,7 +365,7 @@
 
             <div class="editor-panel__footer">
                 <button type="button" class="cancel-btn" (click)="closePicker()">Cancelar</button>
-                <button type="submit" class="confirm-btn">
+                <button type="submit" class="confirm-btn" [disabled]="imageUploading()">
                     {{ editingIndex() !== null ? 'Guardar cambios' : 'Guardar bloque' }}
                 </button>
             </div>

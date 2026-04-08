@@ -315,3 +315,261 @@
     color: #dc2626;
     text-align: center;
 }
+
+// ── Topic header (toggle + action buttons) ───────────────────
+.topic-header {
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+
+    &:hover .topic-actions {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .topic-toggle {
+        flex: 1;
+        min-width: 0;
+        width: auto;
+    }
+}
+
+.topic-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+    padding-right: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+}
+
+.topic-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.12s;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.08);
+    }
+
+    &:focus-visible {
+        outline: 2px solid #4a90d9;
+        outline-offset: -1px;
+        border-radius: 4px;
+    }
+
+    &--delete:hover {
+        background: rgba(239, 68, 68, 0.12);
+    }
+}
+
+// ── Topic inline edit form ────────────────────────────────────
+.topic-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 10px;
+    background: rgba(74, 144, 217, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(74, 144, 217, 0.2);
+}
+
+.topic-edit-input {
+    padding: 5px 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text, #37352f);
+    background: var(--color-card, #fff);
+    border: 1.5px solid rgba(0, 0, 0, 0.12);
+    border-radius: 5px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.13s;
+
+    &:focus {
+        border-color: #4a90d9;
+    }
+
+    &--sm {
+        font-size: 12px;
+        font-weight: 400;
+    }
+}
+
+.topic-edit-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.topic-edit-btn {
+    flex: 1;
+    padding: 4px 10px;
+    border-radius: 5px;
+    border: none;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.13s;
+
+    &:hover:not(:disabled) {
+        opacity: 0.85;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &--save {
+        background: #1d4ed8;
+        color: #fff;
+    }
+
+    &--cancel {
+        background: rgba(0, 0, 0, 0.07);
+        color: var(--color-text, #37352f);
+    }
+}
+
+// ── Subtopic item (link + hover action buttons) ───────────────
+.subtopic-item {
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+
+    &:hover .subtopic-actions {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .subtopic-link {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+.subtopic-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding-right: 4px;
+    flex-shrink: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+}
+
+.subtopic-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+    font-size: 11px;
+    transition: background 0.12s;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.08);
+    }
+
+    &:focus-visible {
+        outline: 2px solid #4a90d9;
+        outline-offset: -1px;
+        border-radius: 4px;
+    }
+
+    &--delete:hover {
+        background: rgba(239, 68, 68, 0.12);
+    }
+}
+
+// ── Subtopic inline edit form ─────────────────────────────────
+.subtopic-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 6px 8px 6px 22px;
+    background: rgba(74, 144, 217, 0.05);
+    border-radius: 5px;
+    border: 1px solid rgba(74, 144, 217, 0.2);
+}
+
+.subtopic-edit-row {
+    display: flex;
+    gap: 5px;
+}
+
+.subtopic-edit-input {
+    padding: 4px 7px;
+    font-size: 12px;
+    color: var(--color-text, #37352f);
+    background: var(--color-card, #fff);
+    border: 1.5px solid rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+    outline: none;
+    flex: 1;
+    min-width: 0;
+    transition: border-color 0.13s;
+
+    &:focus {
+        border-color: #4a90d9;
+    }
+
+    &--icon {
+        flex: 0 0 38px;
+        text-align: center;
+        font-size: 14px;
+    }
+}
+
+.subtopic-edit-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.subtopic-edit-btn {
+    flex: 1;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: none;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.13s;
+
+    &:hover:not(:disabled) {
+        opacity: 0.85;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &--save {
+        background: #1d4ed8;
+        color: #fff;
+    }
+
+    &--cancel {
+        background: rgba(0, 0, 0, 0.07);
+        color: var(--color-text, #37352f);
+    }
+}

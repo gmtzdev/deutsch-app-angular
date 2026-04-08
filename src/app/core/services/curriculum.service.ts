@@ -66,6 +66,26 @@ export class CurriculumService {
         return this.http.post<Topic>(`${API_BASE}/topics`, payload);
     }
 
+    /** Actualiza el título y subtítulo de un tema. */
+    updateTopic(topicId: number | string, title: string, subtitle?: string): Observable<Topic> {
+        return this.http.patch<Topic>(`${API_BASE}/topics/${topicId}`, { title, subtitle: subtitle || '' });
+    }
+
+    /** Elimina un tema por su ID. */
+    deleteTopic(topicId: number | string): Observable<void> {
+        return this.http.delete<void>(`${API_BASE}/topics/${topicId}`);
+    }
+
+    /** Actualiza el título de un subtema. */
+    updateSubtopic(subtopicId: number | string, title: string, icon?: string): Observable<Subtopic> {
+        return this.http.patch<Subtopic>(`${API_BASE}/subtopics/${subtopicId}`, { title, icon: icon ?? '' });
+    }
+
+    /** Elimina un subtema por su ID. */
+    deleteSubtopic(subtopicId: number | string): Observable<void> {
+        return this.http.delete<void>(`${API_BASE}/subtopics/${subtopicId}`);
+    }
+
     /** Crea un nuevo subtema en un tema. */
     createSubtopic(topicId: number | string, title: string, icon?: string): Observable<Subtopic> {
         const payload: CreateSubtopicDto = {
@@ -96,6 +116,17 @@ export class CurriculumService {
         let elements: LessonElementDto[] = [];
         for (const el of preview) {
             switch (el.type) {
+                case 'element': {
+                    elements.push({
+                        id: el.id,
+                        text: el.text,
+                        style: el.style,
+                        type: 'element',
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: el.delete
+                    } as CreateElementDto)
+                    break;
+                }
                 case 'title':
                     elements.push({
                         id: el.id,
@@ -187,6 +218,16 @@ export class CurriculumService {
                         questions: auxq.questions,
                     } as CreateQuizDto)
                     break;
+                case 'image':
+                    elements.push({
+                        id: el.id,
+                        text: el.text,
+                        style: el.style,
+                        type: 'image',
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: el.delete,
+                    } as CreateElementDto)
+                    break;
                 default:
                     console.warn(`Element type ${el.type} is not supported for creation yet.`);
                     break;
@@ -199,6 +240,13 @@ export class CurriculumService {
         };
         console.log(payload);
         return this.http.post<ElementTypeObj>(`${API_BASE}/elements/create-lesson`, payload);
+    }
+
+    /** Sube una imagen al servidor y devuelve su ruta. */
+    uploadImage(file: File): Observable<{ filename: string; path: string }> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<{ filename: string; path: string }>(`${API_BASE}/elements/upload-image`, formData);
     }
 
 }
