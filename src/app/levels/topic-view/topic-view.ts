@@ -25,11 +25,12 @@ import { LessonTag } from './elements/lesson-tag';
 import { LessonConjugation } from './elements/lesson-conjugation';
 import { LessonQuiz } from './elements/lesson-quiz';
 import { LessonImage } from './elements/lesson-image';
+import { LessonDragDrop } from './elements/lesson-drag-drop';
 import { LessonEditor } from './lesson-editor/lesson-editor';
 
 @Component({
     selector: 'app-topic-view',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonEditor],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonEditor],
     templateUrl: './topic-view.html',
     styleUrls: ['./topic-view.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -92,6 +93,15 @@ export class TopicView {
         });
     }
 
+    protected onElementReordered(event: { from: number; to: number }): void {
+        this.pendingElements.update((elements) => {
+            const next = [...elements];
+            const [moved] = next.splice(event.from, 1);
+            next.splice(event.to, 0, moved);
+            return next;
+        });
+    }
+
     protected discardChanges(): void {
         this.pendingElements.set([]);
     }
@@ -102,7 +112,12 @@ export class TopicView {
 
         this.confirming.set(true);
         try {
+            this.pendingElements().forEach((element, index) => {
+                element.order = index; // update order based on current position in array
+            });
             console.log(this.pendingElements());
+
+            // return;
             const response = await firstValueFrom(this.curriculumService.createLesson(lessonId, this.pendingElements()));
             this.pendingElements.set([]);
             this.subtopicResource.reload();

@@ -34,9 +34,12 @@ import { Quiz } from '../../../core/models/elements/quiz.model';
 import { QuizQuestion } from '../../../core/models/elements/quiz-question.model';
 import { LessonImage } from '../elements/lesson-image';
 import { ImageBlock } from '../../../core/models/elements/image-block.model';
+import { LessonDragDrop } from '../elements/lesson-drag-drop';
+import { DragDropExercise } from '../../../core/models/elements/drag-drop-exercise.model';
+import { DragDropRow } from '../../../core/models/elements/drag-drop-row.model';
 import { CurriculumService } from '../../../core/services/curriculum.service';
 
-type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image';
+type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
 type TagColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'gray';
 
@@ -73,6 +76,7 @@ const BLOCK_OPTIONS: BlockOption[] = [
     { type: 'conjugation', label: 'Conjugación', icon: '📝', description: 'Tabla de conjugación verbal (alemán)' },
     { type: 'quiz', label: 'Quiz', icon: '❓', description: 'Preguntas de comprensión' },
     { type: 'image', label: 'Imagen', icon: '🖼', description: 'Imagen desde una URL' },
+    { type: 'dragDrop', label: 'Arrastrar y soltar', icon: '🎯', description: 'Completar espacios arrastrando palabras' },
 ];
 
 const TIP_COLOR_OPTIONS: TipColorOption[] = [
@@ -95,7 +99,7 @@ const TAG_COLOR_OPTIONS: TagColorOption[] = [
     selector: 'app-lesson-editor',
     templateUrl: './lesson-editor.html',
     styleUrl: './lesson-editor.scss',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LessonEditor {
@@ -103,9 +107,14 @@ export class LessonEditor {
     readonly elementAdded = output<ElementTypeObj>();
     readonly elementEdited = output<{ index: number; element: ElementTypeObj }>();
     readonly elementRemoved = output<number>();
+    readonly elementReordered = output<{ from: number; to: number }>();
 
     protected readonly hasPending = computed(() => this.pendingElements().length > 0);
     protected readonly editingIndex = signal<number | null>(null);
+
+    // ── Drag-and-drop state ─────────────────────────────────
+    protected readonly dragFromIndex = signal<number | null>(null);
+    protected readonly dragOverIndex = signal<number | null>(null);
 
     private readonly doc = inject(DOCUMENT);
     private readonly curriculumService = inject(CurriculumService);
@@ -136,12 +145,51 @@ export class LessonEditor {
     protected readonly imageFileName = signal('');
     protected readonly imageUploading = signal(false);
 
+    // ── Drag-drop signals ─────────────────────────────────────
+    protected readonly dragDropWords = signal<string[]>(['']);
+    protected readonly dragDropRows = signal<DragDropRow[]>([{ id: 1, before: '', after: '', answer: '' }]);
+
     protected readonly tipColorOptions = TIP_COLOR_OPTIONS;
     protected readonly tagColorOptions = TAG_COLOR_OPTIONS;
 
     protected openPicker(): void {
         this.pickerOpen.set(true);
         this.activeType.set(null);
+    }
+
+    // ── Drag-and-drop handlers ─────────────────────────────
+
+    protected onDragStart(event: DragEvent, index: number): void {
+        this.dragFromIndex.set(index);
+        event.dataTransfer!.effectAllowed = 'move';
+    }
+
+    protected onDragOver(event: DragEvent, index: number): void {
+        event.preventDefault();
+        event.dataTransfer!.dropEffect = 'move';
+        this.dragOverIndex.set(index);
+    }
+
+    protected onDragLeave(index: number): void {
+        if (this.dragOverIndex() === index) this.dragOverIndex.set(null);
+    }
+
+    protected onDrop(event: DragEvent, toIndex: number): void {
+        event.preventDefault();
+        const fromIndex = this.dragFromIndex();
+        if (fromIndex === null || fromIndex === toIndex) {
+            this.dragFromIndex.set(null);
+            this.dragOverIndex.set(null);
+            return;
+        }
+        this.elementReordered.emit({ from: fromIndex, to: toIndex });
+        this.dragFromIndex.set(null);
+        this.dragOverIndex.set(null);
+    }
+
+    protected onDragEnd(): void {
+        this.dragFromIndex.set(null);
+        this.dragOverIndex.set(null);
     }
 
     protected closePicker(): void {
@@ -162,6 +210,8 @@ export class LessonEditor {
         this.imageMode.set('url');
         this.imageFileName.set('');
         this.imageUploading.set(false);
+        this.dragDropWords.set(['']);
+        this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
         this.editingIndex.set(null);
     }
 
@@ -192,6 +242,8 @@ export class LessonEditor {
         this.imageMode.set('url');
         this.imageFileName.set('');
         this.imageUploading.set(false);
+        this.dragDropWords.set(['']);
+        this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
         this.editingIndex.set(null);
     }
 
@@ -230,6 +282,10 @@ export class LessonEditor {
             this.imageAlt.set(element.style);
             this.imageMode.set('url');
             this.imageFileName.set('');
+        } else if (type === 'dragDrop') {
+            const ex = element as DragDropExercise;
+            this.dragDropWords.set([...ex.words]);
+            this.dragDropRows.set(ex.rows.map((r) => ({ ...r })));
         } else {
             this.inputText.set(element.text);
         }
@@ -372,6 +428,44 @@ export class LessonEditor {
         this.tableRows.update((rows) => rows.filter((_, i) => i !== row));
     }
 
+    // ── Drag-drop management ──────────────────────────────────
+
+    protected setDragDropWord(index: number, value: string): void {
+        this.dragDropWords.update((words) => {
+            const next = [...words];
+            next[index] = value;
+            return next;
+        });
+    }
+
+    protected addDragDropWord(): void {
+        this.dragDropWords.update((words) => [...words, '']);
+    }
+
+    protected removeDragDropWord(index: number): void {
+        this.dragDropWords.update((words) => words.filter((_, i) => i !== index));
+    }
+
+    protected setDragDropRowField(index: number, field: keyof DragDropRow, value: string): void {
+        this.dragDropRows.update((rows) => {
+            const next = [...rows];
+            next[index] = { ...next[index], [field]: value };
+            return next;
+        });
+    }
+
+    protected addDragDropRow(): void {
+        this.dragDropRows.update((rows) => [
+            ...rows,
+            { id: rows.length + 1, before: '', after: '', answer: '' },
+        ]);
+    }
+
+    protected removeDragDropRow(index: number): void {
+        if (this.dragDropRows().length <= 1) return;
+        this.dragDropRows.update((rows) => rows.filter((_, i) => i !== index));
+    }
+
     // ── Image file upload ─────────────────────────────────────
 
     protected onImageFileSelected(event: Event): void {
@@ -412,6 +506,7 @@ export class LessonEditor {
                 text,
                 style: '',
                 type: 'listItem',
+                order: i,
                 lesson: null!,
                 baseStyle: 'li',
                 ul: null!,
@@ -423,6 +518,7 @@ export class LessonEditor {
                 text: '',
                 style: '',
                 type: 'unorderedList',
+                order: 0,
                 lesson: null!,
                 baseStyle: 'ul',
                 delete: false,
@@ -442,6 +538,7 @@ export class LessonEditor {
                 text: '',
                 style: '',
                 type: 'table',
+                order: 0,
                 lesson: null!,
                 baseStyle: 'table',
                 headers,
@@ -456,6 +553,7 @@ export class LessonEditor {
                 text,
                 style: this.tipColor(),
                 type: 'tip',
+                order: 0,
                 lesson: null!,
                 tipTitle: this.tipTitle().trim(),
                 delete: false,
@@ -468,6 +566,7 @@ export class LessonEditor {
                 text: '',
                 style: '',
                 type: 'conjugation',
+                order: 0,
                 lesson: null!,
                 delete: false,
                 verbs,
@@ -480,6 +579,7 @@ export class LessonEditor {
                 text: '',
                 style: '',
                 type: 'quiz',
+                order: 0,
                 lesson: null!,
                 delete: false,
                 questions,
@@ -492,8 +592,31 @@ export class LessonEditor {
                 text: url,
                 style: this.imageAlt().trim(),
                 type: 'image',
+                order: 0,
                 lesson: null!,
                 delete: false,
+            });
+        } else if (type === 'dragDrop') {
+            const words = this.dragDropWords().map((w) => w.trim()).filter(Boolean);
+            const rows = this.dragDropRows()
+                .filter((r) => r.answer.trim())
+                .map((r, i) => ({
+                    id: i + 1,
+                    before: r.before.trim(),
+                    after: r.after.trim(),
+                    answer: r.answer.trim(),
+                }));
+            if (!words.length || !rows.length) return;
+            draft = new DragDropExercise({
+                id: -Date.now(),
+                text: '',
+                style: '',
+                type: 'dragDrop',
+                order: 0,
+                lesson: null!,
+                delete: false,
+                words,
+                rows,
             });
         } else {
             const text = this.inputText().trim();
@@ -505,6 +628,7 @@ export class LessonEditor {
                         text,
                         style: '',
                         type,
+                        order: 0,
                         lesson: null!,
                         baseStyle: '',
                         delete: false,
@@ -516,6 +640,7 @@ export class LessonEditor {
                         text,
                         style: '',
                         type,
+                        order: 0,
                         lesson: null!,
                         baseStyle: '',
                         delete: false,
@@ -527,6 +652,7 @@ export class LessonEditor {
                         text,
                         style: '',
                         type,
+                        order: 0,
                         lesson: null!,
                         delete: false,
                     });
@@ -539,6 +665,7 @@ export class LessonEditor {
                         text,
                         style: this.tagColor(),
                         type,
+                        order: 0,
                         lesson: null!,
                         delete: false,
                     });

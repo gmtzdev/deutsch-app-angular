@@ -20,8 +20,11 @@ import { CreateConjugationDto } from '../dto/elements/dto/conjugation/create-con
 import { Conjugation } from '../models/elements/conjugation.model';
 import { CreateQuizDto } from '../dto/elements/dto/quiz/create-quiz.dto';
 import { Quiz } from '../models/elements/quiz.model';
+import { CreateDragDropDto } from '../dto/elements/dto/drag-drop/create-drag-drop.dto';
+import { DragDropExercise } from '../models/elements/drag-drop-exercise.model';
+import { environment } from '../../../environments/environment';
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = environment.apiUrl;
 
 @Injectable({ providedIn: 'root' })
 export class CurriculumService {
@@ -103,6 +106,7 @@ export class CurriculumService {
             id: 0,
             text,
             type,
+            order: 0,
             lesson: { id: Number(lessonId) } as Lesson,
             delete: false
         };
@@ -114,7 +118,7 @@ export class CurriculumService {
     /** Crea una lista no ordenada con sus ítems en una lección. */
     createLesson(lessonId: number | string, preview: ElementTypeObj[]): Observable<ElementTypeObj> {
         let elements: LessonElementDto[] = [];
-        for (const el of preview) {
+        for (const [order, el] of preview.entries()) {
             switch (el.type) {
                 case 'element': {
                     elements.push({
@@ -122,6 +126,7 @@ export class CurriculumService {
                         text: el.text,
                         style: el.style,
                         type: 'element',
+                        order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         delete: el.delete
                     } as CreateElementDto)
@@ -133,6 +138,7 @@ export class CurriculumService {
                         text: el.text,
                         style: '',
                         type: 'title',
+                        order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         baseStyle: '',
                         delete: el.delete
@@ -144,6 +150,7 @@ export class CurriculumService {
                         text: el.text,
                         style: '',
                         type: 'subtitle',
+                        order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         baseStyle: '',
                         delete: el.delete
@@ -155,6 +162,7 @@ export class CurriculumService {
                         text: li.text,
                         style: '',
                         type: 'listItem',
+                        order: i,
                         lesson: { id: Number(lessonId) } as Lesson,
                         delete: li.delete,
                     }));
@@ -164,6 +172,7 @@ export class CurriculumService {
                         text: '',
                         style: '',
                         type: 'unorderedList',
+                        order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         baseStyle: 'ul',
                         list: lis,
@@ -176,6 +185,7 @@ export class CurriculumService {
                         text: el.text,
                         style: el.style,
                         type: 'tag',
+                        order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         delete: el.delete
                     } as CreateElementDto)
@@ -187,6 +197,7 @@ export class CurriculumService {
                         text: aux.text,
                         style: aux.style,
                         type: 'table',
+                        order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         delete: aux.delete,
                         baseStyle: aux.baseStyle,
@@ -201,6 +212,7 @@ export class CurriculumService {
                         text: auxc.text,
                         style: auxc.style,
                         type: auxc.type,
+                        order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         delete: auxc.delete,
                         verbs: auxc.verbs,
@@ -213,6 +225,7 @@ export class CurriculumService {
                         text: auxq.text,
                         style: auxq.style,
                         type: auxq.type,
+                        order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         delete: auxq.delete,
                         questions: auxq.questions,
@@ -224,9 +237,24 @@ export class CurriculumService {
                         text: el.text,
                         style: el.style,
                         type: 'image',
+                        order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         delete: el.delete,
                     } as CreateElementDto)
+                    break;
+                case 'dragDrop':
+                    const auxd = el as DragDropExercise;
+                    elements.push({
+                        id: auxd.id,
+                        text: auxd.text,
+                        style: auxd.style,
+                        type: auxd.type,
+                        order,
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: auxd.delete,
+                        words: auxd.words,
+                        rows: auxd.rows,
+                    } as CreateDragDropDto)
                     break;
                 default:
                     console.warn(`Element type ${el.type} is not supported for creation yet.`);
@@ -234,6 +262,7 @@ export class CurriculumService {
             }
         }
 
+        console.log('Prepared elements for creation:', elements);
         const payload: CreateBodyLessonDto = {
             lesson: { id: Number(lessonId) } as Lesson,
             elements: elements
