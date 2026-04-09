@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'http://api.gmtzdev.com/api',
+    apiUrl: 'https://api.gmtzdev.com/api',
 };
