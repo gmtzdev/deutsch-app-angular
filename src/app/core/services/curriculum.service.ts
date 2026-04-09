@@ -22,8 +22,9 @@ import { CreateQuizDto } from '../dto/elements/dto/quiz/create-quiz.dto';
 import { Quiz } from '../models/elements/quiz.model';
 import { CreateDragDropDto } from '../dto/elements/dto/drag-drop/create-drag-drop.dto';
 import { DragDropExercise } from '../models/elements/drag-drop-exercise.model';
+import { environment } from '../../../environments/environment';
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = environment.apiUrl;
 
 @Injectable({ providedIn: 'root' })
 export class CurriculumService {
