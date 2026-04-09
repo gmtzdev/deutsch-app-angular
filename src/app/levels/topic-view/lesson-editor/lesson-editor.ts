@@ -34,9 +34,12 @@ import { Quiz } from '../../../core/models/elements/quiz.model';
 import { QuizQuestion } from '../../../core/models/elements/quiz-question.model';
 import { LessonImage } from '../elements/lesson-image';
 import { ImageBlock } from '../../../core/models/elements/image-block.model';
+import { LessonDragDrop } from '../elements/lesson-drag-drop';
+import { DragDropExercise } from '../../../core/models/elements/drag-drop-exercise.model';
+import { DragDropRow } from '../../../core/models/elements/drag-drop-row.model';
 import { CurriculumService } from '../../../core/services/curriculum.service';
 
-type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image';
+type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
 type TagColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'gray';
 
@@ -73,6 +76,7 @@ const BLOCK_OPTIONS: BlockOption[] = [
     { type: 'conjugation', label: 'Conjugación', icon: '📝', description: 'Tabla de conjugación verbal (alemán)' },
     { type: 'quiz', label: 'Quiz', icon: '❓', description: 'Preguntas de comprensión' },
     { type: 'image', label: 'Imagen', icon: '🖼', description: 'Imagen desde una URL' },
+    { type: 'dragDrop', label: 'Arrastrar y soltar', icon: '🎯', description: 'Completar espacios arrastrando palabras' },
 ];
 
 const TIP_COLOR_OPTIONS: TipColorOption[] = [
@@ -95,7 +99,7 @@ const TAG_COLOR_OPTIONS: TagColorOption[] = [
     selector: 'app-lesson-editor',
     templateUrl: './lesson-editor.html',
     styleUrl: './lesson-editor.scss',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LessonEditor {
@@ -140,6 +144,10 @@ export class LessonEditor {
     protected readonly imageMode = signal<'url' | 'file'>('url');
     protected readonly imageFileName = signal('');
     protected readonly imageUploading = signal(false);
+
+    // ── Drag-drop signals ─────────────────────────────────────
+    protected readonly dragDropWords = signal<string[]>(['']);
+    protected readonly dragDropRows = signal<DragDropRow[]>([{ id: 1, before: '', after: '', answer: '' }]);
 
     protected readonly tipColorOptions = TIP_COLOR_OPTIONS;
     protected readonly tagColorOptions = TAG_COLOR_OPTIONS;
@@ -202,6 +210,8 @@ export class LessonEditor {
         this.imageMode.set('url');
         this.imageFileName.set('');
         this.imageUploading.set(false);
+        this.dragDropWords.set(['']);
+        this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
         this.editingIndex.set(null);
     }
 
@@ -232,6 +242,8 @@ export class LessonEditor {
         this.imageMode.set('url');
         this.imageFileName.set('');
         this.imageUploading.set(false);
+        this.dragDropWords.set(['']);
+        this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
         this.editingIndex.set(null);
     }
 
@@ -270,6 +282,10 @@ export class LessonEditor {
             this.imageAlt.set(element.style);
             this.imageMode.set('url');
             this.imageFileName.set('');
+        } else if (type === 'dragDrop') {
+            const ex = element as DragDropExercise;
+            this.dragDropWords.set([...ex.words]);
+            this.dragDropRows.set(ex.rows.map((r) => ({ ...r })));
         } else {
             this.inputText.set(element.text);
         }
@@ -412,6 +428,44 @@ export class LessonEditor {
         this.tableRows.update((rows) => rows.filter((_, i) => i !== row));
     }
 
+    // ── Drag-drop management ──────────────────────────────────
+
+    protected setDragDropWord(index: number, value: string): void {
+        this.dragDropWords.update((words) => {
+            const next = [...words];
+            next[index] = value;
+            return next;
+        });
+    }
+
+    protected addDragDropWord(): void {
+        this.dragDropWords.update((words) => [...words, '']);
+    }
+
+    protected removeDragDropWord(index: number): void {
+        this.dragDropWords.update((words) => words.filter((_, i) => i !== index));
+    }
+
+    protected setDragDropRowField(index: number, field: keyof DragDropRow, value: string): void {
+        this.dragDropRows.update((rows) => {
+            const next = [...rows];
+            next[index] = { ...next[index], [field]: value };
+            return next;
+        });
+    }
+
+    protected addDragDropRow(): void {
+        this.dragDropRows.update((rows) => [
+            ...rows,
+            { id: rows.length + 1, before: '', after: '', answer: '' },
+        ]);
+    }
+
+    protected removeDragDropRow(index: number): void {
+        if (this.dragDropRows().length <= 1) return;
+        this.dragDropRows.update((rows) => rows.filter((_, i) => i !== index));
+    }
+
     // ── Image file upload ─────────────────────────────────────
 
     protected onImageFileSelected(event: Event): void {
@@ -541,6 +595,28 @@ export class LessonEditor {
                 order: 0,
                 lesson: null!,
                 delete: false,
+            });
+        } else if (type === 'dragDrop') {
+            const words = this.dragDropWords().map((w) => w.trim()).filter(Boolean);
+            const rows = this.dragDropRows()
+                .filter((r) => r.answer.trim())
+                .map((r, i) => ({
+                    id: i + 1,
+                    before: r.before.trim(),
+                    after: r.after.trim(),
+                    answer: r.answer.trim(),
+                }));
+            if (!words.length || !rows.length) return;
+            draft = new DragDropExercise({
+                id: -Date.now(),
+                text: '',
+                style: '',
+                type: 'dragDrop',
+                order: 0,
+                lesson: null!,
+                delete: false,
+                words,
+                rows,
             });
         } else {
             const text = this.inputText().trim();

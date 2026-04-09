@@ -25,11 +25,12 @@ import { LessonTag } from './elements/lesson-tag';
 import { LessonConjugation } from './elements/lesson-conjugation';
 import { LessonQuiz } from './elements/lesson-quiz';
 import { LessonImage } from './elements/lesson-image';
+import { LessonDragDrop } from './elements/lesson-drag-drop';
 import { LessonEditor } from './lesson-editor/lesson-editor';
 
 @Component({
     selector: 'app-topic-view',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonEditor],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonEditor],
     templateUrl: './topic-view.html',
     styleUrls: ['./topic-view.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

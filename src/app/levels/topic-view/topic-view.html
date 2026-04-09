@@ -96,6 +96,10 @@
             <app-lesson-image [element]="element" />
             }
 
+            @case ('dragDrop') {
+            <app-lesson-drag-drop [element]="element" />
+            }
+
             @default {
             <!-- 'element' and 'listItem' at top level render as plain paragraph -->
             <app-lesson-paragraph [element]="element" />

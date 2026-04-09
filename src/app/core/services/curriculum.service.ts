@@ -20,6 +20,8 @@ import { CreateConjugationDto } from '../dto/elements/dto/conjugation/create-con
 import { Conjugation } from '../models/elements/conjugation.model';
 import { CreateQuizDto } from '../dto/elements/dto/quiz/create-quiz.dto';
 import { Quiz } from '../models/elements/quiz.model';
+import { CreateDragDropDto } from '../dto/elements/dto/drag-drop/create-drag-drop.dto';
+import { DragDropExercise } from '../models/elements/drag-drop-exercise.model';
 
 const API_BASE = 'http://localhost:3000/api';
 
@@ -239,12 +241,27 @@ export class CurriculumService {
                         delete: el.delete,
                     } as CreateElementDto)
                     break;
+                case 'dragDrop':
+                    const auxd = el as DragDropExercise;
+                    elements.push({
+                        id: auxd.id,
+                        text: auxd.text,
+                        style: auxd.style,
+                        type: auxd.type,
+                        order,
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: auxd.delete,
+                        words: auxd.words,
+                        rows: auxd.rows,
+                    } as CreateDragDropDto)
+                    break;
                 default:
                     console.warn(`Element type ${el.type} is not supported for creation yet.`);
                     break;
             }
         }
 
+        console.log('Prepared elements for creation:', elements);
         const payload: CreateBodyLessonDto = {
             lesson: { id: Number(lessonId) } as Lesson,
             elements: elements

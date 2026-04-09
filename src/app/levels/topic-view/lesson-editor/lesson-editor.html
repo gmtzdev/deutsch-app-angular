@@ -30,6 +30,7 @@
                 @case ('conjugation') { <app-lesson-conjugation [element]="element" /> }
                 @case ('quiz') { <app-lesson-quiz [element]="element" /> }
                 @case ('image') { <app-lesson-image [element]="element" /> }
+                @case ('dragDrop') { <app-lesson-drag-drop [element]="element" /> }
                 @default { <app-lesson-paragraph [element]="element" /> }
                 }
                 <div class="pending-element__actions">
@@ -356,8 +357,51 @@
                     (input)="imageAlt.set($any($event.target).value)" aria-label="Texto alternativo" />
             </div>
 
+            } @else if (activeType() === 'dragDrop') {
+            <!-- Drag-and-drop exercise editor -->
+            <div class="dnd-editor" role="group" aria-label="Editor de ejercicio de arrastrar y soltar">
+                <p class="dnd-editor__label">Banco de palabras</p>
+                @for (word of dragDropWords(); track $index; let wi = $index) {
+                <div class="list-item-row">
+                    <input class="editor-list-input" type="text" [placeholder]="'Palabra ' + (wi + 1)" [value]="word"
+                        (input)="setDragDropWord(wi, $any($event.target).value)"
+                        [attr.aria-label]="'Palabra ' + (wi + 1)" />
+                    @if (dragDropWords().length > 1) {
+                    <button type="button" class="remove-item-btn" (click)="removeDragDropWord(wi)"
+                        [attr.aria-label]="'Eliminar palabra ' + (wi + 1)">✕</button>
+                    }
+                </div>
+                }
+                <button type="button" class="add-item-btn" (click)="addDragDropWord()">+ Añadir palabra</button>
+
+                <p class="dnd-editor__label">Ejercicios</p>
+                @for (row of dragDropRows(); track $index; let ri = $index) {
+                <div class="dnd-editor__row">
+                    <div class="quiz-editor__row-header">
+                        <span class="quiz-editor__row-num">{{ ri + 1 }}</span>
+                        @if (dragDropRows().length > 1) {
+                        <button type="button" class="remove-item-btn" (click)="removeDragDropRow(ri)"
+                            [attr.aria-label]="'Eliminar ejercicio ' + (ri + 1)">✕</button>
+                        }
+                    </div>
+                    <input class="editor-main-input editor-main-input--sm" type="text"
+                        placeholder="Texto antes del espacio (opcional)..." [value]="row.before"
+                        (input)="setDragDropRowField(ri, 'before', $any($event.target).value)"
+                        [attr.aria-label]="'Texto antes, ejercicio ' + (ri + 1)" />
+                    <input class="editor-main-input editor-main-input--sm" type="text"
+                        placeholder="Texto después del espacio (opcional)..." [value]="row.after"
+                        (input)="setDragDropRowField(ri, 'after', $any($event.target).value)"
+                        [attr.aria-label]="'Texto después, ejercicio ' + (ri + 1)" />
+                    <input class="editor-main-input editor-main-input--sm" type="text"
+                        placeholder="Respuesta correcta..." [value]="row.answer"
+                        (input)="setDragDropRowField(ri, 'answer', $any($event.target).value)"
+                        [attr.aria-label]="'Respuesta correcta, ejercicio ' + (ri + 1)" required />
+                </div>
+                }
+                <button type="button" class="add-item-btn" (click)="addDragDropRow()">+ Añadir ejercicio</button>
+            </div>
+
             } @else {
-            <!-- Single text input -->
             <input id="editor-main-input" class="editor-main-input" type="text" [placeholder]="activeType() === 'title' ? 'Título de la sección...' :
                                activeType() === 'subtitle' ? 'Subtítulo...' : 'Escribe el párrafo...'"
                 [value]="inputText()" (input)="inputText.set($any($event.target).value)"
