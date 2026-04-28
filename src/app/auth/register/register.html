@@ -1,0 +1,115 @@
+<main class="page bg-background">
+    <section class="card bg-login-card">
+        <div class="logo">
+            <span>🇩🇪</span>
+        </div>
+        <h1>Crear cuenta</h1>
+        <p class="subtitle text-login-indications">
+            Únete a DeutschApp y empieza a aprender alemán hoy.
+        </p>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="on" novalidate
+            aria-label="Formulario de registro" class="register-form">
+            <!-- Username -->
+            <div class="field">
+                <label for="name">Nombre de usuario</label>
+                <input pInputText id="name" type="text" formControlName="name" autocomplete="name"
+                    placeholder="ej. maria_42"
+                    [attr.aria-invalid]="form.controls.name.invalid && form.controls.name.touched ? 'true' : null"
+                    aria-describedby="name-error" class="w-full" />
+                @if (form.controls.name.invalid && form.controls.name.touched) {
+                <small id="name-error" class="field-error" role="alert">
+                    @if (form.controls.name.errors?.['required']) {
+                    El nombre de usuario es requerido.
+                    } @else if (form.controls.name.errors?.['minlength']) {
+                    Mínimo 3 caracteres.
+                    } @else if (form.controls.name.errors?.['maxlength']) {
+                    Máximo 30 caracteres.
+                    } @else if (form.controls.name.errors?.['pattern']) {
+                    Solo letras, números y guion bajo.
+                    }
+                </small>
+                }
+            </div>
+
+            <!-- Email -->
+            <div class="field">
+                <label for="reg-email">Correo electrónico</label>
+                <input pInputText id="reg-email" type="email" formControlName="email" autocomplete="email"
+                    placeholder="Ingresa tu correo electrónico"
+                    [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched ? 'true' : null"
+                    aria-describedby="reg-email-error" class="w-full" />
+                @if (form.controls.email.invalid && form.controls.email.touched) {
+                <small id="reg-email-error" class="field-error" role="alert">
+                    @if (form.controls.email.errors?.['required']) {
+                    El correo electrónico es requerido.
+                    } @else if (form.controls.email.errors?.['email']) {
+                    Correo electrónico inválido.
+                    } @else if (form.controls.email.errors?.['maxlength']) {
+                    Máximo 100 caracteres.
+                    }
+                </small>
+                }
+            </div>
+
+            <!-- Password -->
+            <div class="field">
+                <label for="reg-password">Contraseña</label>
+                <p-password inputId="reg-password" formControlName="password" [feedback]="true" [toggleMask]="true"
+                    autocomplete="new-password" placeholder="Mínimo 8 caracteres" styleClass="w-full"
+                    inputStyleClass="w-full" aria-describedby="reg-password-error" promptLabel="Ingresa una contraseña"
+                    weakLabel="Débil" mediumLabel="Media" strongLabel="Fuerte" />
+                @if (form.controls.password.invalid && form.controls.password.touched) {
+                <small id="reg-password-error" class="field-error" role="alert">
+                    @if (form.controls.password.errors?.['required']) {
+                    La contraseña es requerida.
+                    } @else if (form.controls.password.errors?.['minlength']) {
+                    Mínimo 8 caracteres.
+                    } @else if (form.controls.password.errors?.['weakPassword']) {
+                    Debe incluir mayúscula, número y carácter especial.
+                    }
+                </small>
+                }
+            </div>
+
+            <!-- Confirm password -->
+            <div class="field">
+                <label for="reg-confirm">Confirmar contraseña</label>
+                <p-password inputId="reg-confirm" formControlName="confirmPassword" [feedback]="false"
+                    [toggleMask]="true" autocomplete="new-password" placeholder="Repite tu contraseña"
+                    styleClass="w-full" inputStyleClass="w-full" aria-describedby="reg-confirm-error" />
+                @if (confirmMismatch) {
+                <small id="reg-confirm-error" class="field-error" role="alert">
+                    Las contraseñas no coinciden.
+                </small>
+                }
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="submit-btn" [disabled]="isLoading()" [attr.aria-busy]="isLoading()">
+                @if (isLoading()) {
+                Creando cuenta…
+                } @else {
+                Crear cuenta
+                }
+            </button>
+
+            <!-- Messages -->
+            @if (errorMessage()) {
+            <p class="form-message error-message" role="alert" aria-live="polite">
+                {{ errorMessage() }}
+            </p>
+            }
+            @if (successMessage()) {
+            <p class="form-message success-message" role="status" aria-live="polite">
+                {{ successMessage() }}
+            </p>
+            }
+        </form>
+
+        <p class="login-link text-login-indications">
+            ¿Ya tienes cuenta?
+            <a routerLink="/login" class="text-login-subtitle">Inicia sesión</a>
+        </p>
+    </section>
+</main>

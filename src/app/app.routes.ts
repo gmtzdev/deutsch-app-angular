@@ -14,6 +14,12 @@ export const routes: Routes = [
         title: 'Iniciar sesión — DeutschApp',
     },
     {
+        path: 'register',
+        loadComponent: () => import('./auth/register/register').then((m) => m.Register),
+        canActivate: [publicOnlyGuard],
+        title: 'Crear cuenta — DeutschApp',
+    },
+    {
         path: 'dashboard',
         loadComponent: () =>
             import('./dashboard/dashboard').then((m) => m.Dashboard),
