@@ -23,14 +23,14 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () =>
             import('./dashboard/dashboard').then((m) => m.Dashboard),
-        // canActivate: [authGuard],
+        canActivate: [authGuard],
         title: 'Dashboard — DeutschApp',
     },
     {
         path: 'levels/:levelId',
         loadComponent: () =>
             import('./levels/level-shell/level-shell').then((m) => m.LevelShell),
-        // canActivate: [authGuard],
+        canActivate: [authGuard],
         title: 'Nivel — DeutschApp',
         children: [
             {
