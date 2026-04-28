@@ -52,6 +52,7 @@ export class Login implements OnDestroy {
     readonly isLoading = signal(false);
     readonly errorMessage = signal<string | null>(null);
     readonly lockoutRemaining = signal(0);
+    readonly errorLogin = signal(false);
 
     readonly isLocked = computed(() => this.authService.isLocked());
     readonly remainingAttempts = computed(() => this.authService.remainingAttempts());
@@ -108,6 +109,7 @@ export class Login implements OnDestroy {
                         this.errorMessage.set(result.error ?? 'Error de autenticación.');
                         // Clear password field on every failure to prevent accidental exposure
                         this.form.controls.password.reset();
+                        this.errorLogin.set(true);
                     }
                 },
                 error: (err) => {

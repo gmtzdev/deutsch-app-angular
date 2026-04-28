@@ -72,6 +72,12 @@
                 <a href="#" class="forgot text-login-subtitle">¿Olvidaste tu contraseña?</a>
             </div>
 
+            @if(errorLogin()) {
+            <div class="text-center mb-1.5 text-red-500">
+                El usurio o contraseña son incorrectos. <br> Inténtalo de nuevo.
+            </div>
+            }
+
             <button type="submit" class="submit-btn">Iniciar sesión</button>
 
             <p id="form-message" class="form-message" aria-live="polite">
