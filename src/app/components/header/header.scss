@@ -42,28 +42,196 @@
     gap: 1rem;
 }
 
-.user-greeting {
-    font-size: 0.875rem;
-    color: #9ca3af;
-    max-width: 200px;
+/* ── User menu ── */
+
+.user-menu {
+    position: relative;
+}
+
+.user-menu-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.6rem 0.3rem 0.3rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    background: transparent;
+    color: #d1d5db;
+    cursor: pointer;
+    transition:
+        background 0.15s,
+        border-color 0.15s;
+
+    &:hover,
+    &:focus-visible {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.25);
+        color: #fff;
+        outline: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid #6366f1;
+        outline-offset: 2px;
+    }
+}
+
+.user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0.05em;
+}
+
+.user-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    max-width: 130px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.logout-btn {
-    padding: 0.4rem 0.9rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border: 1px solid #374151;
-    border-radius: 6px;
-    background: transparent;
-    color: #d1d5db;
-    cursor: pointer;
-    transition: background 0.15s;
+.chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    opacity: 0.7;
+
+    &.chevron--open {
+        transform: rotate(180deg);
+    }
 }
 
-.logout-btn:hover {
-    background: #1f2937;
+/* ── Backdrop ── */
+
+.menu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+}
+
+/* ── Dropdown panel ── */
+
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 210px;
+    background: #1e2538;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.4),
+        0 2px 6px rgba(0, 0, 0, 0.3);
+    z-index: 11;
+    overflow: hidden;
+    animation: dropdown-enter 0.15s ease;
+}
+
+@keyframes dropdown-enter {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+}
+
+.dropdown-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
     color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0.05em;
+}
+
+.dropdown-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    overflow: hidden;
+}
+
+.dropdown-username {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #f3f4f6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dropdown-role {
+    font-size: 0.72rem;
+    color: #8b5cf6;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.07);
+    margin: 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.65rem 1rem;
+    font-size: 0.875rem;
+    color: #d1d5db;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.12s;
+
+    svg {
+        flex-shrink: 0;
+        opacity: 0.75;
+    }
+
+    &:hover,
+    &:focus-visible {
+        background: rgba(255, 255, 255, 0.07);
+        color: #fff;
+        outline: none;
+
+        svg {
+            opacity: 1;
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid #6366f1;
+        outline-offset: -2px;
+    }
 }

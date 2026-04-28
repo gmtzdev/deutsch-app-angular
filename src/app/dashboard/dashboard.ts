@@ -1,7 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy, resource } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../core/services/auth.service';
 import { CurriculumService } from '../core/services/curriculum.service';
 import { Level } from '../core/models/level.model';
 import { Header } from '../components/header/header';
