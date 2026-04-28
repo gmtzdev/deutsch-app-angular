@@ -30,3 +30,15 @@ export const publicOnlyGuard: CanActivateFn = () => {
 
     return router.createUrlTree(['/dashboard']);
 };
+
+/**
+ * Protects admin-only routes. Redirects to /dashboard if the user is not an admin.
+ */
+export const adminGuard: CanActivateFn = () => {
+    const auth = inject(AuthService);
+    const router = inject(Router);
+
+    if (auth.isAuthenticated() && auth.currentUser()?.role === 'admin') return true;
+
+    return router.createUrlTree(['/dashboard']);
+};

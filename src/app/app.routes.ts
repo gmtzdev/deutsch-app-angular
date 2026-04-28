@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, publicOnlyGuard } from './auth/auth.guard';
+import { authGuard, adminGuard, publicOnlyGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
     {
@@ -18,6 +18,12 @@ export const routes: Routes = [
         loadComponent: () => import('./auth/register/register').then((m) => m.Register),
         canActivate: [publicOnlyGuard],
         title: 'Crear cuenta — DeutschApp',
+    },
+    {
+        path: 'admin',
+        loadComponent: () => import('./admin/admin').then((m) => m.Admin),
+        canActivate: [adminGuard],
+        title: 'Administración — DeutschApp',
     },
     {
         path: 'dashboard',
