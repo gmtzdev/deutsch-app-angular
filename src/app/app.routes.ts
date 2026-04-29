@@ -26,6 +26,12 @@ export const routes: Routes = [
         title: 'Administración — DeutschApp',
     },
     {
+        path: 'admin/users',
+        loadComponent: () => import('./admin/users/users').then((m) => m.AdminUsers),
+        canActivate: [adminGuard],
+        title: 'Usuarios — DeutschApp',
+    },
+    {
         path: 'dashboard',
         loadComponent: () =>
             import('./dashboard/dashboard').then((m) => m.Dashboard),
