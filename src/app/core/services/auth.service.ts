@@ -25,9 +25,13 @@ export class AuthService {
 
     private readonly url = environment.apiUrl;
 
-    // Token stored in memory only — avoids XSS via localStorage/sessionStorage
-    private readonly _token = signal<string | null>(null);
-    private readonly _user = signal<AuthUser | null>(null);
+    private static readonly TOKEN_KEY = 'auth_token';
+    private static readonly USER_KEY = 'auth_user';
+
+    private readonly _token = signal<string | null>(localStorage.getItem(AuthService.TOKEN_KEY));
+    private readonly _user = signal<AuthUser | null>(
+        JSON.parse(localStorage.getItem(AuthService.USER_KEY) ?? 'null'),
+    );
     private readonly _attemptState = signal<LoginAttemptState>({
         count: 0,
         lockedUntil: null,
@@ -79,6 +83,8 @@ export class AuthService {
                 this.authenticateWithServer(email, password).subscribe({
                     next: (result: LoginResponse) => {
                         if (result.success && result.token && result.user) {
+                            localStorage.setItem(AuthService.TOKEN_KEY, result.token);
+                            localStorage.setItem(AuthService.USER_KEY, JSON.stringify(result.user));
                             this._token.set(result.token);
                             this._user.set(result.user);
                             this._attemptState.set({ count: 0, lockedUntil: null, lastAttempt: 0 });
@@ -104,6 +110,8 @@ export class AuthService {
     }
 
     logout(): void {
+        localStorage.removeItem(AuthService.TOKEN_KEY);
+        localStorage.removeItem(AuthService.USER_KEY);
         this._token.set(null);
         this._user.set(null);
         this.router.navigate(['/login']);
