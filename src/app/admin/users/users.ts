@@ -11,6 +11,7 @@ import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from '../../core/services/user.service';
 import { AuthService } from '../../core/services/auth.service';
+import { CreateUserModal } from './create-user-modal/create-user-modal';
 
 import { Header } from '../../components/header/header';
 import { User } from '../../core/models/user/User.model';
@@ -20,7 +21,7 @@ type Role = (typeof ROLES)[number];
 
 @Component({
     selector: 'app-admin-users',
-    imports: [Header, RouterLink, ReactiveFormsModule],
+    imports: [Header, RouterLink, ReactiveFormsModule, CreateUserModal],
     templateUrl: './users.html',
     styleUrl: './users.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -114,5 +115,18 @@ export class AdminUsers {
         } finally {
             this.deletingUserId.set(null);
         }
+    }
+
+
+
+
+    readonly isCreateModalOpen = signal(false);
+
+    openCreateModal(): void { this.isCreateModalOpen.set(true); }
+    closeCreateModal(): void { this.isCreateModalOpen.set(false); }
+
+    onUserCreated(): void {
+        this.closeCreateModal();
+        this.usersResource.reload();
     }
 }

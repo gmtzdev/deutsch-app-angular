@@ -59,6 +59,13 @@
         <section class="section bg-card" aria-labelledby="users-table-heading">
             <h2 id="users-table-heading" class="visually-hidden">Tabla de usuarios</h2>
 
+            <div class="flex justify-end mb-2">
+                <button class="btn btn--primary" type="button" (click)="openCreateModal()">
+                    <i class="pi pi-plus"></i>
+                    Nuevo usuario
+                </button>
+            </div>
+
             @if (usersResource.isLoading()) {
             <div class="loading-rows" aria-busy="true" aria-label="Cargando usuarios">
                 @for (_ of [1,2,3,4,5]; track $index) {
@@ -90,6 +97,7 @@
                     <thead>
                         <tr>
                             <th scope="col">Usuario</th>
+                            <th scope="col">Email</th>
                             <th scope="col">ID</th>
                             <th scope="col">Rol</th>
                             <th scope="col" class="col-actions">Acciones</th>
@@ -111,6 +119,7 @@
                                     </span>
                                 </div>
                             </td>
+                            <td class="td-email">{{ user.email }}</td>
                             <td class="td-id">{{ user.id }}</td>
                             <td>
                                 <select class="role-select" [class.role-select--admin]="user.role === 'admin'"
@@ -170,4 +179,8 @@
             }
         </section>
     </main>
+
+    @if (isCreateModalOpen()) {
+    <app-create-user-modal (created)="onUserCreated()" (cancelled)="closeCreateModal()" />
+    }
 </div>
