@@ -38,6 +38,7 @@ import { LessonDragDrop } from '../elements/lesson-drag-drop';
 import { DragDropExercise } from '../../../core/models/elements/drag-drop-exercise.model';
 import { DragDropRow } from '../../../core/models/elements/drag-drop-row.model';
 import { CurriculumService } from '../../../core/services/curriculum.service';
+import { environment } from '../../../../environments/environment';
 
 type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
@@ -476,7 +477,7 @@ export class LessonEditor {
         this.imageUploading.set(true);
         this.curriculumService.uploadImage(file).subscribe({
             next: (result) => {
-                this.imageUrl.set(`http://localhost:3000/${result.path}`);
+                this.imageUrl.set(`${environment.apiUrl}/${result.path}`);
                 this.imageUploading.set(false);
             },
             error: () => {
