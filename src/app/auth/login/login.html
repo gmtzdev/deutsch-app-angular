@@ -72,6 +72,12 @@
                 <a href="#" class="forgot text-login-subtitle">¿Olvidaste tu contraseña?</a>
             </div>
 
+            @if(errorLogin()) {
+            <div class="text-center mb-1.5 text-red-500">
+                El usurio o contraseña son incorrectos. <br> Inténtalo de nuevo.
+            </div>
+            }
+
             <button type="submit" class="submit-btn">Iniciar sesión</button>
 
             <p id="form-message" class="form-message" aria-live="polite">
@@ -79,7 +85,7 @@
         </form>
 
         <p class="register text-login-indications">
-            ¿No tienes cuenta? <a href="#" class="text-login-subtitle">Regístrate gratis</a>
+            ¿No tienes cuenta? <a routerLink="/register" class="text-login-subtitle">Regístrate gratis</a>
         </p>
     </section>
 </main>

@@ -5,6 +5,8 @@ import {
   withInMemoryScrolling,
 } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { tokenInterceptor } from './core/interceptors/token.interceptor';
+import { authErrorInterceptor } from './core/interceptors/auth-error.interceptor';
 import { routes } from './app.routes';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
@@ -25,7 +27,6 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
       withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' }),
     ),
-    // HttpClient available for real API calls; add auth interceptor here when ready
-    provideHttpClient(withInterceptors([])),
+    provideHttpClient(withInterceptors([tokenInterceptor, authErrorInterceptor])),
   ],
 };

@@ -1,10 +1,11 @@
 import { Component, inject, ChangeDetectionStrategy, resource } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../core/services/auth.service';
 import { CurriculumService } from '../core/services/curriculum.service';
 import { Level } from '../core/models/level.model';
 import { Header } from '../components/header/header';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 const LEVEL_ACCENTS: Record<string, string> = {
   A1: '#22c55e',
@@ -25,11 +26,17 @@ const LEVEL_ACCENTS: Record<string, string> = {
 export class Dashboard {
   private readonly authService = inject(AuthService);
   private readonly curriculumService = inject(CurriculumService);
+  private readonly sanitizer = inject(DomSanitizer);
 
   protected readonly currentUser = this.authService.currentUser;
   protected readonly levelsResource = resource<Level[], undefined>({
-    loader: () => firstValueFrom(this.curriculumService.getLevels()),
+    loader: () =>
+      firstValueFrom(this.curriculumService.getLevels()),
   });
+
+  protected safeIcon(icon: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(icon);
+  }
 
   logout(): void {
     this.authService.logout();

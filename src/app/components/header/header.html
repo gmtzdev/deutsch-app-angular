@@ -5,8 +5,59 @@
             <span class="brand-name">DeutschApp</span>
         </a>
         <div class="header-right">
-            <span class="user-greeting hidden md:inline" id="user-greeting"></span>
-            <button id="logout-btn" class="logout-btn">Cerrar sesión</button>
+            @if (currentUser()) {
+            <div class="user-menu">
+                <button class="user-menu-trigger" (click)="toggleMenu()" [attr.aria-expanded]="isMenuOpen()"
+                    aria-haspopup="true" aria-label="Menú de usuario" type="button">
+                    <span class="user-avatar" aria-hidden="true">{{ userInitials() }}</span>
+                    <span class="user-name">{{ currentUser()!.username }}</span>
+                    <svg class="chevron" [class.chevron--open]="isMenuOpen()" xmlns="http://www.w3.org/2000/svg"
+                        width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+
+                @if (isMenuOpen()) {
+                <div class="menu-backdrop" (click)="closeMenu()" aria-hidden="true"></div>
+                <div class="user-dropdown" role="menu" aria-label="Opciones de usuario">
+                    <div class="dropdown-header">
+                        <span class="dropdown-avatar" aria-hidden="true">{{ userInitials() }}</span>
+                        <div class="dropdown-user-info">
+                            <span class="dropdown-username">{{ currentUser()!.username }}</span>
+                            @if (isAdmin()) {
+                            <span class="dropdown-role">Administrador</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    @if (isAdmin()) {
+                    <button class="dropdown-item" role="menuitem" type="button" (click)="goToAdmin()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M12 2a10 10 0 1 0 10 10" />
+                            <path d="M12 8v4l3 3" />
+                            <circle cx="18" cy="8" r="3" />
+                        </svg>
+                        Panel de administración
+                    </button>
+                    <div class="dropdown-divider"></div>
+                    }
+                    <button class="dropdown-item" role="menuitem" type="button" (click)="logout()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                        Cerrar sesión
+                    </button>
+                </div>
+                }
+            </div>
+            }
         </div>
     </div>
 </header>

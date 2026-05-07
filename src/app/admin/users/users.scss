@@ -1,0 +1,410 @@
+.page {
+    min-height: 100vh;
+}
+
+.users-main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ── Page header ── */
+
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.page-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+}
+
+.page-subtitle {
+    font-size: 0.95rem;
+    margin: 0;
+    opacity: 0.7;
+}
+
+/* ── Buttons ── */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+
+.btn--primary {
+    background: #6366f1;
+    color: #fff;
+
+    &:hover {
+        background: #4f46e5;
+    }
+}
+
+.btn--ghost {
+    background: transparent;
+    color: inherit;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+
+    &:hover {
+        background: rgba(128, 128, 128, 0.08);
+    }
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+    color: inherit;
+    opacity: 0.7;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    &.btn-text--danger {
+        color: #ef4444;
+        opacity: 1;
+    }
+}
+
+/* ── Toolbar ── */
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    flex-wrap: wrap;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-input-wrap {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.7rem;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.5rem 2.2rem 0.5rem 2.2rem;
+    border-radius: 8px;
+    border: 1px solid rgba(128, 128, 128, 0.25);
+    background: transparent;
+    font-size: 0.875rem;
+    color: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+
+    &::placeholder {
+        opacity: 0.45;
+    }
+
+    &:focus {
+        border-color: #6366f1;
+    }
+}
+
+.search-clear {
+    position: absolute;
+    right: 0.6rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.45;
+    display: flex;
+    padding: 0.15rem;
+
+    &:hover {
+        opacity: 0.9;
+    }
+}
+
+.users-count {
+    font-size: 0.82rem;
+    opacity: 0.5;
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+/* ── Section ── */
+
+.section {
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+/* ── Table ── */
+
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(128, 128, 128, 0.15);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    th,
+    td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+    }
+
+    th {
+        font-weight: 600;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.5;
+        background: rgba(128, 128, 128, 0.04);
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    tbody tr:hover {
+        background: rgba(128, 128, 128, 0.04);
+    }
+
+    tbody tr.row--current {
+        background: rgba(99, 102, 241, 0.05);
+    }
+}
+
+.col-actions {
+    width: 120px;
+    text-align: right !important;
+}
+
+/* ── User cell ── */
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0.05em;
+}
+
+.user-name {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.you-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+    background: #6366f120;
+    color: #6366f1;
+    letter-spacing: 0.03em;
+}
+
+.td-id {
+    font-size: 0.78rem;
+    opacity: 0.45;
+    font-family: monospace;
+}
+
+.td-email {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── Role select ── */
+
+.role-select {
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid rgba(128, 128, 128, 0.25);
+    background: transparent;
+    color: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s;
+
+    &:focus {
+        outline: 2px solid #6366f1;
+        outline-offset: 1px;
+    }
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    &.role-select--admin {
+        border-color: #8b5cf640;
+        color: #8b5cf6;
+        background: #8b5cf610;
+    }
+}
+
+/* ── Action buttons ── */
+
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.12s;
+    background: transparent;
+    color: inherit;
+
+    &:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
+    &.btn-icon--delete {
+        color: #ef4444;
+
+        &:hover:not(:disabled) {
+            background: #ef444420;
+        }
+    }
+}
+
+.confirm-delete {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    justify-content: flex-end;
+}
+
+.confirm-label {
+    font-size: 0.8rem;
+    opacity: 0.65;
+}
+
+/* ── States ── */
+
+.loading-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.skeleton-row {
+    height: 46px;
+    border-radius: 8px;
+    background: linear-gradient(90deg,
+            rgba(128, 128, 128, 0.08) 25%,
+            rgba(128, 128, 128, 0.15) 50%,
+            rgba(128, 128, 128, 0.08) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.state-message {
+    padding: 1.5rem;
+    text-align: center;
+    opacity: 0.6;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    &.state-message--error {
+        color: #ef4444;
+        opacity: 1;
+    }
+}
+
+.inline-error {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: #ef4444;
+    font-weight: 500;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}

@@ -1,10 +1,11 @@
 import { Component, EnvironmentInjector, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ThemeService } from './core/theme.service';
+import { ThemeService } from './core/services/theme.service';
+import { ThemeToggle } from './components/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ThemeToggle],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

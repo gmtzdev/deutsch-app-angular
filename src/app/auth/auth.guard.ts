@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from './auth.service';
+import { AuthService } from '../core/services/auth.service';
 
 /**
  * Protects routes that require authentication.
@@ -27,6 +27,18 @@ export const publicOnlyGuard: CanActivateFn = () => {
     const router = inject(Router);
 
     if (!auth.isAuthenticated()) return true;
+
+    return router.createUrlTree(['/dashboard']);
+};
+
+/**
+ * Protects admin-only routes. Redirects to /dashboard if the user is not an admin.
+ */
+export const adminGuard: CanActivateFn = () => {
+    const auth = inject(AuthService);
+    const router = inject(Router);
+
+    if (auth.isAuthenticated() && auth.currentUser()?.role === 'admin') return true;
 
     return router.createUrlTree(['/dashboard']);
 };

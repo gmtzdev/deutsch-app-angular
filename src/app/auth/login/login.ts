@@ -14,10 +14,11 @@ import {
     AbstractControl,
     ValidationErrors,
 } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { AuthService } from '../auth.service';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
+import { LoginResponse } from '../../core/dto/auth/login-res.dto';
 
 
 function passwordStrengthValidator(
@@ -35,7 +36,7 @@ function passwordStrengthValidator(
 
 @Component({
     selector: 'app-login',
-    imports: [ReactiveFormsModule, InputText, Password],
+    imports: [ReactiveFormsModule, InputText, Password, RouterLink],
     templateUrl: './login.html',
     styleUrl: './login.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,6 +52,7 @@ export class Login implements OnDestroy {
     readonly isLoading = signal(false);
     readonly errorMessage = signal<string | null>(null);
     readonly lockoutRemaining = signal(0);
+    readonly errorLogin = signal(false);
 
     readonly isLocked = computed(() => this.authService.isLocked());
     readonly remainingAttempts = computed(() => this.authService.remainingAttempts());
@@ -95,22 +97,28 @@ export class Login implements OnDestroy {
         const { email, password } = this.form.getRawValue();
 
         try {
-            const result = await this.authService.login(email, password);
+            this.authService.login(email, password).subscribe({
+                next: async (result: LoginResponse) => {
+                    if (result.success) {
+                        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/dashboard';
+                        // Prevent open redirect: only allow same-origin relative paths
+                        const safeUrl = returnUrl.startsWith('/') && !returnUrl.startsWith('//')
+                            ? returnUrl : '/dashboard';
+                        await this.router.navigateByUrl(safeUrl);
+                    } else {
+                        this.errorMessage.set(result.error ?? 'Error de autenticación.');
+                        // Clear password field on every failure to prevent accidental exposure
+                        this.form.controls.password.reset();
+                        this.errorLogin.set(true);
+                    }
+                },
+                error: (err) => {
+                    this.errorMessage.set('Error de conexión. Inténtalo de nuevo más tarde.');
+                    this.isLoading.set(false);
+                }
+            })
 
-            if (result.success) {
-                const returnUrl =
-                    this.route.snapshot.queryParamMap.get('returnUrl') ?? '/dashboard';
-                // Prevent open redirect: only allow same-origin relative paths
-                const safeUrl =
-                    returnUrl.startsWith('/') && !returnUrl.startsWith('//')
-                        ? returnUrl
-                        : '/dashboard';
-                await this.router.navigateByUrl(safeUrl);
-            } else {
-                this.errorMessage.set(result.error ?? 'Error de autenticación.');
-                // Clear password field on every failure to prevent accidental exposure
-                this.form.controls.password.reset();
-            }
+
         } finally {
             this.isLoading.set(false);
         }

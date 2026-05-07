@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, publicOnlyGuard } from './auth/auth.guard';
+import { authGuard, adminGuard, publicOnlyGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
     {
@@ -14,17 +14,35 @@ export const routes: Routes = [
         title: 'Iniciar sesión — DeutschApp',
     },
     {
+        path: 'register',
+        loadComponent: () => import('./auth/register/register').then((m) => m.Register),
+        canActivate: [publicOnlyGuard],
+        title: 'Crear cuenta — DeutschApp',
+    },
+    {
+        path: 'admin',
+        loadComponent: () => import('./admin/admin').then((m) => m.Admin),
+        canActivate: [adminGuard],
+        title: 'Administración — DeutschApp',
+    },
+    {
+        path: 'admin/users',
+        loadComponent: () => import('./admin/users/users').then((m) => m.AdminUsers),
+        canActivate: [adminGuard],
+        title: 'Usuarios — DeutschApp',
+    },
+    {
         path: 'dashboard',
         loadComponent: () =>
             import('./dashboard/dashboard').then((m) => m.Dashboard),
-        // canActivate: [authGuard],
+        canActivate: [authGuard],
         title: 'Dashboard — DeutschApp',
     },
     {
         path: 'levels/:levelId',
         loadComponent: () =>
             import('./levels/level-shell/level-shell').then((m) => m.LevelShell),
-        // canActivate: [authGuard],
+        canActivate: [authGuard],
         title: 'Nivel — DeutschApp',
         children: [
             {
