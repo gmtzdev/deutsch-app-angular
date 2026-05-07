@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthUser } from '../dto/auth/login-res.dto';
 import { Observable } from 'rxjs';
 import { User } from '../models/user/User.model';
+import { CreateUserDto } from '../dto/user/create-user.dto';
 
 
 
@@ -25,6 +26,10 @@ export class UserService {
 
     getUsers(): Observable<User[]> {
         return this.http.get<User[]>(`${this.url}/users`);
+    }
+
+    createUser(dto: CreateUserDto): Observable<User> {
+        return this.http.post<User>(`${this.url}/users`, dto);
     }
 
     updateUserRole(userId: number, role: string): Observable<User> {
