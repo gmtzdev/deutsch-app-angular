@@ -132,7 +132,8 @@
                             }
 
                             <!-- New subtopic inline form -->
-                            <app-create-subtopic-form [topic]="topic"></app-create-subtopic-form>
+                            <app-create-subtopic-form [topic]="topic"
+                                (saved)="includeSubtopic($event)"></app-create-subtopic-form>
                         </ul>
 
                     </li>

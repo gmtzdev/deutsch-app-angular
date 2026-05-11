@@ -246,4 +246,19 @@ export class LevelShell {
         }
     }
 
+
+    protected includeSubtopic(subtopic: Subtopic): void {
+        this.levelResource.value.update((level) => {
+            if (!level) return level;
+            return {
+                ...level,
+                topics: level.topics.map((t) =>
+                    t.id === subtopic.topic.id
+                        ? { ...t, subtopics: [...t.subtopics, subtopic as any] }
+                        : t
+                ),
+            };
+        });
+    }
+
 }
