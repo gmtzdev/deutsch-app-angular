@@ -35,12 +35,17 @@ import { QuizQuestion } from '../../../core/models/elements/quiz-question.model'
 import { LessonImage } from '../elements/lesson-image';
 import { ImageBlock } from '../../../core/models/elements/image-block.model';
 import { LessonDragDrop } from '../elements/lesson-drag-drop';
+import { LessonAlphabet } from '../elements/lesson-alphabet';
+import { AlphabetBlock } from '../../../core/models/elements/alphabet-block.model';
+import { LessonPronunciation } from '../elements/lesson-pronunciation';
+import { PronunciationBlock } from '../../../core/models/elements/pronunciation-block.model';
+import { PronunciationItem } from '../../../core/models/elements/pronunciation-item.model';
 import { DragDropExercise } from '../../../core/models/elements/drag-drop-exercise.model';
 import { DragDropRow } from '../../../core/models/elements/drag-drop-row.model';
 import { CurriculumService } from '../../../core/services/curriculum.service';
 import { environment } from '../../../../environments/environment';
 
-type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop';
+type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'alphabet' | 'pronunciation';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
 type TagColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'gray';
 
@@ -78,6 +83,8 @@ const BLOCK_OPTIONS: BlockOption[] = [
     { type: 'quiz', label: 'Quiz', icon: '❓', description: 'Preguntas de comprensión' },
     { type: 'image', label: 'Imagen', icon: '🖼', description: 'Imagen desde una URL' },
     { type: 'dragDrop', label: 'Arrastrar y soltar', icon: '🎯', description: 'Completar espacios arrastrando palabras' },
+    { type: 'alphabet', label: 'Alfabeto alemán', icon: '🔤', description: 'Cuadrícula interactiva del alfabeto alemán con pronunciación' },
+    { type: 'pronunciation', label: 'Pronunciación', icon: '🔊', description: 'Cuadrícula de textos reproducibles con voz alemana' },
 ];
 
 const TIP_COLOR_OPTIONS: TipColorOption[] = [
@@ -100,7 +107,7 @@ const TAG_COLOR_OPTIONS: TagColorOption[] = [
     selector: 'app-lesson-editor',
     templateUrl: './lesson-editor.html',
     styleUrl: './lesson-editor.scss',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LessonEditor {
@@ -149,6 +156,9 @@ export class LessonEditor {
     // ── Drag-drop signals ─────────────────────────────────────
     protected readonly dragDropWords = signal<string[]>(['']);
     protected readonly dragDropRows = signal<DragDropRow[]>([{ id: 1, before: '', after: '', answer: '' }]);
+
+    // ── Pronunciation signals ─────────────────────────────────
+    protected readonly pronunciationItems = signal<PronunciationItem[]>([{ id: 1, text: '', label: '' }]);
 
     protected readonly tipColorOptions = TIP_COLOR_OPTIONS;
     protected readonly tagColorOptions = TAG_COLOR_OPTIONS;
@@ -213,6 +223,7 @@ export class LessonEditor {
         this.imageUploading.set(false);
         this.dragDropWords.set(['']);
         this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
+        this.pronunciationItems.set([{ id: 1, text: '', label: '' }]);
         this.editingIndex.set(null);
     }
 
@@ -245,6 +256,7 @@ export class LessonEditor {
         this.imageUploading.set(false);
         this.dragDropWords.set(['']);
         this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
+        this.pronunciationItems.set([{ id: 1, text: '', label: '' }]);
         this.editingIndex.set(null);
     }
 
@@ -287,6 +299,9 @@ export class LessonEditor {
             const ex = element as DragDropExercise;
             this.dragDropWords.set([...ex.words]);
             this.dragDropRows.set(ex.rows.map((r) => ({ ...r })));
+        } else if (type === 'pronunciation') {
+            const pb = element as PronunciationBlock;
+            this.pronunciationItems.set(pb.items.map((i) => ({ ...i })));
         } else {
             this.inputText.set(element.text);
         }
@@ -467,6 +482,28 @@ export class LessonEditor {
         this.dragDropRows.update((rows) => rows.filter((_, i) => i !== index));
     }
 
+    // ── Pronunciation management ──────────────────────────────
+
+    protected setPronunciationField(index: number, field: keyof PronunciationItem, value: string): void {
+        this.pronunciationItems.update((items) => {
+            const next = [...items];
+            next[index] = { ...next[index], [field]: value };
+            return next;
+        });
+    }
+
+    protected addPronunciationItem(): void {
+        this.pronunciationItems.update((items) => [
+            ...items,
+            { id: items.length + 1, text: '', label: '' },
+        ]);
+    }
+
+    protected removePronunciationItem(index: number): void {
+        if (this.pronunciationItems().length <= 1) return;
+        this.pronunciationItems.update((items) => items.filter((_, i) => i !== index));
+    }
+
     // ── Image file upload ─────────────────────────────────────
 
     protected onImageFileSelected(event: Event): void {
@@ -618,6 +655,31 @@ export class LessonEditor {
                 delete: false,
                 words,
                 rows,
+            });
+        } else if (type === 'alphabet') {
+            draft = new AlphabetBlock({
+                id: -Date.now(),
+                text: '',
+                style: '',
+                type: 'alphabet',
+                order: 0,
+                lesson: null!,
+                delete: false,
+            });
+        } else if (type === 'pronunciation') {
+            const items = this.pronunciationItems()
+                .filter((i) => i.text.trim())
+                .map((i, idx) => ({ id: idx + 1, text: i.text.trim(), label: i.label.trim() }));
+            if (!items.length) return;
+            draft = new PronunciationBlock({
+                id: -Date.now(),
+                text: '',
+                style: '',
+                type: 'pronunciation',
+                order: 0,
+                lesson: null!,
+                delete: false,
+                items,
             });
         } else {
             const text = this.inputText().trim();

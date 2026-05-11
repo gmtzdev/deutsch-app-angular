@@ -342,6 +342,13 @@
     gap: 6px;
 }
 
+.pronunciation-item-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: center;
+    gap: 6px;
+}
+
 .list-bullet {
     font-size: 18px;
     color: var(--color-indications, #9b9a97);
@@ -372,6 +379,11 @@
 
     &::placeholder {
         color: var(--color-indications, #9b9a97);
+    }
+
+    &--secondary {
+        font-style: italic;
+        opacity: 0.85;
     }
 }
 
