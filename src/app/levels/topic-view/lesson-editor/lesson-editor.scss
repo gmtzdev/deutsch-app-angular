@@ -349,6 +349,132 @@
     gap: 6px;
 }
 
+// ── Grid badge (pending element) ──────────────────────────────
+.pending-element {
+    &__grid-badge {
+        align-self: flex-start;
+        font-size: 10px;
+        font-weight: 600;
+        color: #4a90d9;
+        background: rgba(74, 144, 217, 0.1);
+        border-radius: 4px;
+        padding: 1px 6px;
+        margin-top: 2px;
+        letter-spacing: 0.02em;
+    }
+}
+
+// ── Grid form (in editor panel) ───────────────────────────────
+.grid-form {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 10px 0 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &__toggle {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--color-text, #37352f);
+        cursor: pointer;
+        user-select: none;
+
+        input[type='checkbox'] {
+            accent-color: #4a90d9;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-left: 21px; // indent under checkbox
+    }
+
+    &__cols {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    &__cols-label {
+        font-size: 11.5px;
+        color: var(--color-indications, #9b9a97);
+        font-weight: 500;
+        min-width: 56px;
+    }
+
+    &__col-btn {
+        background: none;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-radius: 5px;
+        padding: 3px 11px;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--color-text, #37352f);
+        cursor: pointer;
+        transition: border-color 0.12s, background 0.12s, color 0.12s;
+
+        &:hover {
+            border-color: #4a90d9;
+            background: rgba(74, 144, 217, 0.06);
+        }
+
+        &--active {
+            border-color: #4a90d9;
+            background: rgba(74, 144, 217, 0.12);
+            color: #4a90d9;
+        }
+
+        &:focus-visible {
+            outline: 2px solid #4a90d9;
+            outline-offset: 2px;
+        }
+    }
+
+    &__existing {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    &__join-btn {
+        background: none;
+        border: 1px dashed rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+        padding: 3px 11px;
+        font-size: 11.5px;
+        color: var(--color-indications, #9b9a97);
+        cursor: pointer;
+        transition: border-color 0.12s, background 0.12s, color 0.12s;
+
+        &:hover {
+            border-color: #4a90d9;
+            color: #4a90d9;
+        }
+
+        &--active {
+            border-color: #4a90d9;
+            border-style: solid;
+            color: #4a90d9;
+            background: rgba(74, 144, 217, 0.08);
+        }
+
+        &:focus-visible {
+            outline: 2px solid #4a90d9;
+            outline-offset: 2px;
+        }
+    }
+}
+
 .list-bullet {
     font-size: 18px;
     color: var(--color-indications, #9b9a97);

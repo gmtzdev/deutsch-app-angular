@@ -12,6 +12,39 @@ import { CurriculumService } from '../../core/services/curriculum.service';
 import { TopicWithSubtopics } from '../../core/models/topic.model';
 import { SubtopicWithLessons } from '../../core/models/subtopic.models';
 import { ElementTypeObj } from '../../core/types';
+
+interface SingleGroup {
+    kind: 'single';
+    element: ElementTypeObj;
+}
+
+interface GridGroup {
+    kind: 'grid';
+    gridId: string;
+    gridCols: number;
+    elements: ElementTypeObj[];
+}
+
+type ElementGroup = SingleGroup | GridGroup;
+
+function groupElements(elements: ElementTypeObj[]): ElementGroup[] {
+    const groups: ElementGroup[] = [];
+    const gridMap = new Map<string, number>();
+    for (const el of elements) {
+        if (!el.gridId) {
+            groups.push({ kind: 'single', element: el });
+        } else {
+            const idx = gridMap.get(el.gridId);
+            if (idx !== undefined) {
+                (groups[idx] as GridGroup).elements.push(el);
+            } else {
+                gridMap.set(el.gridId, groups.length);
+                groups.push({ kind: 'grid', gridId: el.gridId, gridCols: el.gridCols ?? 2, elements: [el] });
+            }
+        }
+    }
+    return groups;
+}
 import { UnorderedList } from '../../core/models/elements/unorderedlist.model';
 import { Table } from '../../core/models/elements/table.model';
 import { Tip } from '../../core/models/elements/tip.model';
@@ -49,6 +82,10 @@ export class TopicView {
     protected readonly pendingElements = signal<ElementTypeObj[]>([]);
     protected readonly confirming = signal(false);
     protected readonly hasPending = computed(() => this.pendingElements().length > 0);
+
+    protected readonly groupedElements = computed(() =>
+        groupElements(this.subtopicResource.value()?.lesson?.elements ?? [])
+    );
 
     protected enableEditMode(): void {
         this.editMode.set(!this.editMode())

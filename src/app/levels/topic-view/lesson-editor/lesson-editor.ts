@@ -159,7 +159,22 @@ export class LessonEditor {
 
     // ── Pronunciation signals ─────────────────────────────────
     protected readonly pronunciationItems = signal<PronunciationItem[]>([{ id: 1, text: '', label: '' }]);
+    // ── Grid signals ───────────────────────────────────────────────
+    protected readonly gridEnabled = signal(false);
+    protected readonly activeGridCols = signal(2);
+    /** null = crear nuevo grid al guardar; string = unirse a grid existente */
+    protected readonly activeGridId = signal<string | null>(null);
 
+    protected readonly existingGrids = computed(() => {
+        const seen = new Map<string, { cols: number; num: number }>();
+        let counter = 1;
+        for (const el of this.pendingElements()) {
+            if (el.gridId && !seen.has(el.gridId)) {
+                seen.set(el.gridId, { cols: el.gridCols ?? 2, num: counter++ });
+            }
+        }
+        return [...seen.entries()].map(([id, { cols, num }]) => ({ id, cols, num }));
+    });
     protected readonly tipColorOptions = TIP_COLOR_OPTIONS;
     protected readonly tagColorOptions = TAG_COLOR_OPTIONS;
 
@@ -224,6 +239,9 @@ export class LessonEditor {
         this.dragDropWords.set(['']);
         this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
         this.pronunciationItems.set([{ id: 1, text: '', label: '' }]);
+        this.gridEnabled.set(false);
+        this.activeGridCols.set(2);
+        this.activeGridId.set(null);
         this.editingIndex.set(null);
     }
 
@@ -257,6 +275,9 @@ export class LessonEditor {
         this.dragDropWords.set(['']);
         this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
         this.pronunciationItems.set([{ id: 1, text: '', label: '' }]);
+        this.gridEnabled.set(false);
+        this.activeGridCols.set(2);
+        this.activeGridId.set(null);
         this.editingIndex.set(null);
     }
 
@@ -304,8 +325,10 @@ export class LessonEditor {
             this.pronunciationItems.set(pb.items.map((i) => ({ ...i })));
         } else {
             this.inputText.set(element.text);
-        }
-    }
+        }        // restore grid state
+        this.gridEnabled.set(!!element.gridId);
+        this.activeGridId.set(element.gridId ?? null);
+        this.activeGridCols.set((element.gridCols ?? 1) > 1 ? (element.gridCols ?? 2) : 2);    }
 
     // ── List item management ──────────────────────────────────
 
@@ -502,6 +525,20 @@ export class LessonEditor {
     protected removePronunciationItem(index: number): void {
         if (this.pronunciationItems().length <= 1) return;
         this.pronunciationItems.update((items) => items.filter((_, i) => i !== index));
+    }
+
+    // ── Grid helpers ──────────────────────────────────────────
+
+    /** Selecciona columnas para un nuevo grid (limpia cualquier grid existente seleccionado). */
+    protected setNewGrid(cols: number): void {
+        this.activeGridCols.set(cols);
+        this.activeGridId.set(null);
+    }
+
+    /** Elige unirse a un grid existente con el id y número de columnas dados. */
+    protected joinGrid(id: string, cols: number): void {
+        this.activeGridId.set(id);
+        this.activeGridCols.set(cols);
     }
 
     // ── Image file upload ─────────────────────────────────────
@@ -740,6 +777,15 @@ export class LessonEditor {
         }
 
         const idx = this.editingIndex();
+        // Apply grid settings to the draft element
+        if (this.gridEnabled()) {
+            const gId = this.activeGridId() ?? `grid_${Date.now()}`;
+            draft!.gridId = gId;
+            draft!.gridCols = this.activeGridCols();
+        } else {
+            draft!.gridId = null;
+            draft!.gridCols = 1;
+        }
         if (idx !== null) {
             this.elementEdited.emit({ index: idx, element: draft });
         } else {

@@ -10,4 +10,6 @@ export interface CreateElementDto {
     order: number;
     lesson: Lesson;
     delete: boolean;
+    gridId?: string | null;
+    gridCols?: number;
 }

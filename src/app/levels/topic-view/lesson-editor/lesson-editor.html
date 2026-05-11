@@ -35,6 +35,11 @@
                 @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="element" /> }
                 @default { <app-lesson-paragraph [element]="element" /> }
                 }
+                @if (element.gridId) {
+                <div class="pending-element__grid-badge" aria-label="En cuadrícula de {{ element.gridCols }} columnas">
+                    ⊞ {{ element.gridCols }}col
+                </div>
+                }
                 <div class="pending-element__actions">
                     <span class="pending-element__drag-handle" aria-hidden="true"
                         title="Arrastrar para reordenar">↕</span>
@@ -437,6 +442,44 @@
                 [value]="inputText()" (input)="inputText.set($any($event.target).value)"
                 aria-label="Contenido del bloque" required />
             }
+
+            <!-- ── Grid layout ──────────────────────────────────── -->
+            <div class="grid-form" role="group" aria-label="Disposición en cuadrícula">
+                <label class="grid-form__toggle">
+                    <input type="checkbox" [checked]="gridEnabled()"
+                        (change)="gridEnabled.set($any($event.target).checked)"
+                        aria-label="Agregar a cuadrícula" />
+                    Colocar en cuadrícula
+                </label>
+                @if (gridEnabled()) {
+                <div class="grid-form__body">
+                    <div class="grid-form__cols" role="group" aria-label="Número de columnas">
+                        <span class="grid-form__cols-label">Columnas:</span>
+                        @for (n of [2, 3, 4, 5]; track n) {
+                        <button type="button" class="grid-form__col-btn"
+                            [class.grid-form__col-btn--active]="activeGridCols() === n && activeGridId() === null"
+                            (click)="setNewGrid(n)"
+                            [attr.aria-pressed]="activeGridCols() === n && activeGridId() === null"
+                            [attr.aria-label]="n + ' columnas, nuevo grid'">{{ n }}</button>
+                        }
+                    </div>
+                    @if (existingGrids().length > 0) {
+                    <div class="grid-form__existing" role="group" aria-label="Unirse a cuadrícula existente">
+                        <span class="grid-form__cols-label">Unirse a:</span>
+                        @for (grid of existingGrids(); track grid.id) {
+                        <button type="button" class="grid-form__join-btn"
+                            [class.grid-form__join-btn--active]="activeGridId() === grid.id"
+                            (click)="joinGrid(grid.id, grid.cols)"
+                            [attr.aria-pressed]="activeGridId() === grid.id"
+                            [attr.aria-label]="'Cuadrícula ' + grid.num + ' de ' + grid.cols + ' columnas'">
+                            Grid {{ grid.num }} · {{ grid.cols }}col
+                        </button>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+            </div>
 
             <div class="editor-panel__footer">
                 <button type="button" class="cancel-btn" (click)="closePicker()">Cancelar</button>
