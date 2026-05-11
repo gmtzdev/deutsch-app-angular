@@ -100,6 +100,14 @@
             <app-lesson-drag-drop [element]="element" />
             }
 
+            @case ('alphabetBlock') {
+            <app-lesson-alphabet />
+            }
+
+            @case ('pronunciationBlock') {
+            <app-lesson-pronunciation [element]="element" />
+            }
+
             @default {
             <!-- 'element' and 'listItem' at top level render as plain paragraph -->
             <app-lesson-paragraph [element]="element" />

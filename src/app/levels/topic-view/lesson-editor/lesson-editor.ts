@@ -45,7 +45,7 @@ import { DragDropRow } from '../../../core/models/elements/drag-drop-row.model';
 import { CurriculumService } from '../../../core/services/curriculum.service';
 import { environment } from '../../../../environments/environment';
 
-type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'alphabet' | 'pronunciation';
+type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'alphabetBlock' | 'pronunciationBlock';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
 type TagColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'gray';
 
@@ -83,8 +83,8 @@ const BLOCK_OPTIONS: BlockOption[] = [
     { type: 'quiz', label: 'Quiz', icon: '❓', description: 'Preguntas de comprensión' },
     { type: 'image', label: 'Imagen', icon: '🖼', description: 'Imagen desde una URL' },
     { type: 'dragDrop', label: 'Arrastrar y soltar', icon: '🎯', description: 'Completar espacios arrastrando palabras' },
-    { type: 'alphabet', label: 'Alfabeto alemán', icon: '🔤', description: 'Cuadrícula interactiva del alfabeto alemán con pronunciación' },
-    { type: 'pronunciation', label: 'Pronunciación', icon: '🔊', description: 'Cuadrícula de textos reproducibles con voz alemana' },
+    { type: 'alphabetBlock', label: 'Alfabeto alemán', icon: '🔤', description: 'Cuadrícula interactiva del alfabeto alemán con pronunciación' },
+    { type: 'pronunciationBlock', label: 'Pronunciación', icon: '🔊', description: 'Cuadrícula de textos reproducibles con voz alemana' },
 ];
 
 const TIP_COLOR_OPTIONS: TipColorOption[] = [
@@ -299,7 +299,7 @@ export class LessonEditor {
             const ex = element as DragDropExercise;
             this.dragDropWords.set([...ex.words]);
             this.dragDropRows.set(ex.rows.map((r) => ({ ...r })));
-        } else if (type === 'pronunciation') {
+        } else if (type === 'pronunciationBlock') {
             const pb = element as PronunciationBlock;
             this.pronunciationItems.set(pb.items.map((i) => ({ ...i })));
         } else {
@@ -656,17 +656,17 @@ export class LessonEditor {
                 words,
                 rows,
             });
-        } else if (type === 'alphabet') {
+        } else if (type === 'alphabetBlock') {
             draft = new AlphabetBlock({
                 id: -Date.now(),
                 text: '',
                 style: '',
-                type: 'alphabet',
+                type: 'alphabetBlock',
                 order: 0,
                 lesson: null!,
                 delete: false,
             });
-        } else if (type === 'pronunciation') {
+        } else if (type === 'pronunciationBlock') {
             const items = this.pronunciationItems()
                 .filter((i) => i.text.trim())
                 .map((i, idx) => ({ id: idx + 1, text: i.text.trim(), label: i.label.trim() }));
@@ -675,7 +675,7 @@ export class LessonEditor {
                 id: -Date.now(),
                 text: '',
                 style: '',
-                type: 'pronunciation',
+                type: 'pronunciationBlock',
                 order: 0,
                 lesson: null!,
                 delete: false,

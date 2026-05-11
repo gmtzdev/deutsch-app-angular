@@ -23,6 +23,8 @@ import { Quiz } from '../models/elements/quiz.model';
 import { CreateDragDropDto } from '../dto/elements/dto/drag-drop/create-drag-drop.dto';
 import { DragDropExercise } from '../models/elements/drag-drop-exercise.model';
 import { environment } from '../../../environments/environment';
+import { CreatePronunciationBlockDto } from '../dto/elements/dto/pronunciation/create-pronunciation-block.dto';
+import { PronunciationBlock } from '../models/elements/pronunciation-block.model';
 
 const API_BASE = environment.apiUrl;
 
@@ -255,6 +257,19 @@ export class CurriculumService {
                         words: auxd.words,
                         rows: auxd.rows,
                     } as CreateDragDropDto)
+                    break;
+                case 'pronunciationBlock':
+                    const auxp = el as PronunciationBlock;
+                    elements.push({
+                        id: auxp.id,
+                        text: auxp.text,
+                        style: auxp.style,
+                        type: auxp.type,
+                        order,
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: auxp.delete,
+                        items: auxp.items,
+                    } as CreatePronunciationBlockDto)
                     break;
                 default:
                     console.warn(`Element type ${el.type} is not supported for creation yet.`);

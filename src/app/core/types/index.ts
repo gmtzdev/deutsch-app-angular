@@ -20,7 +20,7 @@ import { DragDropExercise } from "../models/elements/drag-drop-exercise.model";
 
 export type LessonElementDto = CreateElementDto | CreateTitleDto | CreateSubtitleDto | CreateListItemDto | CreateUnorderedListDto;
 
-export type ElementType = 'element' | 'title' | 'subtitle' | 'listItem' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'alphabet' | 'pronunciation';
+export type ElementType = 'element' | 'title' | 'subtitle' | 'listItem' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'pronunciationBlock' | 'alphabetBlock';
 export type ElementTypeObj = Element | Title | Subtitle | ListItem | UnorderedList | Table | Tip | Tag | Conjugation | Quiz | ImageBlock | DragDropExercise | AlphabetBlock | PronunciationBlock;
 
-export const elementTypes: ElementType[] = ['element', 'title', 'subtitle', 'listItem', 'unorderedList', 'table', 'tip', 'tag', 'conjugation', 'quiz', 'image', 'dragDrop', 'alphabet', 'pronunciation'];
+export const elementTypes: ElementType[] = ['element', 'title', 'subtitle', 'listItem', 'unorderedList', 'table', 'tip', 'tag', 'conjugation', 'quiz', 'image', 'dragDrop', 'alphabetBlock', 'pronunciationBlock'];

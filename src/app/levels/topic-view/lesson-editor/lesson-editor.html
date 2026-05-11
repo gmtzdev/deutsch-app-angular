@@ -31,8 +31,8 @@
                 @case ('quiz') { <app-lesson-quiz [element]="element" /> }
                 @case ('image') { <app-lesson-image [element]="element" /> }
                 @case ('dragDrop') { <app-lesson-drag-drop [element]="element" /> }
-                @case ('alphabet') { <app-lesson-alphabet /> }
-                @case ('pronunciation') { <app-lesson-pronunciation [element]="element" /> }
+                @case ('alphabetBlock') { <app-lesson-alphabet /> }
+                @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="element" /> }
                 @default { <app-lesson-paragraph [element]="element" /> }
                 }
                 <div class="pending-element__actions">
@@ -403,12 +403,12 @@
                 <button type="button" class="add-item-btn" (click)="addDragDropRow()">+ Añadir ejercicio</button>
             </div>
 
-            } @else if (activeType() === 'alphabet') {
+            } @else if (activeType() === 'alphabetBlock') {
             <!-- Alphabet block — no configuration needed -->
             <p class="editor-panel__hint">Este bloque muestra la cuadrícula interactiva del alfabeto alemán con
                 pronunciación. No requiere configuración.</p>
 
-            } @else if (activeType() === 'pronunciation') {
+            } @else if (activeType() === 'pronunciationBlock') {
             <!-- Pronunciation items editor -->
             <div class="list-items-wrapper" role="group" aria-label="Ítems de pronunciación">
                 @for (item of pronunciationItems(); track $index; let idx = $index) {
