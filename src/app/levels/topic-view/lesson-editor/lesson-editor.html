@@ -447,8 +447,7 @@
             <div class="grid-form" role="group" aria-label="Disposición en cuadrícula">
                 <label class="grid-form__toggle">
                     <input type="checkbox" [checked]="gridEnabled()"
-                        (change)="gridEnabled.set($any($event.target).checked)"
-                        aria-label="Agregar a cuadrícula" />
+                        (change)="gridEnabled.set($any($event.target).checked)" aria-label="Agregar a cuadrícula" />
                     Colocar en cuadrícula
                 </label>
                 @if (gridEnabled()) {
@@ -469,8 +468,7 @@
                         @for (grid of existingGrids(); track grid.id) {
                         <button type="button" class="grid-form__join-btn"
                             [class.grid-form__join-btn--active]="activeGridId() === grid.id"
-                            (click)="joinGrid(grid.id, grid.cols)"
-                            [attr.aria-pressed]="activeGridId() === grid.id"
+                            (click)="joinGrid(grid.id, grid.cols)" [attr.aria-pressed]="activeGridId() === grid.id"
                             [attr.aria-label]="'Cuadrícula ' + grid.num + ' de ' + grid.cols + ' columnas'">
                             Grid {{ grid.num }} · {{ grid.cols }}col
                         </button>

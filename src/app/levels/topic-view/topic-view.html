@@ -60,7 +60,8 @@
             @for (group of groupedElements(); track group.kind === 'grid' ? group.gridId : group.element.id) {
 
             @if (group.kind === 'grid') {
-            <div class="lesson-grid" [style.--cols]="group.gridCols" role="group" [attr.aria-label]="'Cuadrícula de ' + group.gridCols + ' columnas'">
+            <div class="lesson-grid" [style.--cols]="group.gridCols" role="group"
+                [attr.aria-label]="'Cuadrícula de ' + group.gridCols + ' columnas'">
                 @for (element of group.elements; track element.id) {
                 <div class="lesson-grid__cell">
                     @switch (element.type) {

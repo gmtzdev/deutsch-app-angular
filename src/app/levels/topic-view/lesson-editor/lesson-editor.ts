@@ -328,7 +328,8 @@ export class LessonEditor {
         }        // restore grid state
         this.gridEnabled.set(!!element.gridId);
         this.activeGridId.set(element.gridId ?? null);
-        this.activeGridCols.set((element.gridCols ?? 1) > 1 ? (element.gridCols ?? 2) : 2);    }
+        this.activeGridCols.set((element.gridCols ?? 1) > 1 ? (element.gridCols ?? 2) : 2);
+    }
 
     // ── List item management ──────────────────────────────────
 
