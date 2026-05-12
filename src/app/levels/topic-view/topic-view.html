@@ -57,57 +57,50 @@
         <!-- ── Lesson elements ─────────────────────────────────── -->
         @if (subtopic.lesson.elements && !editMode()) {
         <div class="lesson-elements">
-            @for (element of subtopic.lesson.elements; track element.id) {
-            @switch (element.type) {
+            @for (group of groupedElements(); track group.kind === 'grid' ? group.gridId : group.element.id) {
 
-            @case ('title') {
-            <app-lesson-title [element]="element" />
-            }
-
-            @case ('subtitle') {
-            <app-lesson-subtitle [element]="element" />
-            }
-
-            @case ('unorderedList') {
-            <app-lesson-unordered-list [element]="element" />
-            }
-
-            @case ('table') {
-            <app-lesson-table [element]="element" />
-            }
-
-            @case ('tip') {
-            <app-lesson-tip [element]="element" />
-            }
-
-            @case ('tag') {
-            <app-lesson-tag [element]="element" />
-            }
-
-            @case ('conjugation') {
-            <app-lesson-conjugation [element]="element" />
-            }
-
-            @case ('quiz') {
-            <app-lesson-quiz [element]="element" />
-            }
-
-            @case ('image') {
-            <app-lesson-image [element]="element" />
-            }
-
-            @case ('dragDrop') {
-            <app-lesson-drag-drop [element]="element" />
-            }
-
-            @default {
-            <!-- 'element' and 'listItem' at top level render as plain paragraph -->
-            <app-lesson-paragraph [element]="element" />
-            }
-
+            @if (group.kind === 'grid') {
+            <div class="lesson-grid" [style.--cols]="group.gridCols" role="group"
+                [attr.aria-label]="'Cuadrícula de ' + group.gridCols + ' columnas'">
+                @for (element of group.elements; track element.id) {
+                <div class="lesson-grid__cell">
+                    @switch (element.type) {
+                    @case ('title') { <app-lesson-title [element]="element" /> }
+                    @case ('subtitle') { <app-lesson-subtitle [element]="element" /> }
+                    @case ('unorderedList') { <app-lesson-unordered-list [element]="element" /> }
+                    @case ('table') { <app-lesson-table [element]="element" /> }
+                    @case ('tip') { <app-lesson-tip [element]="element" /> }
+                    @case ('tag') { <app-lesson-tag [element]="element" /> }
+                    @case ('conjugation') { <app-lesson-conjugation [element]="element" /> }
+                    @case ('quiz') { <app-lesson-quiz [element]="element" /> }
+                    @case ('image') { <app-lesson-image [element]="element" /> }
+                    @case ('dragDrop') { <app-lesson-drag-drop [element]="element" /> }
+                    @case ('alphabetBlock') { <app-lesson-alphabet /> }
+                    @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="element" /> }
+                    @default { <app-lesson-paragraph [element]="element" /> }
+                    }
+                </div>
+                }
+            </div>
+            } @else {
+            @switch (group.element.type) {
+            @case ('title') { <app-lesson-title [element]="group.element" /> }
+            @case ('subtitle') { <app-lesson-subtitle [element]="group.element" /> }
+            @case ('unorderedList') { <app-lesson-unordered-list [element]="group.element" /> }
+            @case ('table') { <app-lesson-table [element]="group.element" /> }
+            @case ('tip') { <app-lesson-tip [element]="group.element" /> }
+            @case ('tag') { <app-lesson-tag [element]="group.element" /> }
+            @case ('conjugation') { <app-lesson-conjugation [element]="group.element" /> }
+            @case ('quiz') { <app-lesson-quiz [element]="group.element" /> }
+            @case ('image') { <app-lesson-image [element]="group.element" /> }
+            @case ('dragDrop') { <app-lesson-drag-drop [element]="group.element" /> }
+            @case ('alphabetBlock') { <app-lesson-alphabet /> }
+            @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="group.element" /> }
+            @default { <app-lesson-paragraph [element]="group.element" /> }
             }
             }
 
+            }
         </div>
         }
 

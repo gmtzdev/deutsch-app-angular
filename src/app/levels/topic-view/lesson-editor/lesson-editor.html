@@ -31,7 +31,14 @@
                 @case ('quiz') { <app-lesson-quiz [element]="element" /> }
                 @case ('image') { <app-lesson-image [element]="element" /> }
                 @case ('dragDrop') { <app-lesson-drag-drop [element]="element" /> }
+                @case ('alphabetBlock') { <app-lesson-alphabet /> }
+                @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="element" /> }
                 @default { <app-lesson-paragraph [element]="element" /> }
+                }
+                @if (element.gridId) {
+                <div class="pending-element__grid-badge" aria-label="En cuadrícula de {{ element.gridCols }} columnas">
+                    ⊞ {{ element.gridCols }}col
+                </div>
                 }
                 <div class="pending-element__actions">
                     <span class="pending-element__drag-handle" aria-hidden="true"
@@ -401,12 +408,76 @@
                 <button type="button" class="add-item-btn" (click)="addDragDropRow()">+ Añadir ejercicio</button>
             </div>
 
+            } @else if (activeType() === 'alphabetBlock') {
+            <!-- Alphabet block — no configuration needed -->
+            <p class="editor-panel__hint">Este bloque muestra la cuadrícula interactiva del alfabeto alemán con
+                pronunciación. No requiere configuración.</p>
+
+            } @else if (activeType() === 'pronunciationBlock') {
+            <!-- Pronunciation items editor -->
+            <div class="list-items-wrapper" role="group" aria-label="Ítems de pronunciación">
+                @for (item of pronunciationItems(); track $index; let idx = $index) {
+                <div class="pronunciation-item-row">
+                    <input class="editor-list-input" type="text" [placeholder]="'Texto a reproducir ' + (idx + 1)"
+                        [value]="item.text" (input)="setPronunciationField(idx, 'text', $any($event.target).value)"
+                        [attr.aria-label]="'Texto a reproducir ítem ' + (idx + 1)" required />
+                    <input class="editor-list-input editor-list-input--secondary" type="text"
+                        placeholder="Etiqueta visible (opcional)" [value]="item.label"
+                        (input)="setPronunciationField(idx, 'label', $any($event.target).value)"
+                        [attr.aria-label]="'Etiqueta ítem ' + (idx + 1)" />
+                    @if (pronunciationItems().length > 1) {
+                    <button type="button" class="remove-item-btn" (click)="removePronunciationItem(idx)"
+                        [attr.aria-label]="'Eliminar ítem ' + (idx + 1)">✕</button>
+                    }
+                </div>
+                }
+                <button type="button" class="add-item-btn" (click)="addPronunciationItem()">
+                    + Añadir ítem
+                </button>
+            </div>
+
             } @else {
             <input id="editor-main-input" class="editor-main-input" type="text" [placeholder]="activeType() === 'title' ? 'Título de la sección...' :
                                activeType() === 'subtitle' ? 'Subtítulo...' : 'Escribe el párrafo...'"
                 [value]="inputText()" (input)="inputText.set($any($event.target).value)"
                 aria-label="Contenido del bloque" required />
             }
+
+            <!-- ── Grid layout ──────────────────────────────────── -->
+            <div class="grid-form" role="group" aria-label="Disposición en cuadrícula">
+                <label class="grid-form__toggle">
+                    <input type="checkbox" [checked]="gridEnabled()"
+                        (change)="gridEnabled.set($any($event.target).checked)" aria-label="Agregar a cuadrícula" />
+                    Colocar en cuadrícula
+                </label>
+                @if (gridEnabled()) {
+                <div class="grid-form__body">
+                    <div class="grid-form__cols" role="group" aria-label="Número de columnas">
+                        <span class="grid-form__cols-label">Columnas:</span>
+                        @for (n of [2, 3, 4, 5]; track n) {
+                        <button type="button" class="grid-form__col-btn"
+                            [class.grid-form__col-btn--active]="activeGridCols() === n && activeGridId() === null"
+                            (click)="setNewGrid(n)"
+                            [attr.aria-pressed]="activeGridCols() === n && activeGridId() === null"
+                            [attr.aria-label]="n + ' columnas, nuevo grid'">{{ n }}</button>
+                        }
+                    </div>
+                    @if (existingGrids().length > 0) {
+                    <div class="grid-form__existing" role="group" aria-label="Unirse a cuadrícula existente">
+                        <span class="grid-form__cols-label">Unirse a:</span>
+                        @for (grid of existingGrids(); track grid.id) {
+                        <button type="button" class="grid-form__join-btn"
+                            [class.grid-form__join-btn--active]="activeGridId() === grid.id"
+                            (click)="joinGrid(grid.id, grid.cols)" [attr.aria-pressed]="activeGridId() === grid.id"
+                            [attr.aria-label]="'Cuadrícula ' + grid.num + ' de ' + grid.cols + ' columnas'">
+                            Grid {{ grid.num }} · {{ grid.cols }}col
+                        </button>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+            </div>
 
             <div class="editor-panel__footer">
                 <button type="button" class="cancel-btn" (click)="closePicker()">Cancelar</button>

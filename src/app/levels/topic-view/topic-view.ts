@@ -12,6 +12,39 @@ import { CurriculumService } from '../../core/services/curriculum.service';
 import { TopicWithSubtopics } from '../../core/models/topic.model';
 import { SubtopicWithLessons } from '../../core/models/subtopic.models';
 import { ElementTypeObj } from '../../core/types';
+
+interface SingleGroup {
+    kind: 'single';
+    element: ElementTypeObj;
+}
+
+interface GridGroup {
+    kind: 'grid';
+    gridId: string;
+    gridCols: number;
+    elements: ElementTypeObj[];
+}
+
+type ElementGroup = SingleGroup | GridGroup;
+
+function groupElements(elements: ElementTypeObj[]): ElementGroup[] {
+    const groups: ElementGroup[] = [];
+    const gridMap = new Map<string, number>();
+    for (const el of elements) {
+        if (!el.gridId) {
+            groups.push({ kind: 'single', element: el });
+        } else {
+            const idx = gridMap.get(el.gridId);
+            if (idx !== undefined) {
+                (groups[idx] as GridGroup).elements.push(el);
+            } else {
+                gridMap.set(el.gridId, groups.length);
+                groups.push({ kind: 'grid', gridId: el.gridId, gridCols: el.gridCols ?? 2, elements: [el] });
+            }
+        }
+    }
+    return groups;
+}
 import { UnorderedList } from '../../core/models/elements/unorderedlist.model';
 import { Table } from '../../core/models/elements/table.model';
 import { Tip } from '../../core/models/elements/tip.model';
@@ -26,11 +59,13 @@ import { LessonConjugation } from './elements/lesson-conjugation';
 import { LessonQuiz } from './elements/lesson-quiz';
 import { LessonImage } from './elements/lesson-image';
 import { LessonDragDrop } from './elements/lesson-drag-drop';
+import { LessonAlphabet } from './elements/lesson-alphabet';
+import { LessonPronunciation } from './elements/lesson-pronunciation';
 import { LessonEditor } from './lesson-editor/lesson-editor';
 
 @Component({
     selector: 'app-topic-view',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonEditor],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonEditor],
     templateUrl: './topic-view.html',
     styleUrls: ['./topic-view.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,6 +82,10 @@ export class TopicView {
     protected readonly pendingElements = signal<ElementTypeObj[]>([]);
     protected readonly confirming = signal(false);
     protected readonly hasPending = computed(() => this.pendingElements().length > 0);
+
+    protected readonly groupedElements = computed(() =>
+        groupElements(this.subtopicResource.value()?.lesson?.elements ?? [])
+    );
 
     protected enableEditMode(): void {
         this.editMode.set(!this.editMode())
@@ -115,9 +154,9 @@ export class TopicView {
             this.pendingElements().forEach((element, index) => {
                 element.order = index; // update order based on current position in array
             });
+            console.log('Submitting elements:', this.pendingElements());
             console.log(this.pendingElements());
 
-            // return;
             const response = await firstValueFrom(this.curriculumService.createLesson(lessonId, this.pendingElements()));
             this.pendingElements.set([]);
             this.subtopicResource.reload();

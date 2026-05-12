@@ -21,19 +21,6 @@ import { Password } from 'primeng/password';
 import { LoginResponse } from '../../core/dto/auth/login-res.dto';
 
 
-function passwordStrengthValidator(
-    control: AbstractControl,
-): ValidationErrors | null {
-    const value: string = control.value ?? '';
-    if (!value) return null;
-    const valid =
-        value.length >= 8 &&
-        /[A-Z]/.test(value) &&
-        /[0-9]/.test(value) &&
-        /[!@#$%^&*()\-_=+[\]{};':",.<>/?\\|`~]/.test(value);
-    return valid ? null : { weakPassword: true };
-}
-
 @Component({
     selector: 'app-login',
     imports: [ReactiveFormsModule, InputText, Password, RouterLink],
@@ -67,7 +54,7 @@ export class Login implements OnDestroy {
         ],
         password: [
             '',
-            [Validators.required, Validators.minLength(8), passwordStrengthValidator],
+            [Validators.required]
         ],
     });
 

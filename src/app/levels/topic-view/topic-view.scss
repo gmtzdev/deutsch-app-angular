@@ -87,6 +87,24 @@
     flex-direction: column;
 }
 
+// ── Grid layout ───────────────────────────────────────────────
+.lesson-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 2), 1fr);
+    gap: 1rem;
+    align-items: start;
+
+    &__cell {
+        min-width: 0; // prevent overflow in narrow columns
+    }
+}
+
+@media (max-width: 600px) {
+    .lesson-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
 // ── Pending elements preview ──────────────────────────────────
 .pending-section {
     margin: 0 2rem;

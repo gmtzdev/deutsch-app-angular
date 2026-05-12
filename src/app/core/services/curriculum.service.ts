@@ -23,6 +23,8 @@ import { Quiz } from '../models/elements/quiz.model';
 import { CreateDragDropDto } from '../dto/elements/dto/drag-drop/create-drag-drop.dto';
 import { DragDropExercise } from '../models/elements/drag-drop-exercise.model';
 import { environment } from '../../../environments/environment';
+import { CreatePronunciationBlockDto } from '../dto/elements/dto/pronunciation/create-pronunciation-block.dto';
+import { PronunciationBlock } from '../models/elements/pronunciation-block.model';
 
 const API_BASE = environment.apiUrl;
 
@@ -128,7 +130,9 @@ export class CurriculumService {
                         type: 'element',
                         order,
                         lesson: { id: Number(lessonId) } as Lesson,
-                        delete: el.delete
+                        delete: el.delete,
+                        gridId: el.gridId,
+                        gridCols: el.gridCols,
                     } as CreateElementDto)
                     break;
                 }
@@ -141,7 +145,9 @@ export class CurriculumService {
                         order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         baseStyle: '',
-                        delete: el.delete
+                        delete: el.delete,
+                        gridId: el.gridId,
+                        gridCols: el.gridCols,
                     } as CreateTitleDto)
                     break;
                 case 'subtitle':
@@ -153,7 +159,9 @@ export class CurriculumService {
                         order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         baseStyle: '',
-                        delete: el.delete
+                        delete: el.delete,
+                        gridId: el.gridId,
+                        gridCols: el.gridCols,
                     } as CreateSubtitleDto)
                     break;
                 case 'unorderedList':
@@ -176,7 +184,9 @@ export class CurriculumService {
                         lesson: { id: Number(lessonId) } as Lesson,
                         baseStyle: 'ul',
                         list: lis,
-                        delete: el.delete
+                        delete: el.delete,
+                        gridId: el.gridId,
+                        gridCols: el.gridCols,
                     } as CreateUnorderedListDto)
                     break;
                 case 'tag':
@@ -187,7 +197,9 @@ export class CurriculumService {
                         type: 'tag',
                         order,
                         lesson: { id: Number(lessonId) } as Lesson,
-                        delete: el.delete
+                        delete: el.delete,
+                        gridId: el.gridId,
+                        gridCols: el.gridCols,
                     } as CreateElementDto)
                     break;
                 case 'table':
@@ -202,7 +214,9 @@ export class CurriculumService {
                         delete: aux.delete,
                         baseStyle: aux.baseStyle,
                         headers: aux.headers,
-                        rows: aux.rows
+                        rows: aux.rows,
+                        gridId: aux.gridId,
+                        gridCols: aux.gridCols,
                     } as CreateTableDto)
                     break;
                 case 'conjugation':
@@ -215,6 +229,8 @@ export class CurriculumService {
                         order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         delete: auxc.delete,
+                        gridId: auxc.gridId,
+                        gridCols: auxc.gridCols,
                         verbs: auxc.verbs,
                     } as CreateConjugationDto)
                     break;
@@ -228,6 +244,8 @@ export class CurriculumService {
                         order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         delete: auxq.delete,
+                        gridId: auxq.gridId,
+                        gridCols: auxq.gridCols,
                         questions: auxq.questions,
                     } as CreateQuizDto)
                     break;
@@ -240,6 +258,8 @@ export class CurriculumService {
                         order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         delete: el.delete,
+                        gridId: el.gridId,
+                        gridCols: el.gridCols,
                     } as CreateElementDto)
                     break;
                 case 'dragDrop':
@@ -254,7 +274,24 @@ export class CurriculumService {
                         delete: auxd.delete,
                         words: auxd.words,
                         rows: auxd.rows,
+                        gridId: auxd.gridId,
+                        gridCols: auxd.gridCols,
                     } as CreateDragDropDto)
+                    break;
+                case 'pronunciationBlock':
+                    const auxp = el as PronunciationBlock;
+                    elements.push({
+                        id: auxp.id,
+                        text: auxp.text,
+                        style: auxp.style,
+                        type: auxp.type,
+                        order,
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: auxp.delete,
+                        items: auxp.items,
+                        gridId: auxp.gridId,
+                        gridCols: auxp.gridCols,
+                    } as CreatePronunciationBlockDto)
                     break;
                 default:
                     console.warn(`Element type ${el.type} is not supported for creation yet.`);

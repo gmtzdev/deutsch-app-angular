@@ -1,4 +1,6 @@
-import { CreateElementDto } from "../dto/elements/dto/create-element.dto";
+import { AlphabetBlock } from '../models/elements/alphabet-block.model';
+import { PronunciationBlock } from '../models/elements/pronunciation-block.model';
+import { CreateElementDto } from '../dto/elements/dto/create-element.dto';
 import { CreateListItemDto } from "../dto/elements/dto/listitem/create-title.dto";
 import { CreateSubtitleDto } from "../dto/elements/dto/subtitle/create-title.dto";
 import { CreateTitleDto } from "../dto/elements/dto/title/create-title.dto";
@@ -18,7 +20,7 @@ import { DragDropExercise } from "../models/elements/drag-drop-exercise.model";
 
 export type LessonElementDto = CreateElementDto | CreateTitleDto | CreateSubtitleDto | CreateListItemDto | CreateUnorderedListDto;
 
-export type ElementType = 'element' | 'title' | 'subtitle' | 'listItem' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop';
-export type ElementTypeObj = Element | Title | Subtitle | ListItem | UnorderedList | Table | Tip | Tag | Conjugation | Quiz | ImageBlock | DragDropExercise;
+export type ElementType = 'element' | 'title' | 'subtitle' | 'listItem' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'pronunciationBlock' | 'alphabetBlock';
+export type ElementTypeObj = Element | Title | Subtitle | ListItem | UnorderedList | Table | Tip | Tag | Conjugation | Quiz | ImageBlock | DragDropExercise | AlphabetBlock | PronunciationBlock;
 
-export const elementTypes: ElementType[] = ['element', 'title', 'subtitle', 'listItem', 'unorderedList', 'table', 'tip', 'tag', 'conjugation', 'quiz', 'image', 'dragDrop'];
+export const elementTypes: ElementType[] = ['element', 'title', 'subtitle', 'listItem', 'unorderedList', 'table', 'tip', 'tag', 'conjugation', 'quiz', 'image', 'dragDrop', 'alphabetBlock', 'pronunciationBlock'];

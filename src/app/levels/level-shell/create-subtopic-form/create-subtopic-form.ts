@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, inject, input, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, DOCUMENT, inject, input, output, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { CurriculumService } from "../../../core/services/curriculum.service";
 import { firstValueFrom } from "rxjs";
 import { Topic } from "../../../core/models/topic.model";
+import { Subtopic } from "../../../core/models/subtopic.models";
 
 @Component({
     selector: 'app-create-subtopic-form',
@@ -13,6 +14,7 @@ import { Topic } from "../../../core/models/topic.model";
 })
 export class CreateSubtopicForm {
     readonly topic = input.required<Topic>();
+    protected saved = output<Subtopic>();
 
 
     protected readonly creating = signal<CreatingState>({ type: 'none' });
@@ -39,9 +41,7 @@ export class CreateSubtopicForm {
 
         this.saving.set(true);
         try {
-            const subtopic = await firstValueFrom(
-                this.curriculumService.createSubtopic(topicId, title)
-            );
+            const subtopic = await firstValueFrom(this.curriculumService.createSubtopic(topicId, title));
             // this.levelResource.value.update((level) => {
             //     if (!level) return level;
             //     return {
@@ -53,6 +53,7 @@ export class CreateSubtopicForm {
             //         ),
             //     };
             // });
+            this.saved.emit(subtopic);
             this.creating.set({ type: 'none' });
         } catch {
             // keep form open on error
