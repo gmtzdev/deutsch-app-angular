@@ -24,6 +24,10 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+
+    .brand-logo {
+        width: 90px;
+    }
 }
 
 .flag {
