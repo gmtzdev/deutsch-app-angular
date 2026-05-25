@@ -315,4 +315,16 @@ export class CurriculumService {
         return this.http.post<{ filename: string; path: string }>(`${API_BASE}/elements/upload-image`, formData);
     }
 
+    /** Genera o modifica elementos de lección mediante IA. */
+    genAiLesson(
+        prompt: string,
+        currentElements: ElementTypeObj[] | null,
+        chatHistory: unknown[],
+    ): Observable<{ elements: ElementTypeObj[]; message: string; chatHistory: unknown[] }> {
+        return this.http.post<{ elements: ElementTypeObj[]; message: string; chatHistory: unknown[] }>(
+            `${API_BASE}/ai/generate-lesson`,
+            { prompt, currentElements, chatHistory },
+        );
+    }
+
 }
