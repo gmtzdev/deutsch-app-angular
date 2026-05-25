@@ -10,127 +10,171 @@
     </header>
     }
 
-    <!-- ── Subtopic content ─────────────────────────────────────── -->
-    @if (subtopicResource.isLoading()) {
-    <div class="topic-card topic-card--skeleton" aria-busy="true" aria-label="Cargando lecciones">
-        <div class="skeleton skeleton--heading"></div>
-        <div class="skeleton skeleton--sub"></div>
-        <div class="subtopic-skeleton">
-            @for (_ of [1, 2, 3]; track $index) {
-            <div class="skeleton skeleton--block"></div>
+    <div class="topic-split">
+
+        <!-- ── LEFT: lesson content ─────────────────────────────── -->
+        <div class="topic-content">
+
+            @if (subtopicResource.isLoading()) {
+            <div class="topic-card topic-card--skeleton" aria-busy="true" aria-label="Cargando lecciones">
+                <div class="skeleton skeleton--heading"></div>
+                <div class="skeleton skeleton--sub"></div>
+                <div class="subtopic-skeleton">
+                    @for (_ of [1, 2, 3]; track $index) {
+                    <div class="skeleton skeleton--block"></div>
+                    }
+                </div>
+            </div>
             }
-        </div>
-    </div>
-    }
 
-    @if (subtopicResource.error()) {
-    <div class="state-error" role="alert">
-        <span aria-hidden="true">⚠️</span>
-        <p>No se pudo cargar el contenido. Intenta de nuevo.</p>
-        <button type="button" class="retry-btn" (click)="subtopicResource.reload()">
-            Reintentar
-        </button>
-    </div>
-    }
+            @if (subtopicResource.error()) {
+            <div class="state-error" role="alert">
+                <span aria-hidden="true">⚠️</span>
+                <p>No se pudo cargar el contenido. Intenta de nuevo.</p>
+                <button type="button" class="retry-btn" (click)="subtopicResource.reload()">
+                    Reintentar
+                </button>
+            </div>
+            }
 
-    @if (subtopicResource.value(); as subtopic) {
-    <article class="topic-card" [attr.aria-labelledby]="'subtopic-' + subtopic.id">
+            @if (subtopicResource.value(); as subtopic) {
+            <article class="topic-card" [attr.aria-labelledby]="'subtopic-' + subtopic.id">
 
-        <header class="topic-card__header">
-            <h2 class="topic-card__title" [id]="'subtopic-' + subtopic.id">
-                @if (subtopic.icon) {
-                <span class="subtopic__icon" aria-hidden="true">{{ subtopic.icon }}</span>
-                }
-                {{ subtopic.title }}
-            </h2>
+                <header class="topic-card__header">
+                    <h2 class="topic-card__title" [id]="'subtopic-' + subtopic.id">
+                        @if (subtopic.icon) {
+                        <span class="subtopic__icon" aria-hidden="true">{{ subtopic.icon }}</span>
+                        }
+                        {{ subtopic.title }}
+                    </h2>
 
+                    <button type="button" class="edit-toggle-btn" [class.edit-toggle-btn--active]="editMode()"
+                        (click)="enableEditMode()" [attr.aria-pressed]="editMode()" aria-label="Editar contenido">
+                        <i class="pi pi-pencil" aria-hidden="true"></i>
+                        {{ editMode() ? 'Editar' : 'Editar' }}
+                    </button>
+                </header>
 
-            <button type="button" class="edit-toggle-btn" [class.edit-toggle-btn--active]="editMode()"
-                (click)="enableEditMode()" [attr.aria-pressed]="editMode()" aria-label="Editar contenido">
-                <i class="pi pi-pencil" aria-hidden="true"></i>
-                {{ editMode() ? 'Editar' : 'Editar' }}
-            </button>
-        </header>
+                <!-- ── Lesson elements ─────────────────────────────────── -->
+                @if (subtopic.lesson.elements && !editMode()) {
+                <div class="lesson-elements">
+                    @for (group of groupedElements(); track group.kind === 'grid' ? group.gridId : group.element.id) {
 
-
-
-        <!-- ── Lesson elements ─────────────────────────────────── -->
-        @if (subtopic.lesson.elements && !editMode()) {
-        <div class="lesson-elements">
-            @for (group of groupedElements(); track group.kind === 'grid' ? group.gridId : group.element.id) {
-
-            @if (group.kind === 'grid') {
-            <div class="lesson-grid" [style.--cols]="group.gridCols" role="group"
-                [attr.aria-label]="'Cuadrícula de ' + group.gridCols + ' columnas'">
-                @for (element of group.elements; track element.id) {
-                <div class="lesson-grid__cell">
-                    @switch (element.type) {
-                    @case ('title') { <app-lesson-title [element]="element" /> }
-                    @case ('subtitle') { <app-lesson-subtitle [element]="element" /> }
-                    @case ('unorderedList') { <app-lesson-unordered-list [element]="element" /> }
-                    @case ('table') { <app-lesson-table [element]="element" /> }
-                    @case ('tip') { <app-lesson-tip [element]="element" /> }
-                    @case ('tag') { <app-lesson-tag [element]="element" /> }
-                    @case ('conjugation') { <app-lesson-conjugation [element]="element" /> }
-                    @case ('quiz') { <app-lesson-quiz [element]="element" /> }
-                    @case ('image') { <app-lesson-image [element]="element" /> }
-                    @case ('dragDrop') { <app-lesson-drag-drop [element]="element" /> }
+                    @if (group.kind === 'grid') {
+                    <div class="lesson-grid" [style.--cols]="group.gridCols" role="group"
+                        [attr.aria-label]="'Cuadrícula de ' + group.gridCols + ' columnas'">
+                        @for (element of group.elements; track element.id) {
+                        <div class="lesson-grid__cell">
+                            @switch (element.type) {
+                            @case ('title') { <app-lesson-title [element]="element" /> }
+                            @case ('subtitle') { <app-lesson-subtitle [element]="element" /> }
+                            @case ('unorderedList') { <app-lesson-unordered-list [element]="element" /> }
+                            @case ('table') { <app-lesson-table [element]="element" /> }
+                            @case ('tip') { <app-lesson-tip [element]="element" /> }
+                            @case ('tag') { <app-lesson-tag [element]="element" /> }
+                            @case ('conjugation') { <app-lesson-conjugation [element]="element" /> }
+                            @case ('quiz') { <app-lesson-quiz [element]="element" /> }
+                            @case ('image') { <app-lesson-image [element]="element" /> }
+                            @case ('dragDrop') { <app-lesson-drag-drop [element]="element" /> }
+                            @case ('alphabetBlock') { <app-lesson-alphabet /> }
+                            @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="element" /> }
+                            @default { <app-lesson-paragraph [element]="element" /> }
+                            }
+                        </div>
+                        }
+                    </div>
+                    } @else {
+                    @switch (group.element.type) {
+                    @case ('title') { <app-lesson-title [element]="group.element" /> }
+                    @case ('subtitle') { <app-lesson-subtitle [element]="group.element" /> }
+                    @case ('unorderedList') { <app-lesson-unordered-list [element]="group.element" /> }
+                    @case ('table') { <app-lesson-table [element]="group.element" /> }
+                    @case ('tip') { <app-lesson-tip [element]="group.element" /> }
+                    @case ('tag') { <app-lesson-tag [element]="group.element" /> }
+                    @case ('conjugation') { <app-lesson-conjugation [element]="group.element" /> }
+                    @case ('quiz') { <app-lesson-quiz [element]="group.element" /> }
+                    @case ('image') { <app-lesson-image [element]="group.element" /> }
+                    @case ('dragDrop') { <app-lesson-drag-drop [element]="group.element" /> }
                     @case ('alphabetBlock') { <app-lesson-alphabet /> }
-                    @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="element" /> }
-                    @default { <app-lesson-paragraph [element]="element" /> }
+                    @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="group.element" /> }
+                    @default { <app-lesson-paragraph [element]="group.element" /> }
+                    }
+                    }
+
                     }
                 </div>
                 }
-            </div>
-            } @else {
-            @switch (group.element.type) {
-            @case ('title') { <app-lesson-title [element]="group.element" /> }
-            @case ('subtitle') { <app-lesson-subtitle [element]="group.element" /> }
-            @case ('unorderedList') { <app-lesson-unordered-list [element]="group.element" /> }
-            @case ('table') { <app-lesson-table [element]="group.element" /> }
-            @case ('tip') { <app-lesson-tip [element]="group.element" /> }
-            @case ('tag') { <app-lesson-tag [element]="group.element" /> }
-            @case ('conjugation') { <app-lesson-conjugation [element]="group.element" /> }
-            @case ('quiz') { <app-lesson-quiz [element]="group.element" /> }
-            @case ('image') { <app-lesson-image [element]="group.element" /> }
-            @case ('dragDrop') { <app-lesson-drag-drop [element]="group.element" /> }
-            @case ('alphabetBlock') { <app-lesson-alphabet /> }
-            @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="group.element" /> }
-            @default { <app-lesson-paragraph [element]="group.element" /> }
-            }
-            }
 
+                <!-- ── Edit footer (editor + confirm bar) ───────────────────── -->
+                @if (editMode()) {
+                <div class="edit-footer">
+                    <app-lesson-editor [pendingElements]="pendingElements()" (elementAdded)="onElementAdded($event)"
+                        (elementEdited)="onElementEdited($event)" (elementRemoved)="onElementRemoved($event)"
+                        (elementReordered)="onElementReordered($event)" />
+
+                    @if (hasPending()) {
+                    <div class="confirm-bar" role="toolbar" aria-label="Guardar cambios">
+                        <button type="button" class="discard-btn" (click)="discardChanges()" [disabled]="confirming()"
+                            aria-label="Descartar cambios pendientes">
+                            Descartar
+                        </button>
+                        <button type="button" class="confirm-btn" (click)="confirmChanges()" [disabled]="confirming()"
+                            aria-label="Confirmar y guardar todos los cambios">
+                            @if (confirming()) {
+                            Guardando...
+                            } @else {
+                            Confirmar cambios ({{ pendingElements().length }})
+                            }
+                        </button>
+                    </div>
+                    }
+                </div>
+                }
+
+            </article>
             }
         </div>
-        }
 
-        <!-- ── Edit footer (editor + confirm bar) ───────────────────── -->
-        @if (editMode()) {
-        <div class="edit-footer">
-            <app-lesson-editor [pendingElements]="pendingElements()" (elementAdded)="onElementAdded($event)"
-                (elementEdited)="onElementEdited($event)" (elementRemoved)="onElementRemoved($event)"
-                (elementReordered)="onElementReordered($event)" />
+        <!-- ── RIGHT: AI chat panel ──────────────────────────────── -->
+        <aside class="ai-chat" aria-label="Asistente IA">
+            <header class="ai-chat__header">
+                <i class="pi pi-sparkles" aria-hidden="true"></i>
+                <span>Generar con IA</span>
+            </header>
 
-            @if (hasPending()) {
-            <div class="confirm-bar" role="toolbar" aria-label="Guardar cambios">
-                <button type="button" class="discard-btn" (click)="discardChanges()" [disabled]="confirming()"
-                    aria-label="Descartar cambios pendientes">
-                    Descartar
-                </button>
-                <button type="button" class="confirm-btn" (click)="confirmChanges()" [disabled]="confirming()"
-                    aria-label="Confirmar y guardar todos los cambios">
-                    @if (confirming()) {
-                    Guardando...
+            <div class="ai-chat__messages" #chatMessages role="log" aria-live="polite" aria-label="Historial del chat">
+                @for (msg of chatHistory(); track $index) {
+                <div class="ai-chat__bubble" [class.ai-chat__bubble--user]="msg.role === 'user'"
+                    [class.ai-chat__bubble--assistant]="msg.role === 'assistant'">
+                    {{ msg.content }}
+                </div>
+                }
+
+                @if (aiLoading()) {
+                <div class="ai-chat__bubble ai-chat__bubble--assistant ai-chat__bubble--typing"
+                    aria-label="La IA está escribiendo">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                </div>
+                }
+            </div>
+
+            <div class="ai-chat__input-area">
+                <textarea class="ai-chat__textarea" [(ngModel)]="userInput" (keydown)="onKeyDown($event)"
+                    [disabled]="aiLoading()" placeholder="Describe el contenido que quieres generar…" rows="3"
+                    aria-label="Mensaje para la IA"></textarea>
+                <button type="button" class="ai-chat__send-btn" (click)="sendMessage()"
+                    [disabled]="aiLoading() || !userInput().trim()" aria-label="Enviar mensaje">
+                    @if (aiLoading()) {
+                    <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
                     } @else {
-                    Confirmar cambios ({{ pendingElements().length }})
+                    <i class="pi pi-send" aria-hidden="true"></i>
                     }
                 </button>
             </div>
-            }
-        </div>
-        }
+        </aside>
 
-    </article>
-    }
+    </div><!-- /.topic-split -->
 
 </div>

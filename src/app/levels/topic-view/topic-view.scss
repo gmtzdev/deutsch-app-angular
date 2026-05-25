@@ -3,8 +3,20 @@
 }
 
 .topic-view {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
+}
+
+// ── Split layout ──────────────────────────────────────────────
+.topic-split {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.topic-content {
+    flex: 1;
+    min-width: 0;
 }
 
 // ── Topic card ────────────────────────────────────────────────
@@ -393,4 +405,197 @@
 
 .subtopic-skeleton {
     margin-top: 1.5rem;
+}
+
+// ── AI Chat panel ─────────────────────────────────────────────
+.ai-chat {
+    width: 320px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    background: var(--color-card, #ffffff);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.9rem 1.1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-title, #111827);
+        flex-shrink: 0;
+
+        i {
+            color: #4a90d9;
+            font-size: 15px;
+        }
+    }
+
+    &__messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0.9rem;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-height: 0;
+
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 4px;
+        }
+    }
+
+    &__bubble {
+        max-width: 90%;
+        padding: 9px 12px;
+        border-radius: 12px;
+        font-size: 12.5px;
+        line-height: 1.5;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+
+        &--user {
+            align-self: flex-end;
+            background: #4a90d9;
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+
+        &--assistant {
+            align-self: flex-start;
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--color-text, #374151);
+            border-bottom-left-radius: 4px;
+        }
+
+        &--typing {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 11px 14px;
+        }
+    }
+
+    &__input-area {
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 0.7rem;
+        flex-shrink: 0;
+        display: flex;
+        gap: 6px;
+        align-items: flex-end;
+    }
+
+    &__textarea {
+        flex: 1;
+        resize: none;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 12.5px;
+        font-family: inherit;
+        line-height: 1.45;
+        background: var(--color-background, #f9fafb);
+        color: var(--color-text, #374151);
+        outline: none;
+        transition: border-color 0.15s;
+
+        &:focus {
+            border-color: #4a90d9;
+        }
+
+        &:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+    }
+
+    &__send-btn {
+        flex-shrink: 0;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        border: none;
+        background: #4a90d9;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.12s;
+
+        &:hover:not(:disabled) {
+            background: #357abd;
+        }
+
+        &:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        &:focus-visible {
+            outline: 2px solid #4a90d9;
+            outline-offset: 2px;
+        }
+    }
+}
+
+// ── Typing animation dots ─────────────────────────────────────
+.typing-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.6;
+    animation: typing-bounce 1.2s infinite;
+
+    &:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    &:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+}
+
+@keyframes typing-bounce {
+
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+    }
+
+    30% {
+        transform: translateY(-5px);
+    }
+}
+
+// ── Responsive ───────────────────────────────────────────────
+@media (max-width: 900px) {
+    .topic-split {
+        flex-direction: column;
+    }
+
+    .ai-chat {
+        width: 100%;
+        position: static;
+        max-height: 400px;
+    }
 }
