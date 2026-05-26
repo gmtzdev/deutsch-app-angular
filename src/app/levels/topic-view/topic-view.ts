@@ -12,6 +12,7 @@ import {
 import { firstValueFrom, tap } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CurriculumService } from '../../core/services/curriculum.service';
+import { HasUnsavedChanges } from '../../core/guards/unsaved-changes.guard';
 import { TopicWithSubtopics } from '../../core/models/topic.model';
 import { SubtopicWithLessons } from '../../core/models/subtopic.models';
 import { ElementTypeObj } from '../../core/types';
@@ -76,7 +77,7 @@ import { ChatMessage } from '../../core/dto/ai/chat-message.dto';
     styleUrls: ['./topic-view.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TopicView {
+export class TopicView implements HasUnsavedChanges {
     readonly topicId = input.required<string>();
     readonly subtopicId = input.required<string>();
 
@@ -301,6 +302,10 @@ export class TopicView {
             next.splice(event.to, 0, moved);
             return next;
         });
+    }
+
+    canDeactivate(): boolean {
+        return !this.hasPending();
     }
 
     protected discardChanges(): void {
