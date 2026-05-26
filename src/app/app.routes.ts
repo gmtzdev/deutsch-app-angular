@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, adminGuard, publicOnlyGuard } from './auth/auth.guard';
+import { unsavedChangesGuard } from './core/guards/unsaved-changes.guard';
 
 export const routes: Routes = [
     {
@@ -49,6 +50,7 @@ export const routes: Routes = [
                 path: 'topics/:topicId/:subtopicId',
                 loadComponent: () =>
                     import('./levels/topic-view/topic-view').then((m) => m.TopicView),
+                canDeactivate: [unsavedChangesGuard],
                 title: 'Tema — DeutschApp',
             },
         ],
