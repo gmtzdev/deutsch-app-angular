@@ -309,7 +309,11 @@ export class TopicView implements HasUnsavedChanges {
     }
 
     protected discardChanges(): void {
-        this.pendingElements.set([]);
+        // Ask for confirmation before discarding changes
+        if (confirm('¿Estás seguro de que quieres descartar los cambios? Se perderán todos los cambios no guardados.')) {
+            this.pendingElements.set([]);
+            this.editMode.set(false);
+        }
     }
 
     protected async confirmChanges(): Promise<void> {
