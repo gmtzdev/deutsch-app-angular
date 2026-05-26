@@ -329,6 +329,13 @@ export class LessonEditor {
         this.gridEnabled.set(!!element.gridId);
         this.activeGridId.set(element.gridId ?? null);
         this.activeGridCols.set((element.gridCols ?? 1) > 1 ? (element.gridCols ?? 2) : 2);
+
+        setTimeout(() => {
+            const container = this.doc.getElementById('main-content');
+            if (container) {
+                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            }
+        }, 0);
     }
 
     // ── List item management ──────────────────────────────────
