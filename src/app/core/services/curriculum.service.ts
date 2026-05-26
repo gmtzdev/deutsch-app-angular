@@ -25,6 +25,7 @@ import { DragDropExercise } from '../models/elements/drag-drop-exercise.model';
 import { environment } from '../../../environments/environment';
 import { CreatePronunciationBlockDto } from '../dto/elements/dto/pronunciation/create-pronunciation-block.dto';
 import { PronunciationBlock } from '../models/elements/pronunciation-block.model';
+import { Tip } from '../models/elements/tip.model';
 
 const API_BASE = environment.apiUrl;
 
@@ -200,6 +201,21 @@ export class CurriculumService {
                         delete: el.delete,
                         gridId: el.gridId,
                         gridCols: el.gridCols,
+                    } as CreateElementDto)
+                    break;
+                case 'tip':
+                    const tp = el as Tip;
+                    elements.push({
+                        id: tp.id,
+                        tipTitle: tp.tipTitle,
+                        text: tp.text,
+                        style: tp.style,
+                        type: 'tip',
+                        order,
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: tp.delete,
+                        gridId: tp.gridId,
+                        gridCols: tp.gridCols,
                     } as CreateElementDto)
                     break;
                 case 'table':
