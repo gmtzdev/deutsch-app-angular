@@ -26,6 +26,8 @@ import { environment } from '../../../environments/environment';
 import { CreatePronunciationBlockDto } from '../dto/elements/dto/pronunciation/create-pronunciation-block.dto';
 import { PronunciationBlock } from '../models/elements/pronunciation-block.model';
 import { Tip } from '../models/elements/tip.model';
+import { UpdateSubtopicDto } from '../dto/subtopic/update-subtopic.dto';
+import { UpdateTopicDto } from '../dto/topic/update-topic.dto';
 
 const API_BASE = environment.apiUrl;
 
@@ -73,8 +75,8 @@ export class CurriculumService {
     }
 
     /** Actualiza el título y subtítulo de un tema. */
-    updateTopic(topicId: number | string, title: string, subtitle?: string): Observable<Topic> {
-        return this.http.patch<Topic>(`${API_BASE}/topics/${topicId}`, { title, subtitle: subtitle || '' });
+    updateTopic(topicId: number | string, topic: UpdateTopicDto): Observable<Topic> {
+        return this.http.patch<Topic>(`${API_BASE}/topics/${topicId}`, topic);
     }
 
     /** Elimina un tema por su ID. */
@@ -83,8 +85,8 @@ export class CurriculumService {
     }
 
     /** Actualiza el título de un subtema. */
-    updateSubtopic(subtopicId: number | string, title: string, icon?: string): Observable<Subtopic> {
-        return this.http.patch<Subtopic>(`${API_BASE}/subtopics/${subtopicId}`, { title, icon: icon ?? '' });
+    updateSubtopic(subtopicId: number | string, subtopic: UpdateSubtopicDto): Observable<Subtopic> {
+        return this.http.patch<Subtopic>(`${API_BASE}/subtopics/${subtopicId}`, subtopic);
     }
 
     /** Elimina un subtema por su ID. */

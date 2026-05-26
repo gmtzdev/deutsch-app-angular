@@ -18,12 +18,14 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { firstValueFrom, filter, map, startWith } from 'rxjs';
 import { CurriculumService } from '../../core/services/curriculum.service';
-import { LevelWithTopics } from '../../core/models/level.model';
+import { Level, LevelWithTopics } from '../../core/models/level.model';
 import { Topic } from '../../core/models/topic.model';
 import { Subtopic } from '../../core/models/subtopic.models';
 import { Header } from '../../components/header/header';
 import { CreateTopicForm } from './create-topic-form/create-topic-form';
 import { CreateSubtopicForm } from "./create-subtopic-form/create-subtopic-form";
+import { UpdateSubtopicDto } from '../../core/dto/subtopic/update-subtopic.dto';
+import { UpdateTopicDto } from '../../core/dto/topic/update-topic.dto';
 
 
 
@@ -148,8 +150,9 @@ export class LevelShell {
         if (!title || this.editSaving()) return;
         this.editSaving.set(true);
         try {
+            const dto: UpdateTopicDto = { title, subtitle: this.editSubtitle().trim(), level: { id: Number.parseInt(this.levelId()) } as Level };
             const updated = await firstValueFrom(
-                this.curriculumService.updateTopic(topicId, title, this.editSubtitle().trim())
+                this.curriculumService.updateTopic(topicId, dto)
             );
             this.levelResource.value.update((level) => {
                 if (!level) return level;
@@ -203,8 +206,9 @@ export class LevelShell {
         if (!title || this.editSubtopicSaving()) return;
         this.editSubtopicSaving.set(true);
         try {
+            const dto: UpdateSubtopicDto = { title, icon: this.editSubtopicIcon().trim() || "", path: "", topic: { id: topicId } as Topic };
             const updated = await firstValueFrom(
-                this.curriculumService.updateSubtopic(subtopicId, title, this.editSubtopicIcon().trim())
+                this.curriculumService.updateSubtopic(subtopicId, dto)
             );
             this.levelResource.value.update((level) => {
                 if (!level) return level;
