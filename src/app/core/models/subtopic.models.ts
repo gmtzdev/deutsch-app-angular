@@ -7,6 +7,7 @@ export class Subtopic {
     title: string;
     icon: string;
     path: string;
+    order: number;
     topic: Topic;
 
     constructor(subtopic: Subtopic) {
@@ -14,6 +15,7 @@ export class Subtopic {
         this.title = subtopic.title;
         this.icon = subtopic.icon;
         this.path = subtopic.path;
+        this.order = subtopic.order;
         this.topic = subtopic.topic;
     }
 }

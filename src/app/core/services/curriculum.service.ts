@@ -30,6 +30,7 @@ import { UpdateSubtopicDto } from '../dto/subtopic/update-subtopic.dto';
 import { UpdateTopicDto } from '../dto/topic/update-topic.dto';
 import { FillBlankExercise } from '../models/elements/fill-blank-exercise.model';
 import { CreateFillBlankDto } from '../dto/elements/dto/fill-blank/create-fill-blank.dto';
+import { ReorderSubtopicDto } from '../dto/subtopic/reorder-subtopic.dto';
 
 const API_BASE = environment.apiUrl;
 
@@ -89,6 +90,11 @@ export class CurriculumService {
     /** Actualiza el título de un subtema. */
     updateSubtopic(subtopicId: number | string, subtopic: UpdateSubtopicDto): Observable<Subtopic> {
         return this.http.patch<Subtopic>(`${API_BASE}/subtopics/${subtopicId}`, subtopic);
+    }
+
+    /** Reordena los subtemas de un tema enviando la nueva lista de IDs con su orden. */
+    reorderSubtopics(items: ReorderSubtopicDto[]): Observable<void> {
+        return this.http.patch<void>(`${API_BASE}/subtopics/reorder`, items);
     }
 
     /** Elimina un subtema por su ID. */
