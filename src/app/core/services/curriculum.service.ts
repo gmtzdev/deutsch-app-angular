@@ -29,6 +29,7 @@ import { Tip } from '../models/elements/tip.model';
 import { UpdateSubtopicDto } from '../dto/subtopic/update-subtopic.dto';
 import { UpdateTopicDto } from '../dto/topic/update-topic.dto';
 import { FillBlankExercise } from '../models/elements/fill-blank-exercise.model';
+import { FillBlankTableExercise } from '../models/elements/fill-blank-table-exercise.model';
 import { CreateFillBlankDto } from '../dto/elements/dto/fill-blank/create-fill-blank.dto';
 import { ReorderSubtopicDto } from '../dto/subtopic/reorder-subtopic.dto';
 
@@ -332,6 +333,21 @@ export class CurriculumService {
                         rows: auxf.rows,
                         gridId: auxf.gridId,
                         gridCols: auxf.gridCols,
+                    } as CreateFillBlankDto)
+                    break;
+                case 'fillBlankTable':
+                    const auxft = el as FillBlankTableExercise;
+                    elements.push({
+                        id: auxft.id,
+                        text: auxft.text,
+                        style: auxft.style,
+                        type: auxft.type,
+                        order,
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: auxft.delete,
+                        rows: auxft.rows,
+                        gridId: auxft.gridId,
+                        gridCols: auxft.gridCols,
                     } as CreateFillBlankDto)
                     break;
                 default:

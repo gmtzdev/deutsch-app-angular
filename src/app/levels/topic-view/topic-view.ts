@@ -68,12 +68,13 @@ import { LessonDragDrop } from './elements/lesson-drag-drop';
 import { LessonAlphabet } from './elements/lesson-alphabet';
 import { LessonPronunciation } from './elements/lesson-pronunciation';
 import { LessonFillBlank } from './elements/lesson-fill-blank';
+import { LessonFillBlankTable } from './elements/lesson-fill-blank-table-simple';
 import { LessonEditor } from './lesson-editor/lesson-editor';
 import { ChatMessage } from '../../core/dto/ai/chat-message.dto';
 
 @Component({
     selector: 'app-topic-view',
-    imports: [FormsModule, LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonEditor],
+    imports: [FormsModule, LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonFillBlankTable, LessonEditor],
     templateUrl: './topic-view.html',
     styleUrls: ['./topic-view.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
