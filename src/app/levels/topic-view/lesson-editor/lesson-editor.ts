@@ -42,10 +42,13 @@ import { PronunciationBlock } from '../../../core/models/elements/pronunciation-
 import { PronunciationItem } from '../../../core/models/elements/pronunciation-item.model';
 import { DragDropExercise } from '../../../core/models/elements/drag-drop-exercise.model';
 import { DragDropRow } from '../../../core/models/elements/drag-drop-row.model';
+import { FillBlankExercise } from '../../../core/models/elements/fill-blank-exercise.model';
+import { FillBlankRow } from '../../../core/models/elements/fill-blank-row.model';
+import { LessonFillBlank } from '../elements/lesson-fill-blank';
 import { CurriculumService } from '../../../core/services/curriculum.service';
 import { environment } from '../../../../environments/environment';
 
-type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'alphabetBlock' | 'pronunciationBlock';
+type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'alphabetBlock' | 'pronunciationBlock' | 'fillBlank';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
 type TagColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'gray';
 
@@ -85,6 +88,7 @@ const BLOCK_OPTIONS: BlockOption[] = [
     { type: 'dragDrop', label: 'Arrastrar y soltar', icon: '🎯', description: 'Completar espacios arrastrando palabras' },
     { type: 'alphabetBlock', label: 'Alfabeto alemán', icon: '🔤', description: 'Cuadrícula interactiva del alfabeto alemán con pronunciación' },
     { type: 'pronunciationBlock', label: 'Pronunciación', icon: '🔊', description: 'Cuadrícula de textos reproducibles con voz alemana' },
+    { type: 'fillBlank', label: 'Completar oración', icon: '✍️', description: 'Rellenar los espacios en blanco de una oración' },
 ];
 
 const TIP_COLOR_OPTIONS: TipColorOption[] = [
@@ -107,7 +111,7 @@ const TAG_COLOR_OPTIONS: TagColorOption[] = [
     selector: 'app-lesson-editor',
     templateUrl: './lesson-editor.html',
     styleUrl: './lesson-editor.scss',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LessonEditor {
@@ -159,6 +163,8 @@ export class LessonEditor {
 
     // ── Pronunciation signals ─────────────────────────────────
     protected readonly pronunciationItems = signal<PronunciationItem[]>([{ id: 1, text: '', label: '' }]);
+    // ── Fill-blank signals ────────────────────────────────────
+    protected readonly fillBlankRows = signal<FillBlankRow[]>([{ id: 1, sentence: '', answers: [''] }]);
     // ── Grid signals ───────────────────────────────────────────────
     protected readonly gridEnabled = signal(false);
     protected readonly activeGridCols = signal(2);
@@ -239,6 +245,7 @@ export class LessonEditor {
         this.dragDropWords.set(['']);
         this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
         this.pronunciationItems.set([{ id: 1, text: '', label: '' }]);
+        this.fillBlankRows.set([{ id: 1, sentence: '', answers: [''] }]);
         this.gridEnabled.set(false);
         this.activeGridCols.set(2);
         this.activeGridId.set(null);
@@ -275,6 +282,7 @@ export class LessonEditor {
         this.dragDropWords.set(['']);
         this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
         this.pronunciationItems.set([{ id: 1, text: '', label: '' }]);
+        this.fillBlankRows.set([{ id: 1, sentence: '', answers: [''] }]);
         this.gridEnabled.set(false);
         this.activeGridCols.set(2);
         this.activeGridId.set(null);
@@ -323,6 +331,9 @@ export class LessonEditor {
         } else if (type === 'pronunciationBlock') {
             const pb = element as PronunciationBlock;
             this.pronunciationItems.set(pb.items.map((i) => ({ ...i })));
+        } else if (type === 'fillBlank') {
+            const fb = element as FillBlankExercise;
+            this.fillBlankRows.set(fb.rows.map((r) => ({ ...r, answers: [...r.answers] })));
         } else {
             this.inputText.set(element.text);
         }        // restore grid state
@@ -535,6 +546,47 @@ export class LessonEditor {
         this.pronunciationItems.update((items) => items.filter((_, i) => i !== index));
     }
 
+    // ── Fill-blank management ─────────────────────────────────
+
+    /** Updates the sentence text for a row, recalculating answers array length to match blank count. */
+    protected setFillBlankSentence(index: number, sentence: string): void {
+        const blankCount = (sentence.match(/___/g) ?? []).length;
+        this.fillBlankRows.update((rows) => {
+            const next = [...rows];
+            const current = next[index];
+            const answers = Array.from({ length: blankCount }, (_, i) => current.answers[i] ?? '');
+            next[index] = { ...current, sentence, answers };
+            return next;
+        });
+    }
+
+    protected setFillBlankAnswer(rowIndex: number, blankIndex: number, value: string): void {
+        this.fillBlankRows.update((rows) => {
+            const next = [...rows];
+            const answers = [...next[rowIndex].answers];
+            answers[blankIndex] = value;
+            next[rowIndex] = { ...next[rowIndex], answers };
+            return next;
+        });
+    }
+
+    protected addFillBlankRow(): void {
+        this.fillBlankRows.update((rows) => [
+            ...rows,
+            { id: rows.length + 1, sentence: '', answers: [''] },
+        ]);
+    }
+
+    protected removeFillBlankRow(index: number): void {
+        if (this.fillBlankRows().length <= 1) return;
+        this.fillBlankRows.update((rows) => rows.filter((_, i) => i !== index));
+    }
+
+    protected fillBlankBlankCount(rowIndex: number): number[] {
+        const count = (this.fillBlankRows()[rowIndex]?.sentence.match(/___/g) ?? []).length;
+        return Array.from({ length: count }, (_, i) => i);
+    }
+
     // ── Grid helpers ──────────────────────────────────────────
 
     /** Selecciona columnas para un nuevo grid (limpia cualquier grid existente seleccionado). */
@@ -725,6 +777,25 @@ export class LessonEditor {
                 lesson: null!,
                 delete: false,
                 items,
+            });
+        } else if (type === 'fillBlank') {
+            const rows = this.fillBlankRows()
+                .filter((r) => r.sentence.trim() && r.answers.every((a) => a.trim()))
+                .map((r, i) => ({
+                    id: i + 1,
+                    sentence: r.sentence.trim(),
+                    answers: r.answers.map((a) => a.trim()),
+                }));
+            if (!rows.length) return;
+            draft = new FillBlankExercise({
+                id: -Date.now(),
+                text: '',
+                style: '',
+                type: 'fillBlank',
+                order: 0,
+                lesson: null!,
+                delete: false,
+                rows,
             });
         } else {
             const text = this.inputText().trim();
