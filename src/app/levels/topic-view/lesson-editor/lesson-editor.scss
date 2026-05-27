@@ -990,6 +990,26 @@
     }
 }
 
+// ── Fill-blank editor ─────────────────────────────────────────────────────────
+.fill-blank-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+
+    &__hint {
+        font-size: 0.78rem;
+        color: var(--color-indications, #9b9a97);
+        margin: 0;
+
+        code {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.06);
+            padding: 0 0.25rem;
+            border-radius: 3px;
+        }
+    }
+}
+
 // ── Image editor ─────────────────────────────────────────────────────────────
 .image-form {
     display: flex;

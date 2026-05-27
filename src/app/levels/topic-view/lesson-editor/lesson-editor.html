@@ -33,6 +33,7 @@
                 @case ('dragDrop') { <app-lesson-drag-drop [element]="element" /> }
                 @case ('alphabetBlock') { <app-lesson-alphabet /> }
                 @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="element" /> }
+                @case ('fillBlank') { <app-lesson-fill-blank [element]="element" /> }
                 @default { <app-lesson-paragraph [element]="element" /> }
                 }
                 @if (element.gridId) {
@@ -434,6 +435,39 @@
                 <button type="button" class="add-item-btn" (click)="addPronunciationItem()">
                     + Añadir ítem
                 </button>
+            </div>
+
+            } @else if (activeType() === 'fillBlank') {
+            <!-- Fill-in-the-blank exercise editor -->
+            <div class="fill-blank-editor" role="group" aria-label="Editor de completar oración">
+                <p class="dnd-editor__label">Usa <code>___</code> (tres guiones bajos) para marcar cada espacio en
+                    blanco dentro de la oración.</p>
+                @for (row of fillBlankRows(); track $index; let ri = $index) {
+                <div class="dnd-editor__row">
+                    <div class="quiz-editor__row-header">
+                        <span class="quiz-editor__row-num">{{ ri + 1 }}</span>
+                        @if (fillBlankRows().length > 1) {
+                        <button type="button" class="remove-item-btn" (click)="removeFillBlankRow(ri)"
+                            [attr.aria-label]="'Eliminar oración ' + (ri + 1)">&#x2715;</button>
+                        }
+                    </div>
+                    <input class="editor-main-input editor-main-input--sm" type="text"
+                        placeholder="Ej: Der Mann ___ nach Hause ___." [value]="row.sentence"
+                        (input)="setFillBlankSentence(ri, $any($event.target).value)"
+                        [attr.aria-label]="'Oración ' + (ri + 1)" required />
+                    @for (bi of fillBlankBlankCount(ri); track bi) {
+                    <input class="editor-main-input editor-main-input--sm" type="text"
+                        [placeholder]="'Respuesta espacio ' + (bi + 1) + '...'" [value]="row.answers[bi] ?? ''"
+                        (input)="setFillBlankAnswer(ri, bi, $any($event.target).value)"
+                        [attr.aria-label]="'Respuesta espacio ' + (bi + 1) + ', oración ' + (ri + 1)" required />
+                    }
+                    @if (fillBlankBlankCount(ri).length === 0) {
+                    <p class="fill-blank-editor__hint">Incluye al menos un <code>___</code> en la oración para definir
+                        los espacios.</p>
+                    }
+                </div>
+                }
+                <button type="button" class="add-item-btn" (click)="addFillBlankRow()">+ Añadir oración</button>
             </div>
 
             } @else {

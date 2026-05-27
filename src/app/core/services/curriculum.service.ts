@@ -28,6 +28,8 @@ import { PronunciationBlock } from '../models/elements/pronunciation-block.model
 import { Tip } from '../models/elements/tip.model';
 import { UpdateSubtopicDto } from '../dto/subtopic/update-subtopic.dto';
 import { UpdateTopicDto } from '../dto/topic/update-topic.dto';
+import { FillBlankExercise } from '../models/elements/fill-blank-exercise.model';
+import { CreateFillBlankDto } from '../dto/elements/dto/fill-blank/create-fill-blank.dto';
 
 const API_BASE = environment.apiUrl;
 
@@ -310,6 +312,21 @@ export class CurriculumService {
                         gridId: auxp.gridId,
                         gridCols: auxp.gridCols,
                     } as CreatePronunciationBlockDto)
+                    break;
+                case 'fillBlank':
+                    const auxf = el as FillBlankExercise;
+                    elements.push({
+                        id: auxf.id,
+                        text: auxf.text,
+                        style: auxf.style,
+                        type: auxf.type,
+                        order,
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: auxf.delete,
+                        rows: auxf.rows,
+                        gridId: auxf.gridId,
+                        gridCols: auxf.gridCols,
+                    } as CreateFillBlankDto)
                     break;
                 default:
                     console.warn(`Element type ${el.type} is not supported for creation yet.`);
