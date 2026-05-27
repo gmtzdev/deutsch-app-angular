@@ -38,26 +38,15 @@ export class CreateSubtopicForm {
         if (!value || this.saving()) return;
         const title = value;
 
-
         this.saving.set(true);
         try {
             const subtopic = await firstValueFrom(this.curriculumService.createSubtopic(topicId, title));
-            // this.levelResource.value.update((level) => {
-            //     if (!level) return level;
-            //     return {
-            //         ...level,
-            //         topics: level.topics.map((t) =>
-            //             t.id === topicId
-            //                 ? { ...t, subtopics: [...(t.subtopics ?? []), { ...subtopic, lessons: [] }] }
-            //                 : t
-            //         ),
-            //     };
-            // });
             this.saved.emit(subtopic);
             this.creating.set({ type: 'none' });
         } catch {
             // keep form open on error
         } finally {
+            this.title.set('');
             this.saving.set(false);
         }
     }
