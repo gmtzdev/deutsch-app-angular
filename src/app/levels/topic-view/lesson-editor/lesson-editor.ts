@@ -43,12 +43,14 @@ import { PronunciationItem } from '../../../core/models/elements/pronunciation-i
 import { DragDropExercise } from '../../../core/models/elements/drag-drop-exercise.model';
 import { DragDropRow } from '../../../core/models/elements/drag-drop-row.model';
 import { FillBlankExercise } from '../../../core/models/elements/fill-blank-exercise.model';
+import { FillBlankTableExercise } from '../../../core/models/elements/fill-blank-table-exercise.model';
 import { FillBlankRow } from '../../../core/models/elements/fill-blank-row.model';
 import { LessonFillBlank } from '../elements/lesson-fill-blank';
+import { LessonFillBlankTable } from '../elements/lesson-fill-blank-table-simple';
 import { CurriculumService } from '../../../core/services/curriculum.service';
 import { environment } from '../../../../environments/environment';
 
-type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'alphabetBlock' | 'pronunciationBlock' | 'fillBlank';
+type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'alphabetBlock' | 'pronunciationBlock' | 'fillBlank' | 'fillBlankTable';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
 type TagColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'gray';
 
@@ -74,6 +76,31 @@ interface BlockOption {
     description: string;
 }
 
+interface FillBlankTableCellDraft {
+    text: string;
+    editable: boolean;
+    answer: string;
+}
+
+interface FillBlankTableRowDraft {
+    id: number;
+    cells: FillBlankTableCellDraft[];
+}
+
+interface FillBlankTableStoredCell {
+    text: string;
+    editable: boolean;
+    answer: string;
+}
+
+interface FillBlankTableStoredRow {
+    cells: FillBlankTableStoredCell[];
+}
+
+interface FillBlankTableStoredStyle {
+    headers: string[];
+}
+
 const BLOCK_OPTIONS: BlockOption[] = [
     { type: 'title', label: 'Título', icon: 'H1', description: 'Encabezado principal de sección' },
     { type: 'subtitle', label: 'Subtítulo', icon: 'H2', description: 'Encabezado secundario' },
@@ -89,6 +116,7 @@ const BLOCK_OPTIONS: BlockOption[] = [
     { type: 'alphabetBlock', label: 'Alfabeto alemán', icon: '🔤', description: 'Cuadrícula interactiva del alfabeto alemán con pronunciación' },
     { type: 'pronunciationBlock', label: 'Pronunciación', icon: '🔊', description: 'Cuadrícula de textos reproducibles con voz alemana' },
     { type: 'fillBlank', label: 'Completar oración', icon: '✍️', description: 'Rellenar los espacios en blanco de una oración' },
+    { type: 'fillBlankTable', label: 'Tabla completar espacios', icon: '🧩', description: 'Ejercicio en tabla para completar espacios en blanco' },
 ];
 
 const TIP_COLOR_OPTIONS: TipColorOption[] = [
@@ -111,7 +139,7 @@ const TAG_COLOR_OPTIONS: TagColorOption[] = [
     selector: 'app-lesson-editor',
     templateUrl: './lesson-editor.html',
     styleUrl: './lesson-editor.scss',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank],
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonFillBlankTable],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LessonEditor {
@@ -165,6 +193,9 @@ export class LessonEditor {
     protected readonly pronunciationItems = signal<PronunciationItem[]>([{ id: 1, text: '', label: '' }]);
     // ── Fill-blank signals ────────────────────────────────────
     protected readonly fillBlankRows = signal<FillBlankRow[]>([{ id: 1, sentence: '', answers: [''] }]);
+    protected readonly fillBlankTableCols = signal(3);
+    protected readonly fillBlankTableHeaders = signal<string[]>(['Col 1', 'Col 2', 'Col 3']);
+    protected readonly fillBlankTableRows = signal<FillBlankTableRowDraft[]>(this.createFillBlankTableRows(3));
     // ── Grid signals ───────────────────────────────────────────────
     protected readonly gridEnabled = signal(false);
     protected readonly activeGridCols = signal(2);
@@ -243,9 +274,12 @@ export class LessonEditor {
         this.imageFileName.set('');
         this.imageUploading.set(false);
         this.dragDropWords.set(['']);
-        this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
+        this.dragDropRows.set([{ id: null, before: '', after: '', answer: '' }]);
         this.pronunciationItems.set([{ id: 1, text: '', label: '' }]);
         this.fillBlankRows.set([{ id: 1, sentence: '', answers: [''] }]);
+        this.fillBlankTableCols.set(3);
+        this.fillBlankTableHeaders.set(['Col 1', 'Col 2', 'Col 3']);
+        this.fillBlankTableRows.set(this.createFillBlankTableRows(3));
         this.gridEnabled.set(false);
         this.activeGridCols.set(2);
         this.activeGridId.set(null);
@@ -280,9 +314,12 @@ export class LessonEditor {
         this.imageFileName.set('');
         this.imageUploading.set(false);
         this.dragDropWords.set(['']);
-        this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
+        this.dragDropRows.set([{ id: null, before: '', after: '', answer: '' }]);
         this.pronunciationItems.set([{ id: 1, text: '', label: '' }]);
         this.fillBlankRows.set([{ id: 1, sentence: '', answers: [''] }]);
+        this.fillBlankTableCols.set(3);
+        this.fillBlankTableHeaders.set(['Col 1', 'Col 2', 'Col 3']);
+        this.fillBlankTableRows.set(this.createFillBlankTableRows(3));
         this.gridEnabled.set(false);
         this.activeGridCols.set(2);
         this.activeGridId.set(null);
@@ -334,6 +371,14 @@ export class LessonEditor {
         } else if (type === 'fillBlank') {
             const fb = element as FillBlankExercise;
             this.fillBlankRows.set(fb.rows.map((r) => ({ ...r, answers: [...r.answers] })));
+        } else if (type === 'fillBlankTable') {
+            const fbt = element as FillBlankTableExercise;
+            const parsedRows = fbt.rows.map((r: FillBlankRow) => this.parseFillBlankTableRow(r, this.fillBlankTableCols()));
+            const cols = parsedRows[0]?.cells.length ?? 3;
+            const parsedStyle = this.parseFillBlankTableStyle(fbt.style, cols);
+            this.fillBlankTableCols.set(cols);
+            this.fillBlankTableHeaders.set(parsedStyle.headers);
+            this.fillBlankTableRows.set(parsedRows.length ? parsedRows : this.createFillBlankTableRows(cols));
         } else {
             this.inputText.set(element.text);
         }        // restore grid state
@@ -515,7 +560,7 @@ export class LessonEditor {
     protected addDragDropRow(): void {
         this.dragDropRows.update((rows) => [
             ...rows,
-            { id: rows.length + 1, before: '', after: '', answer: '' },
+            { id: null, before: '', after: '', answer: '' },
         ]);
     }
 
@@ -585,6 +630,136 @@ export class LessonEditor {
     protected fillBlankBlankCount(rowIndex: number): number[] {
         const count = (this.fillBlankRows()[rowIndex]?.sentence.match(/___/g) ?? []).length;
         return Array.from({ length: count }, (_, i) => i);
+    }
+
+    private createFillBlankTableCell(): FillBlankTableCellDraft {
+        return { text: '', editable: false, answer: '' };
+    }
+
+    private createFillBlankTableRows(cols: number): FillBlankTableRowDraft[] {
+        return [{
+            id: 1,
+            cells: Array.from({ length: cols }, () => this.createFillBlankTableCell()),
+        }];
+    }
+
+    private parseFillBlankTableStyle(rawStyle: string, cols: number): FillBlankTableStoredStyle {
+        try {
+            const parsed = JSON.parse(rawStyle) as FillBlankTableStoredStyle;
+            if (Array.isArray(parsed.headers) && parsed.headers.length > 0) {
+                const headers = [...parsed.headers];
+                if (headers.length < cols) {
+                    headers.push(...Array.from({ length: cols - headers.length }, (_, i) => `Col ${headers.length + i + 1}`));
+                } else if (headers.length > cols) {
+                    headers.splice(cols);
+                }
+                return { headers };
+            }
+        } catch {
+            // Default style
+        }
+        return { headers: Array.from({ length: cols }, (_, i) => `Col ${i + 1}`) };
+    }
+
+    private parseFillBlankTableRow(row: FillBlankRow, fallbackCols: number): FillBlankTableRowDraft {
+        try {
+            const parsed = JSON.parse(row.sentence) as FillBlankTableStoredRow;
+            if (!Array.isArray(parsed.cells) || !parsed.cells.length) {
+                throw new Error('invalid cells');
+            }
+            return {
+                id: row.id,
+                cells: parsed.cells.map((cell) => ({
+                    text: cell.text ?? '',
+                    editable: !!cell.editable,
+                    answer: cell.answer ?? '',
+                })),
+            };
+        } catch {
+            const cells = Array.from({ length: Math.max(1, fallbackCols) }, () => this.createFillBlankTableCell());
+            cells[0] = {
+                text: row.sentence,
+                editable: row.answers.length > 0,
+                answer: row.answers[0] ?? '',
+            };
+            return { id: row.id, cells };
+        }
+    }
+
+    protected fillBlankTableColIndexes(): number[] {
+        return Array.from({ length: this.fillBlankTableCols() }, (_, i) => i);
+    }
+
+    protected setFillBlankTableColCount(count: number): void {
+        const nextCount = Math.max(1, Math.min(8, count));
+        this.fillBlankTableCols.set(nextCount);
+        this.fillBlankTableHeaders.update((headers) => {
+            const next = [...headers];
+            if (next.length < nextCount) {
+                next.push(...Array.from({ length: nextCount - next.length }, (_, i) => `Col ${next.length + i + 1}`));
+            } else if (next.length > nextCount) {
+                next.splice(nextCount);
+            }
+            return next;
+        });
+        this.fillBlankTableRows.update((rows) =>
+            rows.map((row) => {
+                const cells = [...row.cells];
+                if (cells.length < nextCount) {
+                    cells.push(...Array.from({ length: nextCount - cells.length }, () => this.createFillBlankTableCell()));
+                } else if (cells.length > nextCount) {
+                    cells.splice(nextCount);
+                }
+                return { ...row, cells };
+            })
+        );
+    }
+
+    protected setFillBlankTableHeader(colIndex: number, value: string): void {
+        this.fillBlankTableHeaders.update((headers) => {
+            const next = [...headers];
+            next[colIndex] = value;
+            return next;
+        });
+    }
+
+    protected setFillBlankTableCellText(rowIndex: number, colIndex: number, value: string): void {
+        this.fillBlankTableRows.update((rows) => {
+            const next = rows.map((row) => ({ ...row, cells: row.cells.map((cell) => ({ ...cell })) }));
+            next[rowIndex].cells[colIndex].text = value;
+            return next;
+        });
+    }
+
+    protected setFillBlankTableCellEditable(rowIndex: number, colIndex: number, editable: boolean): void {
+        this.fillBlankTableRows.update((rows) => {
+            const next = rows.map((row) => ({ ...row, cells: row.cells.map((cell) => ({ ...cell })) }));
+            next[rowIndex].cells[colIndex].editable = editable;
+            return next;
+        });
+    }
+
+    protected setFillBlankTableCellAnswer(rowIndex: number, colIndex: number, value: string): void {
+        this.fillBlankTableRows.update((rows) => {
+            const next = rows.map((row) => ({ ...row, cells: row.cells.map((cell) => ({ ...cell })) }));
+            next[rowIndex].cells[colIndex].answer = value;
+            return next;
+        });
+    }
+
+    protected addFillBlankTableRow(): void {
+        this.fillBlankTableRows.update((rows) => [
+            ...rows,
+            {
+                id: rows.length + 1,
+                cells: Array.from({ length: this.fillBlankTableCols() }, () => this.createFillBlankTableCell()),
+            },
+        ]);
+    }
+
+    protected removeFillBlankTableRow(index: number): void {
+        if (this.fillBlankTableRows().length <= 1) return;
+        this.fillBlankTableRows.update((rows) => rows.filter((_, i) => i !== index));
     }
 
     // ── Grid helpers ──────────────────────────────────────────
@@ -735,8 +910,8 @@ export class LessonEditor {
             const words = this.dragDropWords().map((w) => w.trim()).filter(Boolean);
             const rows = this.dragDropRows()
                 .filter((r) => r.answer.trim())
-                .map((r, i) => ({
-                    id: i + 1,
+                .map((r) => ({
+                    id: r.id,
                     before: r.before.trim(),
                     after: r.after.trim(),
                     answer: r.answer.trim(),
@@ -792,6 +967,33 @@ export class LessonEditor {
                 text: '',
                 style: '',
                 type: 'fillBlank',
+                order: 0,
+                lesson: null!,
+                delete: false,
+                rows,
+            });
+        } else if (type === 'fillBlankTable') {
+            const rows = this.fillBlankTableRows()
+                .filter((r) => r.cells.some((c) => c.text.trim() || c.answer.trim()))
+                .map((r, i) => ({
+                    id: i + 1,
+                    sentence: JSON.stringify({
+                        cells: r.cells.map((c) => ({
+                            text: c.text.trim(),
+                            editable: c.editable,
+                            answer: c.answer.trim(),
+                        })),
+                    } as FillBlankTableStoredRow),
+                    answers: r.cells.filter((c) => c.editable).map((c) => c.answer.trim()),
+                }));
+            if (!rows.length || rows.some((r) => r.answers.some((a) => !a))) return;
+            draft = new FillBlankTableExercise({
+                id: -Date.now(),
+                text: '',
+                style: JSON.stringify({
+                    headers: this.fillBlankTableHeaders().map((h) => h.trim() || ''),
+                } as FillBlankTableStoredStyle),
+                type: 'fillBlankTable',
                 order: 0,
                 lesson: null!,
                 delete: false,

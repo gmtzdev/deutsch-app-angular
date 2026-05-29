@@ -1010,6 +1010,65 @@
     }
 }
 
+.fill-blank-table-editor {
+    &__controls {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+    }
+
+    &__scroll {
+        overflow-x: auto;
+    }
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 640px;
+
+        th,
+        td {
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            padding: 0.45rem;
+            vertical-align: top;
+        }
+
+        th {
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--color-indications, #9b9a97);
+            background: rgba(0, 0, 0, 0.03);
+        }
+    }
+
+    &__index {
+        width: 42px;
+        text-align: center;
+        font-weight: 700;
+        color: var(--color-text, #37352f);
+    }
+
+    &__cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        min-width: 130px;
+    }
+
+    &__toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--color-indications, #9b9a97);
+        user-select: none;
+    }
+}
+
 // ── Image editor ─────────────────────────────────────────────────────────────
 .image-form {
     display: flex;

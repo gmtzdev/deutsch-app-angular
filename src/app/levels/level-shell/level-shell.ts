@@ -65,6 +65,11 @@ export class LevelShell {
     protected readonly editSubtopicIcon = signal('');
     protected readonly editSubtopicSaving = signal(false);
 
+    // ── Subtopic drag-and-drop state ──────────────────────────
+    protected readonly dragTopicId = signal<number | null>(null);
+    protected readonly dragFromIndex = signal<number | null>(null);
+    protected readonly dragOverIndex = signal<number | null>(null);
+
 
 
     private readonly activeTopicId = toSignal(
@@ -250,7 +255,6 @@ export class LevelShell {
         }
     }
 
-
     protected includeSubtopic(subtopic: Subtopic): void {
         this.levelResource.value.update((level) => {
             if (!level) return level;
@@ -263,6 +267,72 @@ export class LevelShell {
                 ),
             };
         });
+    }
+
+
+    // ── Subtopic drag-and-drop handlers ──────────────────────
+
+    protected onSubtopicDragStart(event: DragEvent, topicId: number, index: number): void {
+        this.dragTopicId.set(topicId);
+        this.dragFromIndex.set(index);
+        event.dataTransfer!.effectAllowed = 'move';
+    }
+
+    protected onSubtopicDragOver(event: DragEvent, index: number): void {
+        event.preventDefault();
+        event.dataTransfer!.dropEffect = 'move';
+        this.dragOverIndex.set(index);
+    }
+
+    protected onSubtopicDragLeave(index: number): void {
+        if (this.dragOverIndex() === index) this.dragOverIndex.set(null);
+    }
+
+    protected onSubtopicDrop(event: DragEvent, toIndex: number): void {
+        event.preventDefault();
+        const from = this.dragFromIndex();
+        const topicId = this.dragTopicId();
+        if (from === null || topicId === null || from === toIndex) {
+            this.clearSubtopicDrag();
+            return;
+        }
+
+        // Optimistic reorder in local state
+        this.levelResource.value.update((level) => {
+            if (!level) return level;
+            return {
+                ...level,
+                topics: level.topics.map((t) => {
+                    if (t.id !== topicId) return t;
+                    const reordered = [...t.subtopics];
+                    const [moved] = reordered.splice(from, 1);
+                    reordered.splice(toIndex, 0, moved);
+                    return {
+                        ...t,
+                        subtopics: reordered.map((s, i) => ({ ...s, order: i })),
+                    };
+                }),
+            };
+        });
+
+        // Persist new order
+        const topic = this.levelResource.value()?.topics.find((t) => t.id === topicId);
+        if (topic) {
+            const items = topic.subtopics.map((s) => ({ id: s.id, order: s.order }));
+            this.curriculumService.reorderSubtopics(items).subscribe();
+        }
+
+        this.clearSubtopicDrag();
+    }
+
+    protected onSubtopicDragEnd(): void {
+        this.clearSubtopicDrag();
+    }
+
+    private clearSubtopicDrag(): void {
+        this.dragTopicId.set(null);
+        this.dragFromIndex.set(null);
+        this.dragOverIndex.set(null);
     }
 
 }

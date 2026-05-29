@@ -34,6 +34,7 @@
                 @case ('alphabetBlock') { <app-lesson-alphabet /> }
                 @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="element" /> }
                 @case ('fillBlank') { <app-lesson-fill-blank [element]="element" /> }
+                @case ('fillBlankTable') { <app-lesson-fill-blank-table [element]="element" /> }
                 @default { <app-lesson-paragraph [element]="element" /> }
                 }
                 @if (element.gridId) {
@@ -457,7 +458,7 @@
                         [attr.aria-label]="'Oración ' + (ri + 1)" required />
                     @for (bi of fillBlankBlankCount(ri); track bi) {
                     <input class="editor-main-input editor-main-input--sm" type="text"
-                        [placeholder]="'Respuesta espacio ' + (bi + 1) + '...'" [value]="row.answers[bi] ?? ''"
+                        [placeholder]="'Respuesta espacio ' + (bi + 1) + '...'" [value]="row.answers[bi]"
                         (input)="setFillBlankAnswer(ri, bi, $any($event.target).value)"
                         [attr.aria-label]="'Respuesta espacio ' + (bi + 1) + ', oración ' + (ri + 1)" required />
                     }
@@ -468,6 +469,78 @@
                 </div>
                 }
                 <button type="button" class="add-item-btn" (click)="addFillBlankRow()">+ Añadir oración</button>
+            </div>
+
+            } @else if (activeType() === 'fillBlankTable') {
+            <!-- Fill-in-the-blank table exercise editor -->
+            <div class="fill-blank-editor" role="group" aria-label="Editor de tabla completar espacios">
+                <p class="dnd-editor__label">Define columnas y filas. En cada celda puedes marcar si es hueco editable
+                    para el alumno.</p>
+                <div class="fill-blank-table-editor__controls">
+                    <span class="dnd-editor__label">Columnas: {{ fillBlankTableCols() }}</span>
+                    <button type="button" class="table-editor__add-btn"
+                        (click)="setFillBlankTableColCount(fillBlankTableCols() - 1)"
+                        [disabled]="fillBlankTableCols() <= 1">- Columna</button>
+                    <button type="button" class="table-editor__add-btn"
+                        (click)="setFillBlankTableColCount(fillBlankTableCols() + 1)"
+                        [disabled]="fillBlankTableCols() >= 8">+ Columna</button>
+                </div>
+                <div class="fill-blank-table-editor__scroll">
+                    <table class="fill-blank-table-editor__table" aria-label="Tabla de ejercicios de completar">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                @for (ci of fillBlankTableColIndexes(); track ci) {
+                                <th>
+                                    <input class="editor-main-input editor-main-input--sm"
+                                        [value]="fillBlankTableHeaders()[ci]" [placeholder]="'Col ' + (ci + 1)"
+                                        (input)="setFillBlankTableHeader(ci, $any($event.target).value)"
+                                        [attr.aria-label]="'Encabezado columna ' + (ci + 1)" />
+                                </th>
+                                }
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (row of fillBlankTableRows(); track $index; let ri = $index) {
+                            <tr>
+                                <td class="fill-blank-table-editor__index">{{ ri + 1 }}</td>
+                                @for (cell of row.cells; track $index; let ci = $index) {
+                                <td>
+                                    <div class="fill-blank-table-editor__cell">
+                                        <label class="fill-blank-table-editor__toggle">
+                                            <input type="checkbox" [checked]="cell.editable"
+                                                (change)="setFillBlankTableCellEditable(ri, ci, $any($event.target).checked)" />
+                                            Hueco
+                                        </label>
+
+                                        @if (cell.editable) {
+                                        <input class="editor-main-input editor-main-input--sm" type="text"
+                                            placeholder="Respuesta correcta" [value]="cell.answer"
+                                            (input)="setFillBlankTableCellAnswer(ri, ci, $any($event.target).value)"
+                                            [attr.aria-label]="'Respuesta correcta fila ' + (ri + 1) + ', columna ' + (ci + 1)"
+                                            required />
+                                        } @else {
+                                        <input class="editor-main-input editor-main-input--sm" type="text"
+                                            placeholder="Texto fijo" [value]="cell.text"
+                                            (input)="setFillBlankTableCellText(ri, ci, $any($event.target).value)"
+                                            [attr.aria-label]="'Texto fijo fila ' + (ri + 1) + ', columna ' + (ci + 1)" />
+                                        }
+                                    </div>
+                                </td>
+                                }
+                                <td>
+                                    @if (fillBlankTableRows().length > 1) {
+                                    <button type="button" class="remove-item-btn" (click)="removeFillBlankTableRow(ri)"
+                                        [attr.aria-label]="'Eliminar fila ' + (ri + 1)">&#x2715;</button>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="add-item-btn" (click)="addFillBlankTableRow()">+ Añadir fila</button>
             </div>
 
             } @else {

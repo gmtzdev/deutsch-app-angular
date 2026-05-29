@@ -80,6 +80,7 @@
                             @case ('alphabetBlock') { <app-lesson-alphabet /> }
                             @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="element" /> }
                             @case ('fillBlank') { <app-lesson-fill-blank [element]="element" /> }
+                            @case ('fillBlankTable') { <app-lesson-fill-blank-table [element]="element" /> }
                             @default { <app-lesson-paragraph [element]="element" /> }
                             }
                         </div>
@@ -100,6 +101,7 @@
                     @case ('alphabetBlock') { <app-lesson-alphabet /> }
                     @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="group.element" /> }
                     @case ('fillBlank') { <app-lesson-fill-blank [element]="group.element" /> }
+                    @case ('fillBlankTable') { <app-lesson-fill-blank-table [element]="group.element" /> }
                     @default { <app-lesson-paragraph [element]="group.element" /> }
                     }
                     }
