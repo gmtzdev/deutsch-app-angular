@@ -274,7 +274,7 @@ export class LessonEditor {
         this.imageFileName.set('');
         this.imageUploading.set(false);
         this.dragDropWords.set(['']);
-        this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
+        this.dragDropRows.set([{ id: null, before: '', after: '', answer: '' }]);
         this.pronunciationItems.set([{ id: 1, text: '', label: '' }]);
         this.fillBlankRows.set([{ id: 1, sentence: '', answers: [''] }]);
         this.fillBlankTableCols.set(3);
@@ -314,7 +314,7 @@ export class LessonEditor {
         this.imageFileName.set('');
         this.imageUploading.set(false);
         this.dragDropWords.set(['']);
-        this.dragDropRows.set([{ id: 1, before: '', after: '', answer: '' }]);
+        this.dragDropRows.set([{ id: null, before: '', after: '', answer: '' }]);
         this.pronunciationItems.set([{ id: 1, text: '', label: '' }]);
         this.fillBlankRows.set([{ id: 1, sentence: '', answers: [''] }]);
         this.fillBlankTableCols.set(3);
@@ -560,7 +560,7 @@ export class LessonEditor {
     protected addDragDropRow(): void {
         this.dragDropRows.update((rows) => [
             ...rows,
-            { id: rows.length + 1, before: '', after: '', answer: '' },
+            { id: null, before: '', after: '', answer: '' },
         ]);
     }
 
@@ -910,8 +910,8 @@ export class LessonEditor {
             const words = this.dragDropWords().map((w) => w.trim()).filter(Boolean);
             const rows = this.dragDropRows()
                 .filter((r) => r.answer.trim())
-                .map((r, i) => ({
-                    id: i + 1,
+                .map((r) => ({
+                    id: r.id,
                     before: r.before.trim(),
                     after: r.after.trim(),
                     answer: r.answer.trim(),
