@@ -16,6 +16,9 @@ import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
 import { AuthService } from '../../core/services/auth.service';
 import { RegisterResponse } from '../../core/dto/auth/register-res.dto';
+import { UserAlertComponent } from '../../components/user-alert/user-alert';
+import { UserAlert } from '../../components/user-alert/UserAlert';
+import { AlertTone } from '../../components/user-alert/AlertTone.enum';
 
 function passwordStrengthValidator(
     control: AbstractControl,
@@ -40,7 +43,7 @@ function passwordsMatchValidator(
 
 @Component({
     selector: 'app-register',
-    imports: [ReactiveFormsModule, InputText, Password, RouterLink],
+    imports: [ReactiveFormsModule, InputText, Password, RouterLink, UserAlertComponent],
     templateUrl: './register.html',
     styleUrl: './register.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,6 +56,14 @@ export class Register {
     readonly isLoading = signal(false);
     readonly errorMessage = signal<string | null>(null);
     readonly successMessage = signal<string | null>(null);
+    readonly openAlert = signal(false);
+
+    public userAlert: UserAlert = {
+        title: '',
+        message: '',
+        tone: AlertTone.Info,
+        eyebrow: '',
+    };
 
     readonly form = this.fb.nonNullable.group(
         {
@@ -71,7 +82,7 @@ export class Register {
             ],
             password: [
                 '',
-                [Validators.required, Validators.minLength(8), passwordStrengthValidator],
+                [Validators.required, Validators.minLength(8)], //passwordStrengthValidator
             ],
             confirmPassword: ['', [Validators.required]],
         },
@@ -92,18 +103,50 @@ export class Register {
                 next: (response: RegisterResponse) => {
                     if (response.success) {
                         this.successMessage.set('¡Cuenta creada con éxito! Redirigiendo...');
-                        setTimeout(() => this.router.navigate(['/login']), 1500);
+                        this.userAlert = {
+                            title: '¡Cuenta creada con éxito!',
+                            message: 'Haz clic en "Continuar" para ir al inicio de sesión. Puedes iniciar sesión una vez que tu cuenta haya sido verificada por un administrador.',
+                            tone: AlertTone.Success,
+                            eyebrow: 'Registro exitoso',
+                            actionLabel: 'Continuar',
+                        };
+                        this.openAlert.set(true);
                     } else {
                         this.errorMessage.set(response.error ?? 'Error al crear la cuenta.');
+                        this.userAlert = {
+                            title: 'Error al crear la cuenta',
+                            message: response.error ?? 'Ocurrió un error desconocido.',
+                            tone: AlertTone.Error,
+                            eyebrow: 'Acceso denegado',
+                            actionLabel: 'Entendido',
+                        };
+                        this.openAlert.set(true);
                     }
                 },
                 error: (err) => {
-                    this.errorMessage.set('Error al crear la cuenta.');
+                    this.userAlert = {
+                        title: 'Error al crear la cuenta',
+                        message: err?.error?.message ?? 'Error al crear la cuenta.',
+                        tone: AlertTone.Error,
+                        eyebrow: 'Acceso denegado',
+                        actionLabel: 'Entendido',
+                    };
+                    this.openAlert.set(true);
                 }
             });
         } finally {
             this.isLoading.set(false);
         }
+    }
+
+    onAlertAction(): void {
+        if (this.userAlert.tone === AlertTone.Success) {
+            this.openAlert.set(false);
+            this.router.navigate(['/login']);
+            return;
+        }
+
+        this.openAlert.set(false);
     }
 
     get confirmMismatch(): boolean {

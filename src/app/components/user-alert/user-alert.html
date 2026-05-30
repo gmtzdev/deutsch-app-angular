@@ -1,0 +1,27 @@
+@if(open()){
+<div class="user-alert-wrapper">
+    <section class="user-alert" [class.user-alert--info]="userAlert().tone === 'info'"
+        [class.user-alert--success]="userAlert().tone === 'success'"
+        [class.user-alert--warning]="userAlert().tone === 'warning'"
+        [class.user-alert--error]="userAlert().tone === 'error'" [attr.role]="role()" [attr.aria-live]="liveRegion()"
+        aria-atomic="true">
+        <div class="user-alert__icon" aria-hidden="true">{{ icon() }}</div>
+
+        <div class="user-alert__content">
+            <p class="user-alert__eyebrow">{{ userAlert().eyebrow }}</p>
+            <h2 class="user-alert__title">{{ userAlert().title }}</h2>
+            <p class="user-alert__message">{{ userAlert().message }}</p>
+
+            @if (actionLabel()) {
+            <button type="button" class="user-alert__action" (click)="action.emit()">
+                {{ actionLabel() }}
+            </button>
+            }
+        </div>
+
+        <div class="user-alert__close" role="button" aria-label="Cerrar mensaje" clickable (click)="close.emit()">
+            <i class="pi pi-times cursor-pointer"></i>
+        </div>
+    </section>
+</div>
+}
