@@ -20,12 +20,13 @@ import { firstValueFrom, filter, map, startWith } from 'rxjs';
 import { CurriculumService } from '../../core/services/curriculum.service';
 import { Level, LevelWithTopics } from '../../core/models/level.model';
 import { Topic } from '../../core/models/topic.model';
-import { Subtopic } from '../../core/models/subtopic.models';
+import { Subtopic, SubtopicWithLessons } from '../../core/models/subtopic.models';
 import { Header } from '../../components/header/header';
 import { CreateTopicForm } from './create-topic-form/create-topic-form';
 import { CreateSubtopicForm } from "./create-subtopic-form/create-subtopic-form";
 import { UpdateSubtopicDto } from '../../core/dto/subtopic/update-subtopic.dto';
 import { UpdateTopicDto } from '../../core/dto/topic/update-topic.dto';
+import { Lesson } from '../../core/models/lesson.model';
 
 
 
@@ -69,6 +70,7 @@ export class LevelShell {
     protected readonly dragTopicId = signal<number | null>(null);
     protected readonly dragFromIndex = signal<number | null>(null);
     protected readonly dragOverIndex = signal<number | null>(null);
+    protected readonly dragOverTopicId = signal<number | null>(null);
 
 
 
@@ -288,24 +290,56 @@ export class LevelShell {
         if (this.dragOverIndex() === index) this.dragOverIndex.set(null);
     }
 
-    protected onSubtopicDrop(event: DragEvent, toIndex: number): void {
+    protected onSubtopicDrop(event: DragEvent, toIndex: number, destinationTopicIndex: number): void {
         event.preventDefault();
-        const from = this.dragFromIndex();
         const topicId = this.dragTopicId();
-        if (from === null || topicId === null || from === toIndex) {
+        const from = this.dragFromIndex();
+
+
+        if (from === null || topicId === null || destinationTopicIndex === null || toIndex === null) {
+            this.clearSubtopicDrag();
+            return;
+        }
+
+        if (topicId === destinationTopicIndex && from === toIndex) {
             this.clearSubtopicDrag();
             return;
         }
 
         // Optimistic reorder in local state
+        let moved: SubtopicWithLessons | null = null;
+        // Remove from original position
+        this.levelResource.value.update((level) => {
+            if (!level) return level;
+            return {
+                ...level,
+                topics: level.topics.map((t, index) => {
+                    if (t.id !== topicId) return t;
+                    const reordered = [...t.subtopics];
+                    const [m] = reordered.splice(from, 1);
+                    moved = m;
+                    return {
+                        ...t,
+                        subtopics: reordered.map((s, i) => ({ ...s, order: i })),
+                    };
+                }),
+            };
+        });
+
+        if (moved === null) {
+            this.clearSubtopicDrag();
+            return;
+        }
+
+        // Insert into detination
         this.levelResource.value.update((level) => {
             if (!level) return level;
             return {
                 ...level,
                 topics: level.topics.map((t) => {
-                    if (t.id !== topicId) return t;
+                    if (t.id !== destinationTopicIndex) return t;
                     const reordered = [...t.subtopics];
-                    const [moved] = reordered.splice(from, 1);
+                    if (moved === null) return t;
                     reordered.splice(toIndex, 0, moved);
                     return {
                         ...t,
@@ -315,12 +349,20 @@ export class LevelShell {
             };
         });
 
+
         // Persist new order
-        const topic = this.levelResource.value()?.topics.find((t) => t.id === topicId);
-        if (topic) {
-            const items = topic.subtopics.map((s) => ({ id: s.id, order: s.order }));
+        const topico = this.levelResource.value()?.topics.find((t) => t.id === topicId);
+        if (topico) {
+            const items = topico.subtopics.map((s) => ({ id: s.id, order: s.order, topicId: topico.id }));
             this.curriculumService.reorderSubtopics(items).subscribe();
         }
+
+        const topicd = this.levelResource.value()?.topics.find((t) => t.id === destinationTopicIndex);
+        if (topicd) {
+            const items = topicd.subtopics.map((s) => ({ id: s.id, order: s.order, topicId: topicd.id }));
+            this.curriculumService.reorderSubtopics(items).subscribe();
+        }
+
 
         this.clearSubtopicDrag();
     }
@@ -333,6 +375,12 @@ export class LevelShell {
         this.dragTopicId.set(null);
         this.dragFromIndex.set(null);
         this.dragOverIndex.set(null);
+        this.dragOverTopicId.set(null);
     }
 
+    protected onSubtopicListDragOver(event: DragEvent, toTopicId: number): void {
+        event.preventDefault();
+        event.dataTransfer!.dropEffect = 'move';
+        this.dragOverTopicId.set(toTopicId);
+    }
 }

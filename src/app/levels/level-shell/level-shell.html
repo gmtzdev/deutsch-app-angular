@@ -90,15 +90,17 @@
 
                         <!-- Subtopics -->
                         <ul class="subtopic-list" [class.subtopic-list--open]="isExpanded(topic.id)"
-                            [id]="'subtopics-' + topic.id" role="list">
+                            [id]="'subtopics-' + topic.id" role="list"
+                            (dragover)="onSubtopicListDragOver($event, topic.id)">
 
                             @for (subtopic of topic.subtopics; track subtopic.id; let si = $index) {
                             <li role="listitem" draggable="true"
                                 [class.subtopic-list__item--dragging]="dragFromIndex() === si && dragTopicId() === topic.id"
-                                [class.subtopic-list__item--drag-over]="dragOverIndex() === si && dragTopicId() === topic.id && dragFromIndex() !== si"
+                                [class.subtopic-list__item--drag-over]="dragOverTopicId() === topic.id && dragOverIndex() === si && !(dragFromIndex() === si && dragTopicId() === topic.id)"
                                 (dragstart)="onSubtopicDragStart($event, topic.id, si)"
                                 (dragover)="onSubtopicDragOver($event, si)" (dragleave)="onSubtopicDragLeave(si)"
-                                (drop)="onSubtopicDrop($event, si)" (dragend)="onSubtopicDragEnd()">
+                                (drop)="onSubtopicDrop($event, si, topic.id)" (dragend)="onSubtopicDragEnd()">
+
                                 @if (editingSubtopicId() === subtopic.id) {
                                 <!-- Inline subtopic edit form -->
                                 <form class="subtopic-edit-form"
