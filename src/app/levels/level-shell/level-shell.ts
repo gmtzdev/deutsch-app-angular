@@ -52,6 +52,7 @@ export class LevelShell {
             firstValueFrom(this.curriculumService.getLevelWithTopics(params)),
     });
 
+    protected readonly sidebarCollapsed = signal(false);
     protected readonly expandedTopics = signal<Set<number>>(new Set());
 
     // ── Topic edit/delete state ───────────────────────────────
@@ -123,6 +124,10 @@ export class LevelShell {
 
     protected isTopicActive(topicId: number): boolean {
         return this.activeTopicId() === topicId;
+    }
+
+    protected toggleSidebar(): void {
+        this.sidebarCollapsed.update((value) => !value);
     }
 
 

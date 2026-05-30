@@ -1,10 +1,16 @@
 <div class="shell">
     <app-header />
 
-    <div class="shell-body">
+    <div class="shell-body" [class.shell-body--sidebar-collapsed]="sidebarCollapsed()">
+
+        <button type="button" class="sidebar-toggle" (click)="toggleSidebar()"
+            [attr.aria-expanded]="!sidebarCollapsed()"
+            [attr.aria-label]="sidebarCollapsed() ? 'Expandir barra lateral' : 'Contraer barra lateral'">
+            {{ sidebarCollapsed() ? '›' : '‹' }}
+        </button>
 
         <!-- ── Sidebar ──────────────────────────────────────────── -->
-        <aside class="sidebar" aria-label="Temas del nivel">
+        <aside class="sidebar" [class.sidebar--collapsed]="sidebarCollapsed()" aria-label="Temas del nivel">
 
             @if (levelResource.isLoading()) {
             <div class="sidebar-header skeleton-wrap" aria-busy="true" aria-label="Cargando nivel">
