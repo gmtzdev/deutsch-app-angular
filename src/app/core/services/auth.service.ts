@@ -95,9 +95,9 @@ export class AuthService {
                         }
                         observer.complete();
                     },
-                    error: () => {
+                    error: (err) => {
                         this.recordFailedAttempt();
-                        observer.next({ success: false, error: 'Servicio de autenticación no disponible.' });
+                        observer.next({ success: false, error: err.error?.error ?? 'INVALID_CREDENTIALS' });
                         observer.complete();
                     }
                 });

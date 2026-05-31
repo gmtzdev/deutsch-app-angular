@@ -19,11 +19,14 @@ import { AuthService } from '../../core/services/auth.service';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
 import { LoginResponse } from '../../core/dto/auth/login-res.dto';
+import { UserAlertComponent } from '../../components/user-alert/user-alert';
+import { UserAlert } from '../../components/user-alert/UserAlert';
+import { AlertTone } from '../../components/user-alert/AlertTone.enum';
 
 
 @Component({
     selector: 'app-login',
-    imports: [ReactiveFormsModule, InputText, Password, RouterLink],
+    imports: [ReactiveFormsModule, InputText, Password, RouterLink, UserAlertComponent],
     templateUrl: './login.html',
     styleUrl: './login.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,13 +42,21 @@ export class Login implements OnDestroy {
     readonly isLoading = signal(false);
     readonly errorMessage = signal<string | null>(null);
     readonly lockoutRemaining = signal(0);
-    readonly errorLogin = signal(false);
 
     readonly isLocked = computed(() => this.authService.isLocked());
     readonly remainingAttempts = computed(() => this.authService.remainingAttempts());
     readonly showAttemptsWarning = computed(
         () => this.remainingAttempts() < 5 && this.remainingAttempts() > 0 && !this.isLocked(),
     );
+
+    readonly openAlert = signal(false);
+    readonly userAlert = signal<UserAlert>({
+        title: '',
+        message: '',
+        tone: AlertTone.Info,
+        eyebrow: '',
+        actionLabel: '',
+    });
 
     readonly form = this.fb.nonNullable.group({
         email: [
@@ -93,19 +104,33 @@ export class Login implements OnDestroy {
                             ? returnUrl : '/dashboard';
                         await this.router.navigateByUrl(safeUrl);
                     } else {
-                        this.errorMessage.set(result.error ?? 'Error de autenticación.');
+                        if (result.error === 'INVALID_CREDENTIALS') {
+                            this.errorMessage.set('Correo o contraseña incorrectos.');
+                        } else if (result.error === 'ACCOUNT_LOCKED') {
+                            this.errorMessage.set('Cuenta bloqueada debido a múltiples intentos fallidos. Intenta de nuevo más tarde.');
+                        } else if (result.error === 'USER_NOT_VERIFIED') {
+                            this.errorMessage.set('Usuario no verificado. Por favor, verifica tu correo electrónico.');
+                            this.userAlert.set({
+                                title: 'Usuario no verificado',
+                                message: 'Tu cuenta aún no ha sido verificada por un administrador. Por favor, espera a que se complete el proceso de verificación.',
+                                tone: AlertTone.Warning,
+                                eyebrow: 'Acceso denegado',
+                                actionLabel: 'Aceptar',
+                            });
+                            this.openAlert.set(true);
+                        } else {
+                            this.errorMessage.set(result.error ?? 'Error de autenticación.');
+                        }
                         // Clear password field on every failure to prevent accidental exposure
                         this.form.controls.password.reset();
-                        this.errorLogin.set(true);
                     }
                 },
                 error: (err) => {
+                    console.error('Login error:', err);
                     this.errorMessage.set('Error de conexión. Inténtalo de nuevo más tarde.');
                     this.isLoading.set(false);
                 }
             })
-
-
         } finally {
             this.isLoading.set(false);
         }
@@ -123,5 +148,14 @@ export class Login implements OnDestroy {
                 this.lockoutRemaining.set(0);
             }
         }, 1_000);
+    }
+
+    onAlertAction(): void {
+        if (this.userAlert().tone === AlertTone.Warning) {
+            this.openAlert.set(false);
+            return;
+        }
+
+        this.openAlert.set(false);
     }
 }

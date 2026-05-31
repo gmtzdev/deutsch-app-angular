@@ -1,3 +1,6 @@
+<app-user-alert [open]="openAlert()" [userAlert]="userAlert()" [actionLabel]="userAlert().actionLabel ?? null"
+    (close)="openAlert.set(false)" (action)="onAlertAction()" />
+
 <main class="page bg-background">
     <section class="card bg-login-card">
         <div class="logo">
@@ -61,16 +64,7 @@
                 <a href="#" class="forgot text-login-subtitle">¿Olvidaste tu contraseña?</a>
             </div>
 
-            @if(errorLogin()) {
-            <div class="text-center mb-1.5 text-red-500">
-                El usurio o contraseña son incorrectos. <br> Inténtalo de nuevo.
-            </div>
-            }
-
             <button type="submit" class="submit-btn">Iniciar sesión</button>
-
-            <p id="form-message" class="form-message" aria-live="polite">
-            </p>
         </form>
 
         <p class="register text-login-indications">
