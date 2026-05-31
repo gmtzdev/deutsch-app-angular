@@ -1,0 +1,84 @@
+<aside class="admin-sidebar bg-card" [class.admin-sidebar--collapsed]="sidebarCollapsed()"
+    aria-label="Navegación del panel de administración">
+
+    <div class="admin-sidebar__top">
+        <div class="admin-sidebar__header">
+            <div class="admin-sidebar__brand">
+                <div class="logo">
+                    <span>🇩🇪</span>
+                </div>
+                <strong class="admin-sidebar__title">DeutschApp</strong>
+            </div>
+
+
+            <button type="button" class="admin-sidebar__toggle" (click)="toggleSidebar()"
+                [attr.aria-expanded]="!sidebarCollapsed()"
+                [attr.aria-label]="sidebarCollapsed() ? 'Expandir menú lateral' : 'Contraer menú lateral'">
+                {{ sidebarCollapsed() ? '›' : '‹' }}
+            </button>
+        </div>
+
+        <nav class="admin-sidebar__nav">
+            <a href="#admin-overview" class="admin-sidebar__link">
+                <i class="pi pi-search" aria-hidden="true"></i>
+                <span class="admin-sidebar__link-text">Quick Search</span>
+            </a>
+        </nav>
+
+        <nav class="admin-sidebar__nav">
+            <a href="#admin-overview" class="admin-sidebar__link">
+                <i class="pi pi-inbox" aria-hidden="true"></i>
+                <span class="admin-sidebar__link-text">Inbox</span>
+            </a>
+            <a href="#users-heading" class="admin-sidebar__link">
+                <i class="pi pi-bell" aria-hidden="true"></i>
+                <span class="admin-sidebar__link-text">Notificaciones</span>
+            </a>
+            <a href="#users-heading" class="admin-sidebar__link">
+                <i class="pi pi-file-check" aria-hidden="true"></i>
+                <span class="admin-sidebar__link-text">Alumnos por verificar</span>
+            </a>
+        </nav>
+
+        <nav class="admin-sidebar__nav">
+
+            <span class="admin-sidebar__section-label" aria-hidden="true">Menu</span>
+            <a href="#admin-overview" class="admin-sidebar__link">
+                <i class="pi pi-users" aria-hidden="true"></i>
+                <span class="admin-sidebar__link-text">Alumnos</span>
+            </a>
+            <a href="#admin-overview" class="admin-sidebar__link">
+                <i class="pi pi-building-columns" aria-hidden="true"></i>
+                <span class="admin-sidebar__link-text">Maestros</span>
+            </a>
+            <a href="#users-heading" class="admin-sidebar__link">
+                <i class="pi pi-database" aria-hidden="true"></i>
+                <span class="admin-sidebar__link-text">Niveles</span>
+            </a>
+            <a href="#levels-heading" class="admin-sidebar__link">
+                <span class="admin-sidebar__link-icon" aria-hidden="true">◻</span>
+                <span class="admin-sidebar__link-text">Niveles</span>
+            </a>
+            <a routerLink="/admin/users" class="admin-sidebar__link admin-sidebar__link--accent">
+                <span class="admin-sidebar__link-icon" aria-hidden="true">+</span>
+                <span class="admin-sidebar__link-text">Administrar usuarios</span>
+            </a>
+            <a routerLink="/dashboard" class="admin-sidebar__link">
+                <span class="admin-sidebar__link-icon" aria-hidden="true">↗</span>
+                <span class="admin-sidebar__link-text">Ir al dashboard</span>
+            </a>
+        </nav>
+    </div>
+
+    <div class="admin-sidebar__down">
+        <nav class="admin-sidebar__footer-nav">
+            <a href="#admin-overview" class="admin-sidebar__link">
+                <span class="user-avatar" aria-hidden="true">GM</span>
+                <div class="admin-sidebar__user-info">
+                    <span class="admin-sidebar__link-text">Gerardo</span>
+                    <span class="admin-sidebar__link-subtext">Administrador</span>
+                </div>
+            </a>
+        </nav>
+    </div>
+</aside>

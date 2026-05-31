@@ -1,0 +1,185 @@
+.admin-sidebar {
+    position: fixed;
+    height: calc(100vh - 60px);
+    width: 260px;
+    border-radius: 10px;
+    box-shadow: 0 10px 32px rgba(15, 23, 42, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: padding 0.2s ease;
+}
+
+.admin-sidebar__top {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-sidebar__down {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-sidebar--collapsed {
+    padding-inline: 0.75rem;
+    width: 72px;
+}
+
+.admin-sidebar__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #dedfe5;
+}
+
+
+.admin-sidebar__brand {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.admin-sidebar__kicker {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    opacity: 0.6;
+    font-weight: 700;
+}
+
+.admin-sidebar__title {
+    font-size: 1.05rem;
+    line-height: 1.1;
+}
+
+.admin-sidebar__toggle {
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid rgba(128, 128, 128, 0.22);
+    background: transparent;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 1rem;
+    flex-shrink: 0;
+
+    &:hover {
+        background: rgba(128, 128, 128, 0.08);
+    }
+
+    &:focus-visible {
+        outline: 2px solid #6366f1;
+        outline-offset: 2px;
+    }
+}
+
+.admin-sidebar__nav {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #dedfe5;
+}
+
+.admin-sidebar--collapsed .admin-sidebar__nav {
+    padding: 0.5rem 0;
+}
+
+
+/* ── Links ── */
+.admin-sidebar__link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 12px;
+    color: inherit;
+    text-decoration: none;
+    font-weight: 400;
+    transition: background 0.15s ease, color 0.15s ease;
+    border: solid 1px transparent;
+
+    &:hover,
+    &:focus-visible {
+        background: #f5f6fa;
+        outline: none;
+        border: solid 1px #cacbcf;
+    }
+}
+
+.admin-sidebar__section-label {
+    padding-left: 0.7rem;
+}
+
+.admin-sidebar__link--accent {
+    background: rgba(99, 102, 241, 0.12);
+    color: #4338ca;
+}
+
+.admin-sidebar__link-icon {
+    width: 1.35rem;
+    text-align: center;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.admin-sidebar__link-text {
+    font-size: 0.92rem;
+    line-height: 1.2;
+}
+
+.admin-sidebar--collapsed .admin-sidebar__brand,
+.admin-sidebar--collapsed .admin-sidebar__link-text,
+.admin-sidebar--collapsed .admin-sidebar__link-subtext,
+.admin-sidebar--collapsed .admin-sidebar__section-label {
+    display: none;
+}
+
+.admin-sidebar--collapsed .admin-sidebar__header {
+    justify-content: center;
+}
+
+.admin-sidebar--collapsed .admin-sidebar__link {
+    justify-content: center;
+    padding-inline: 0;
+}
+
+
+.admin-sidebar__footer-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 1rem;
+    border-top: 1px solid #dedfe5;
+}
+
+.admin-sidebar__user-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.admin-sidebar__user-info span:last-child {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    font-weight: 500;
+}
+
+
+
+
+.user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0.05em;
+}

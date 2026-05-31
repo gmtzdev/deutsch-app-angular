@@ -11,10 +11,11 @@ import { AuthService } from '../core/services/auth.service';
 import { CurriculumService } from '../core/services/curriculum.service';
 import { Header } from '../components/header/header';
 import { Level } from '../core/models/level.model';
+import { SidebarAdmin } from '../components/sidebar-admin/sidebar-admin';
 
 @Component({
     selector: 'app-admin',
-    imports: [Header, RouterLink],
+    imports: [Header, RouterLink, SidebarAdmin],
     templateUrl: './admin.html',
     styleUrl: './admin.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,6 +25,7 @@ export class Admin {
     private readonly curriculumService = inject(CurriculumService);
 
     readonly currentUser = this.authService.currentUser;
+    readonly sidebarCollapsed = signal(false);
 
     readonly levelsResource = resource<Level[], undefined>({
         loader: () => firstValueFrom(this.curriculumService.getLevels()),
@@ -33,6 +35,8 @@ export class Admin {
 
     readonly deletingLevelId = signal<number | null>(null);
     readonly deleteError = signal<string | null>(null);
+
+
 
     async deleteLevel(id: number): Promise<void> {
         if (this.deletingLevelId() !== null) return;
