@@ -8,7 +8,7 @@
             <div class="user-menu">
                 <button class="user-menu-trigger" (click)="toggleMenu()" [attr.aria-expanded]="isMenuOpen()"
                     aria-haspopup="true" aria-label="Menú de usuario" type="button">
-                    <span class="user-avatar" aria-hidden="true">{{ userInitials() }}</span>
+                    <app-user-avatar />
                     <span class="user-name">{{ currentUser()!.username }}</span>
                     <svg class="chevron" [class.chevron--open]="isMenuOpen()" xmlns="http://www.w3.org/2000/svg"
                         width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -21,7 +21,7 @@
                 <div class="menu-backdrop" (click)="closeMenu()" aria-hidden="true"></div>
                 <div class="user-dropdown" role="menu" aria-label="Opciones de usuario">
                     <div class="dropdown-header">
-                        <span class="dropdown-avatar" aria-hidden="true">{{ userInitials() }}</span>
+                        <app-user-avatar [size]="'md'" />
                         <div class="dropdown-user-info">
                             <span class="dropdown-username">{{ currentUser()!.username }}</span>
                             @if (isAdmin()) {

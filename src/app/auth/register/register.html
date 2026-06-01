@@ -1,3 +1,6 @@
+<app-user-alert [open]="openAlert()" [userAlert]="userAlert" [actionLabel]="userAlert.actionLabel ?? null"
+    (close)="openAlert.set(false)" (action)="onAlertAction()" />
+
 <main class="page bg-background">
     <section class="card bg-login-card">
         <div class="logo">
@@ -65,8 +68,6 @@
                     La contraseña es requerida.
                     } @else if (form.controls.password.errors?.['minlength']) {
                     Mínimo 8 caracteres.
-                    } @else if (form.controls.password.errors?.['weakPassword']) {
-                    Debe incluir mayúscula, número y carácter especial.
                     }
                 </small>
                 }
@@ -93,18 +94,6 @@
                 Crear cuenta
                 }
             </button>
-
-            <!-- Messages -->
-            @if (errorMessage()) {
-            <p class="form-message error-message" role="alert" aria-live="polite">
-                {{ errorMessage() }}
-            </p>
-            }
-            @if (successMessage()) {
-            <p class="form-message success-message" role="status" aria-live="polite">
-                {{ successMessage() }}
-            </p>
-            }
         </form>
 
         <p class="login-link text-login-indications">
