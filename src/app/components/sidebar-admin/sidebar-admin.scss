@@ -154,6 +154,10 @@
     border-top: 1px solid #dedfe5;
 }
 
+.admin-sidebar--collapsed .admin-sidebar__footer-nav {
+    padding: 0.5rem 0;
+}
+
 .admin-sidebar__user-info {
     display: flex;
     flex-direction: column;
@@ -164,22 +168,4 @@
     font-size: 0.75rem;
     opacity: 0.6;
     font-weight: 500;
-}
-
-
-
-
-.user-avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    letter-spacing: 0.05em;
 }
