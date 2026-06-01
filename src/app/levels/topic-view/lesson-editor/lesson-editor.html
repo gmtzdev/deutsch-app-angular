@@ -36,6 +36,7 @@
                 @case ('fillBlank') { <app-lesson-fill-blank [element]="element" /> }
                 @case ('fillBlankTable') { <app-lesson-fill-blank-table [element]="element" /> }
                 @case ('textQuestion') { <app-lesson-text-question [element]="element" /> }
+                @case ('multipleChoice') { <app-lesson-multiple-choice [element]="element" /> }
                 @default { <app-lesson-paragraph [element]="element" /> }
                 }
                 @if (element.gridId) {
@@ -547,6 +548,9 @@
             } @else if (activeType() === 'textQuestion') {
             <!-- Open text-question exercise editor -->
             <app-editor-lesson-text-question [(textQuestions)]="textQuestions" />
+            } @else if (activeType() === 'multipleChoice') {
+            <!-- Open multiple-choice exercise editor -->
+            <app-editor-lesson-multiple-choice [(multipleChoiceQuestions)]="multipleChoiceQuestions" />
             } @else {
             <input id="editor-main-input" class="editor-main-input" type="text" [placeholder]="activeType() === 'title' ? 'Título de la sección...' :
                                activeType() === 'subtitle' ? 'Subtítulo...' : 'Escribe el párrafo...'"

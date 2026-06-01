@@ -50,11 +50,15 @@ import { LessonFillBlankTable } from '../elements/lesson-fill-blank-table-simple
 import { TextQuestionExercise } from '../../../core/models/elements/text-question-exercise.model';
 import { TextQuestionItem } from '../../../core/models/elements/text-question-item.model';
 import { LessonTextQuestion } from '../elements/lesson-text-question';
+import { MultipleChoiceExercise } from '../../../core/models/elements/multiple-choice-exercise.model';
+import { MultipleChoiceQuestion } from '../../../core/models/elements/multiple-choice-question.model';
+import { LessonMultipleChoice } from '../elements/lesson-multiple-choice';
 import { CurriculumService } from '../../../core/services/curriculum.service';
 import { environment } from '../../../../environments/environment';
 import { TextQuestionComponent } from './element-editor/textQuestion/textQuestion.component';
+import { MultipleChoiceComponent } from './element-editor/multipleChoice/multipleChoice.component';
 
-type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'alphabetBlock' | 'pronunciationBlock' | 'fillBlank' | 'fillBlankTable' | 'textQuestion';
+type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'alphabetBlock' | 'pronunciationBlock' | 'fillBlank' | 'fillBlankTable' | 'textQuestion' | 'multipleChoice';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
 type TagColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'gray';
 
@@ -122,6 +126,7 @@ const BLOCK_OPTIONS: BlockOption[] = [
     { type: 'fillBlank', label: 'Completar oración', icon: '✍️', description: 'Rellenar los espacios en blanco de una oración' },
     { type: 'fillBlankTable', label: 'Tabla completar espacios', icon: '🧩', description: 'Ejercicio en tabla para completar espacios en blanco' },
     { type: 'textQuestion', label: 'Pregunta abierta', icon: '💬', description: 'Preguntas con respuesta en texto libre' },
+    { type: 'multipleChoice', label: 'Opción múltiple', icon: '✅', description: 'Preguntas con opciones y una respuesta correcta' },
 ];
 
 const TIP_COLOR_OPTIONS: TipColorOption[] = [
@@ -144,8 +149,8 @@ const TAG_COLOR_OPTIONS: TagColorOption[] = [
     selector: 'app-lesson-editor',
     templateUrl: './lesson-editor.html',
     styleUrl: './lesson-editor.scss',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonFillBlankTable, LessonTextQuestion,
-        TextQuestionComponent
+    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonFillBlankTable, LessonTextQuestion, LessonMultipleChoice,
+        TextQuestionComponent, MultipleChoiceComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -201,6 +206,9 @@ export class LessonEditor {
     // ── Fill-blank signals ────────────────────────────────────
     protected readonly fillBlankRows = signal<FillBlankRow[]>([{ id: 1, sentence: '', answers: [''] }]);
     protected readonly textQuestions = signal<TextQuestionItem[]>([{ id: 1, question: '', answer: '', update: false }]);
+    protected readonly multipleChoiceQuestions = signal<MultipleChoiceQuestion[]>([
+        { id: 1, question: '', options: ['', ''], correctOption: 0, update: false },
+    ]);
     protected readonly fillBlankTableCols = signal(3);
     protected readonly fillBlankTableHeaders = signal<string[]>(['Col 1', 'Col 2', 'Col 3']);
     protected readonly fillBlankTableRows = signal<FillBlankTableRowDraft[]>(this.createFillBlankTableRows(3));
@@ -286,6 +294,7 @@ export class LessonEditor {
         this.pronunciationItems.set([{ id: 1, text: '', label: '' }]);
         this.fillBlankRows.set([{ id: 1, sentence: '', answers: [''] }]);
         this.textQuestions.set([{ id: 1, question: '', answer: '', update: false }]);
+        this.multipleChoiceQuestions.set([{ id: 1, question: '', options: ['', ''], correctOption: 0, update: false }]);
         this.fillBlankTableCols.set(3);
         this.fillBlankTableHeaders.set(['Col 1', 'Col 2', 'Col 3']);
         this.fillBlankTableRows.set(this.createFillBlankTableRows(3));
@@ -327,6 +336,7 @@ export class LessonEditor {
         this.pronunciationItems.set([{ id: 1, text: '', label: '' }]);
         this.fillBlankRows.set([{ id: 1, sentence: '', answers: [''] }]);
         this.textQuestions.set([{ id: 1, question: '', answer: '', update: false }]);
+        this.multipleChoiceQuestions.set([{ id: 1, question: '', options: ['', ''], correctOption: 0, update: false }]);
         this.fillBlankTableCols.set(3);
         this.fillBlankTableHeaders.set(['Col 1', 'Col 2', 'Col 3']);
         this.fillBlankTableRows.set(this.createFillBlankTableRows(3));
@@ -398,6 +408,25 @@ export class LessonEditor {
                 this.textQuestions.set(qs);
             } else {
                 this.textQuestions.set([{ id: 1, question: '', answer: '', update: false }]);
+            }
+        } else if (type === 'multipleChoice') {
+            const mc = element as MultipleChoiceExercise;
+            if (Array.isArray(mc.questions) && mc.questions.length > 0) {
+                let idq = 0;
+                const qs: MultipleChoiceQuestion[] = [];
+                for (const q of mc.questions) {
+                    qs.push({
+                        id: q.id ?? ++idq,
+                        question: q.question ?? '',
+                        options: Array.isArray(q.options) && q.options.length >= 2 ? q.options : ['', ''],
+                        correctOption: typeof q.correctOption === 'number' ? q.correctOption : 0,
+                        update: true,
+                    });
+                    idq = q.id ?? idq;
+                }
+                this.multipleChoiceQuestions.set(qs);
+            } else {
+                this.multipleChoiceQuestions.set([{ id: 1, question: '', options: ['', ''], correctOption: 0, update: false }]);
             }
         } else if (type === 'fillBlankTable') {
             const fbt = element as FillBlankTableExercise;
@@ -1032,6 +1061,32 @@ export class LessonEditor {
                 text: JSON.stringify(questions),
                 style: '',
                 type: 'textQuestion',
+                order: 0,
+                lesson: null!,
+                delete: false,
+                questions,
+            });
+        } else if (type === 'multipleChoice') {
+            const questions = this.multipleChoiceQuestions()
+                .map((q) => ({
+                    ...q,
+                    question: q.question.trim(),
+                    options: q.options.map((o) => o.trim()).filter(Boolean),
+                }))
+                .filter((q) => q.question && q.options.length >= 2 && q.correctOption >= 0 && q.correctOption < q.options.length)
+                .map((q) => ({
+                    id: q.id,
+                    question: q.question,
+                    options: q.options,
+                    correctOption: q.correctOption,
+                    update: q.update,
+                }));
+            if (!questions.length) return;
+            draft = new MultipleChoiceExercise({
+                id: -Date.now(),
+                text: JSON.stringify(questions),
+                style: '',
+                type: 'multipleChoice',
                 order: 0,
                 lesson: null!,
                 delete: false,

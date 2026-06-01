@@ -1,0 +1,48 @@
+<div class="quiz-editor" role="group" aria-label="Editor de preguntas de opción múltiple">
+    @for (q of multipleChoiceQuestions(); track $index; let qi = $index) {
+    <div class="quiz-editor__row">
+        <div class="quiz-editor__row-header">
+            <span class="quiz-editor__row-num">Pregunta {{ qi + 1 }}</span>
+            @if (multipleChoiceQuestions().length > 1) {
+            <button type="button" class="remove-item-btn" (click)="removeQuestion(qi)"
+                [attr.aria-label]="'Eliminar pregunta ' + (qi + 1)">&#x2715;</button>
+            }
+        </div>
+
+        <input class="editor-main-input editor-main-input--sm" type="text" placeholder="Pregunta..."
+            [value]="q.question" (input)="setQuestionField(qi, $any($event.target).value)"
+            [attr.aria-label]="'Pregunta ' + (qi + 1)" required />
+
+        <div class="mc-editor__options" role="group" [attr.aria-label]="'Opciones pregunta ' + (qi + 1)">
+            @for (option of q.options; track $index; let oi = $index) {
+            <div class="mc-editor__option-row">
+                <label class="mc-editor__correct-toggle" [attr.for]="'mc-correct-' + qi + '-' + oi">
+                    <input [id]="'mc-correct-' + qi + '-' + oi" type="radio" [name]="'mc-correct-' + qi"
+                        [checked]="q.correctOption === oi" (change)="setCorrectOption(qi, oi)"
+                        [attr.aria-label]="'Marcar opción ' + (oi + 1) + ' como correcta'" />
+                    Correcta
+                </label>
+
+                <input class="editor-main-input editor-main-input--sm" type="text"
+                    [placeholder]="'Opción ' + (oi + 1) + '...'" [value]="option"
+                    (input)="setOption(qi, oi, $any($event.target).value)"
+                    [attr.aria-label]="'Texto opción ' + (oi + 1) + ' de pregunta ' + (qi + 1)" required />
+
+                @if (q.options.length > 2) {
+                <button type="button" class="remove-item-btn" (click)="removeOption(qi, oi)"
+                    [attr.aria-label]="'Eliminar opción ' + (oi + 1)">&#x2715;</button>
+                }
+            </div>
+            }
+        </div>
+
+        <button type="button" class="add-item-btn" (click)="addOption(qi)" [disabled]="q.options.length >= 6">
+            + Añadir opción
+        </button>
+    </div>
+    }
+
+    <button type="button" class="add-item-btn" (click)="addQuestion()">
+        + Añadir pregunta
+    </button>
+</div>
