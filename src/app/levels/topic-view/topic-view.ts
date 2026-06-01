@@ -69,12 +69,14 @@ import { LessonAlphabet } from './elements/lesson-alphabet';
 import { LessonPronunciation } from './elements/lesson-pronunciation';
 import { LessonFillBlank } from './elements/lesson-fill-blank';
 import { LessonFillBlankTable } from './elements/lesson-fill-blank-table-simple';
+import { LessonTextQuestion } from './elements/lesson-text-question';
+import { LessonMultipleChoice } from './elements/lesson-multiple-choice';
 import { LessonEditor } from './lesson-editor/lesson-editor';
 import { ChatMessage } from '../../core/dto/ai/chat-message.dto';
 
 @Component({
     selector: 'app-topic-view',
-    imports: [FormsModule, LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonFillBlankTable, LessonEditor],
+    imports: [FormsModule, LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonFillBlankTable, LessonTextQuestion, LessonMultipleChoice, LessonEditor],
     templateUrl: './topic-view.html',
     styleUrls: ['./topic-view.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -153,112 +155,12 @@ export class TopicView implements HasUnsavedChanges {
 
     protected readonly groupedElements = computed(() =>
         groupElements(this.subtopicResource.value()?.lesson?.elements ?? [])
-        // groupElements([
-        //     {
-        //         "type": "title",
-        //         "order": 1,
-        //         "text": "Die Artikel",
-        //         "baseStyle": "h1"
-        //     },
-        //     {
-        //         "type": "element",
-        //         "order": 2,
-        //         "text": "Im Deutschen gibt es drei bestimmte Artikel: der, die und das. Sie werden verwendet, um bestimmte Personen, Dinge oder Konzepte zu identifizieren."
-        //     },
-        //     {
-        //         "type": "tip",
-        //         "order": 3,
-        //         "text": "Die Artikel hängen vom Genus (grammatisches Geschlecht) des Substantivs ab. Es gibt Maskulinum, Femininum und Neutrum."
-        //     },
-        //     {
-        //         "type": "table",
-        //         "order": 4,
-        //         "headers": [
-        //             "Artikel",
-        //             "Genus",
-        //             "Beispiel"
-        //         ],
-        //         "rows": [
-        //             {
-        //                 "cells": [
-        //                     "der",
-        //                     "Maskulinum",
-        //                     "der Mann"
-        //                 ]
-        //             },
-        //             {
-        //                 "cells": [
-        //                     "die",
-        //                     "Femininum",
-        //                     "die Frau"
-        //                 ]
-        //             },
-        //             {
-        //                 "cells": [
-        //                     "das",
-        //                     "Neutrum",
-        //                     "das Kind"
-        //                 ]
-        //             }
-        //         ]
-        //     },
-        //     {
-        //         "type": "quiz",
-        //         "order": 5,
-        //         "questions": [
-        //             {
-        //                 "question": "Welcher Artikel passt zu 'Auto'?",
-        //                 "answer": "das",
-        //                 "hint": "Das Auto ist Neutrum."
-        //             },
-        //             {
-        //                 "question": "Welcher Artikel passt zu 'Tisch'?",
-        //                 "answer": "der",
-        //                 "hint": "Der Tisch ist Maskulinum."
-        //             },
-        //             {
-        //                 "question": "Welcher Artikel passt zu 'Lampe'?",
-        //                 "answer": "die",
-        //                 "hint": "Die Lampe ist Femininum."
-        //             }
-        //         ]
-        //     },
-        //     {
-        //         "type": "dragDrop",
-        //         "order": 6,
-        //         "rows": [
-        //             {
-        //                 "before": "___ Mann",
-        //                 "answer": "der"
-        //             },
-        //             {
-        //                 "before": "___ Frau",
-        //                 "answer": "die"
-        //             },
-        //             {
-        //                 "before": "___ Kind",
-        //                 "answer": "das"
-        //             }
-        //         ],
-        //         "words": [
-        //             "der",
-        //             "die",
-        //             "das",
-        //             "Kind",
-        //             "Mann",
-        //             "Frau"
-        //         ]
-        //     }
-        // ] as ElementTypeObj[])
     );
 
     protected enableEditMode(): void {
         this.editMode.set(!this.editMode())
         this.pendingElements.set(this.subtopicResource.value()?.lesson?.elements ?? []);
     }
-
-
-
 
     protected readonly topicResource = resource<TopicWithSubtopics, string>({
         params: () => this.topicId(),

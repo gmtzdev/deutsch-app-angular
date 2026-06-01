@@ -1,0 +1,21 @@
+.mc-editor__options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.mc-editor__option-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.mc-editor__correct-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-indications, #9b9a97);
+}

@@ -30,8 +30,12 @@ import { UpdateSubtopicDto } from '../dto/subtopic/update-subtopic.dto';
 import { UpdateTopicDto } from '../dto/topic/update-topic.dto';
 import { FillBlankExercise } from '../models/elements/fill-blank-exercise.model';
 import { FillBlankTableExercise } from '../models/elements/fill-blank-table-exercise.model';
+import { TextQuestionExercise } from '../models/elements/text-question-exercise.model';
+import { MultipleChoiceExercise } from '../models/elements/multiple-choice-exercise.model';
 import { CreateFillBlankDto } from '../dto/elements/dto/fill-blank/create-fill-blank.dto';
 import { ReorderSubtopicDto } from '../dto/subtopic/reorder-subtopic.dto';
+import { CreateTextQuestionDto } from '../dto/elements/dto/text-question/create-text-question.dto';
+import { CreateMultipleChoiceDto } from '../dto/elements/dto/multiple-choice/create-multiple-choice.dto';
 
 const API_BASE = environment.apiUrl;
 
@@ -349,6 +353,41 @@ export class CurriculumService {
                         gridId: auxft.gridId,
                         gridCols: auxft.gridCols,
                     } as CreateFillBlankDto)
+                    break;
+                case 'textQuestion':
+                    const auxtq = el as TextQuestionExercise;
+                    elements.push({
+                        id: auxtq.id,
+                        text: auxtq.questions?.length ? JSON.stringify(auxtq.questions) : auxtq.text,
+                        style: auxtq.style,
+                        type: 'textQuestion',
+                        order,
+                        questions: auxtq.questions.map(q => ({ id: (q.update) ? q.id : undefined, question: q.question, answer: q.answer, update: q.update })),
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: auxtq.delete,
+                        gridId: auxtq.gridId,
+                        gridCols: auxtq.gridCols,
+                    } as CreateTextQuestionDto)
+                    break;
+                case 'multipleChoice':
+                    const auxmc = el as MultipleChoiceExercise;
+                    elements.push({
+                        id: auxmc.id,
+                        text: auxmc.questions?.length ? JSON.stringify(auxmc.questions) : auxmc.text,
+                        style: auxmc.style,
+                        type: 'multipleChoice',
+                        order,
+                        questions: auxmc.questions.map((q) => ({
+                            id: q.update ? q.id : undefined,
+                            question: q.question,
+                            options: JSON.stringify(q.options),
+                            correctOption: q.correctOption,
+                        })),
+                        lesson: { id: Number(lessonId) } as Lesson,
+                        delete: auxmc.delete,
+                        gridId: auxmc.gridId,
+                        gridCols: auxmc.gridCols,
+                    } as CreateMultipleChoiceDto)
                     break;
                 default:
                     console.warn(`Element type ${el.type} is not supported for creation yet.`);

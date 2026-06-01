@@ -1,0 +1,117 @@
+// ── Shared button patterns ───────────────────────────────────
+%_ghost-add {
+    background: none;
+    border: none;
+    font-size: 12px;
+    font-weight: 500;
+    color: #4a90d9;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.12s;
+
+    &:hover {
+        background: rgba(74, 144, 217, 0.08);
+    }
+}
+
+%_icon-rm {
+    background: none;
+    border: none;
+    color: var(--color-indications, #9b9a97);
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: color 0.12s, background 0.12s;
+
+    &:hover {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
+    }
+}
+
+:host {
+    display: block;
+    margin-top: 1.5rem;
+}
+
+// ── Quiz editor ─────────────────────────────────────────────
+.quiz-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    &__row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+        padding: 0.625rem 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        background: var(--color-background, #f7f6f3);
+    }
+
+    &__row-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.125rem;
+    }
+
+    &__row-num {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--color-indications, #9b9a97);
+    }
+}
+
+
+.editor-main-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid rgba(74, 144, 217, 0.4);
+    border-radius: 7px;
+    font-size: 14px;
+    color: var(--color-text, #37352f);
+    background: var(--color-background, #f7f6f3);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:focus {
+        border-color: #4a90d9;
+        box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.15);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    &::placeholder {
+        color: var(--color-indications, #9b9a97);
+    }
+}
+
+.editor-main-input--sm {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 10px;
+}
+
+.editor-main-input--tag {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 10px;
+    letter-spacing: 0.02em;
+}
+
+.add-item-btn {
+    @extend %_ghost-add;
+    align-self: flex-start;
+    margin-top: 2px;
+    padding: 4px 10px;
+}

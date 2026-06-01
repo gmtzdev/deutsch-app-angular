@@ -81,6 +81,8 @@
                             @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="element" /> }
                             @case ('fillBlank') { <app-lesson-fill-blank [element]="element" /> }
                             @case ('fillBlankTable') { <app-lesson-fill-blank-table [element]="element" /> }
+                            @case ('textQuestion') { <app-lesson-text-question [element]="element" /> }
+                            @case ('multipleChoice') { <app-lesson-multiple-choice [element]="element" /> }
                             @default { <app-lesson-paragraph [element]="element" /> }
                             }
                         </div>
@@ -102,6 +104,8 @@
                     @case ('pronunciationBlock') { <app-lesson-pronunciation [element]="group.element" /> }
                     @case ('fillBlank') { <app-lesson-fill-blank [element]="group.element" /> }
                     @case ('fillBlankTable') { <app-lesson-fill-blank-table [element]="group.element" /> }
+                    @case ('textQuestion') { <app-lesson-text-question [element]="group.element" /> }
+                    @case ('multipleChoice') { <app-lesson-multiple-choice [element]="group.element" /> }
                     @default { <app-lesson-paragraph [element]="group.element" /> }
                     }
                     }

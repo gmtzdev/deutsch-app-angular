@@ -1,0 +1,22 @@
+<div class="quiz-editor" role="group" aria-label="Editor de preguntas abiertas">
+    @for (q of textQuestions(); track $index; let qi = $index) {
+    <div class="quiz-editor__row">
+        <div class="quiz-editor__row-header">
+            <span class="quiz-editor__row-num">{{ qi + 1 }}</span>
+            @if (textQuestions().length > 1) {
+            <button type="button" class="remove-item-btn" (click)="removeTextQuestion(qi)"
+                [attr.aria-label]="'Eliminar pregunta ' + (qi + 1)">&#x2715;</button>
+            }
+        </div>
+        <input class="editor-main-input editor-main-input--sm" type="text" placeholder="Pregunta..."
+            [value]="q.question" (input)="setTextQuestionField(qi, 'question', $any($event.target).value)"
+            [attr.aria-label]="'Pregunta ' + (qi + 1)" required />
+        <input class="editor-main-input editor-main-input--sm" type="text" placeholder="Respuesta correcta..."
+            [value]="q.answer" (input)="setTextQuestionField(qi, 'answer', $any($event.target).value)"
+            [attr.aria-label]="'Respuesta correcta ' + (qi + 1)" required />
+    </div>
+    }
+    <button type="button" class="add-item-btn" (click)="addTextQuestion()">
+        + Añadir pregunta
+    </button>
+</div>
