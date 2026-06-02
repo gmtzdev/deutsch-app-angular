@@ -26,25 +26,23 @@ export const routes: Routes = [
         canActivate: [adminGuard],
         title: 'Administración — DeutschApp',
         children: [
-            // {
-            //     path: 'topics/:topicId/:subtopicId',
-            //     loadComponent: () =>
-            //         import('./levels/topic-view/topic-view').then((m) => m.TopicView),
-            //     canDeactivate: [unsavedChangesGuard],
-            //     title: 'Tema — DeutschApp',
-            // },
             {
                 path: '',
                 loadComponent: () => import('./admin/index/index').then((m) => m.AdminIndex),
                 canActivate: [adminGuard],
                 title: 'Usuarios — DeutschApp',
             },
-
             {
                 path: 'users',
                 loadComponent: () => import('./admin/users/users').then((m) => m.AdminUsers),
                 canActivate: [adminGuard],
                 title: 'Usuarios — DeutschApp',
+            },
+            {
+                path: 'pending-users',
+                loadComponent: () => import('./admin/pending-users/pending-users').then((m) => m.AdminPendingUsers),
+                canActivate: [adminGuard],
+                title: 'Pendientes por verificar — DeutschApp',
             },
         ]
     },

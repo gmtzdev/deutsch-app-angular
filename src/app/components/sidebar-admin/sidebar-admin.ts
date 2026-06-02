@@ -1,11 +1,12 @@
-import { Component, output, signal } from "@angular/core";
+import { Component, output, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { UserAvatarComponent } from "../user-avatar/user-avatar";
 
 @Component({
     selector: 'app-sidebar-admin',
     templateUrl: './sidebar-admin.html',
     styleUrls: ['./sidebar-admin.scss'],
-    imports: [UserAvatarComponent],
+    imports: [RouterLink, UserAvatarComponent],
 })
 export class SidebarAdmin {
     readonly sidebarCollapsed = signal(false);
