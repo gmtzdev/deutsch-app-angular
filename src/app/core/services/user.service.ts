@@ -2,7 +2,6 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { AuthUser } from '../dto/auth/login-res.dto';
 import { Observable } from 'rxjs';
 import { User } from '../models/user/User.model';
 import { CreateUserDto } from '../dto/user/create-user.dto';
@@ -26,6 +25,14 @@ export class UserService {
 
     getUsers(): Observable<User[]> {
         return this.http.get<User[]>(`${this.url}/users`);
+    }
+
+    getPendingVerificationUsers(): Observable<User[]> {
+        return this.http.get<User[]>(`${this.url}/users/pending-verification`);
+    }
+
+    verifyUser(userId: number): Observable<boolean> {
+        return this.http.patch<boolean>(`${this.url}/users/${userId}/verify`, {});
     }
 
     createUser(dto: CreateUserDto): Observable<User> {

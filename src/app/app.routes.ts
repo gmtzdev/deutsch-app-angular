@@ -25,12 +25,26 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/admin').then((m) => m.Admin),
         canActivate: [adminGuard],
         title: 'Administración — DeutschApp',
-    },
-    {
-        path: 'admin/users',
-        loadComponent: () => import('./admin/users/users').then((m) => m.AdminUsers),
-        canActivate: [adminGuard],
-        title: 'Usuarios — DeutschApp',
+        children: [
+            {
+                path: '',
+                loadComponent: () => import('./admin/index/index').then((m) => m.AdminIndex),
+                canActivate: [adminGuard],
+                title: 'Usuarios — DeutschApp',
+            },
+            {
+                path: 'users',
+                loadComponent: () => import('./admin/users/users').then((m) => m.AdminUsers),
+                canActivate: [adminGuard],
+                title: 'Usuarios — DeutschApp',
+            },
+            {
+                path: 'pending-users',
+                loadComponent: () => import('./admin/pending-users/pending-users').then((m) => m.AdminPendingUsers),
+                canActivate: [adminGuard],
+                title: 'Pendientes por verificar — DeutschApp',
+            },
+        ]
     },
     {
         path: 'dashboard',
