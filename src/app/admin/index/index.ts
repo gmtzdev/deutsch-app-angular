@@ -1,7 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, inject, resource } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Header } from '../../components/header/header';
-import { SidebarAdmin } from '../../components/sidebar-admin/sidebar-admin';
 import { AuthService } from '../../core/services/auth.service';
 import { CurriculumService } from '../../core/services/curriculum.service';
 import { Level } from '../../core/models/level.model';
@@ -12,7 +10,7 @@ import { firstValueFrom } from 'rxjs';
     templateUrl: './index.html',
     styleUrls: ['./index.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [RouterLink, Header, SidebarAdmin],
+    imports: [RouterLink],
 })
 export class AdminIndex {
     private readonly authService = inject(AuthService);
