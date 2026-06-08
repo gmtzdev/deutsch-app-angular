@@ -56,9 +56,9 @@
                     <span class="lessons-count">
                         📚 {{ level.lessonNumber }} lecciones
                     </span>
-                    <a [routerLink]="['/levels', level.id]" class="start-btn">
+                    <button (click)="startLevel(level.id)" class="start-btn cursor-pointer">
                         Comenzar →
-                    </a>
+                    </button>
                 </div>
             </article>
             }
