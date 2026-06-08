@@ -1,0 +1,133 @@
+<div class="shell">
+    <app-header />
+
+    <div class="shell-body" [class.shell-body--sidebar-collapsed]="sidebarCollapsed()">
+
+        <button type="button" class="sidebar-toggle" (click)="toggleSidebar()"
+            [attr.aria-expanded]="!sidebarCollapsed()"
+            [attr.aria-label]="sidebarCollapsed() ? 'Expandir barra lateral' : 'Contraer barra lateral'">
+            {{ sidebarCollapsed() ? '›' : '‹' }}
+        </button>
+
+        <!-- ── Sidebar ──────────────────────────────────────────── -->
+        <aside class="sidebar" [class.sidebar--collapsed]="sidebarCollapsed()" aria-label="Temas del nivel">
+
+            @if (levelResource.isLoading()) {
+            <div class="sidebar-header skeleton-wrap" aria-busy="true" aria-label="Cargando nivel">
+                <div class="skeleton skeleton--badge"></div>
+                <div class="skeleton skeleton--title"></div>
+            </div>
+            <ul class="topic-list" aria-hidden="true">
+                @for (_ of [1, 2, 3, 4, 5]; track $index) {
+                <li class="topic-item topic-item--skeleton">
+                    <div class="skeleton skeleton--topic-title"></div>
+                    <div class="skeleton skeleton--topic-sub"></div>
+                </li>
+                }
+            </ul>
+            }
+
+            @if (levelResource.error()) {
+            <p class="sidebar-error" role="alert">Error al cargar el nivel.</p>
+            }
+
+            @if (levelResource.value(); as level) {
+            <div class="sidebar-header">
+                <a class="back-link" routerLink="/dashboard" aria-label="Volver al inicio">
+                    ← Niveles
+                </a>
+                <div class="level-meta">
+                    <span class="level-badge">{{ level.tag }}</span>
+                    <h1 class="level-title">{{ level.title }}</h1>
+                </div>
+            </div>
+
+            <nav [attr.aria-label]="'Temas de ' + level.title">
+                <ul class="topic-list" role="list">
+                    @for (topic of level.topics; track topic.id) {
+                    <li class="topic-group" role="listitem">
+
+
+                        <!-- Topic toggle + action buttons -->
+                        <div class="topic-header">
+                            <button type="button" class="topic-toggle"
+                                [class.topic-toggle--active]="isTopicActive(topic.id)"
+                                [class.topic-toggle--open]="isExpanded(topic.id)"
+                                [attr.aria-expanded]="isExpanded(topic.id)"
+                                [attr.aria-controls]="'subtopics-' + topic.id" (click)="toggleTopic(topic.id, $event)">
+                                <span class="topic-toggle__text">
+                                    {{ topic.title }}
+
+                                    @if (topic.subtitle) {
+                                    <span class="topic-toggle__sub">{{ topic.subtitle }}</span>
+                                    }
+                                </span>
+
+                                <div class="topic-actions">
+
+
+                                    <button type="button" class="topic-action-btn topic-action-btn--delete"
+                                        (click)="deleteTopicById(topic.id)" aria-label="Eliminar tema">🗑</button>
+                                </div>
+
+                                <span class="topic-toggle__chevron" aria-hidden="true">›</span>
+                            </button>
+
+                        </div>
+
+
+                        <!-- Subtopics -->
+                        <ul class="subtopic-list" [class.subtopic-list--open]="isExpanded(topic.id)"
+                            [id]="'subtopics-' + topic.id" role="list"
+                            (dragover)="onSubtopicListDragOver($event, topic.id)">
+
+                            @for (subtopic of topic.subtopics; track subtopic.id; let si = $index) {
+                            <li role="listitem" draggable="true"
+                                [class.subtopic-list__item--dragging]="dragFromIndex() === si && dragTopicId() === topic.id"
+                                [class.subtopic-list__item--drag-over]="dragOverTopicId() === topic.id && dragOverIndex() === si && !(dragFromIndex() === si && dragTopicId() === topic.id)"
+                                (dragstart)="onSubtopicDragStart($event, topic.id, si)"
+                                (dragover)="onSubtopicDragOver($event, si)" (dragleave)="onSubtopicDragLeave(si)"
+                                (drop)="onSubtopicDrop($event, si, topic.id)" (dragend)="onSubtopicDragEnd()">
+
+
+                                <!-- Subtopic link + action buttons -->
+                                <div class="subtopic-item">
+                                    <span class="subtopic-drag-handle" aria-hidden="true"
+                                        title="Arrastrar para reordenar">⠿</span>
+                                    <a class="subtopic-link" [routerLink]="['topics', topic.id, subtopic.id]"
+                                        [attr.aria-label]="subtopic.title">
+                                        @if (subtopic.icon) {
+                                        <span class="subtopic-link__icon" aria-hidden="true">{{ subtopic.icon }}</span>
+                                        }
+                                        <span class="subtopic-link__title">{{ subtopic.title }}</span>
+                                    </a>
+                                    <div class="subtopic-actions">
+                                        <button type="button" class="subtopic-action-btn subtopic-action-btn--delete"
+                                            (click)="deleteSubtopicById(topic.id, subtopic.id)"
+                                            aria-label="Eliminar subtema">🗑</button>
+                                    </div>
+                                </div>
+
+                            </li>
+                            }
+
+
+                        </ul>
+
+                    </li>
+                    }
+                </ul>
+            </nav>
+
+
+            }
+
+        </aside>
+
+        <!-- ── Main content ─────────────────────────────────────── -->
+        <main class="main-content" id="main-content" tabindex="-1">
+            <router-outlet />
+        </main>
+
+    </div>
+</div>
