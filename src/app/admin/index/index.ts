@@ -22,7 +22,7 @@ export class AdminIndex {
     readonly sidebarCollapsed = signal(false);
 
     readonly levelsResource = resource<Level[], undefined>({
-        loader: () => firstValueFrom(this.curriculumService.getLevels()),
+        loader: () => firstValueFrom(this.curriculumService.getAllLevels()),
     });
 
     // ── Delete level ──────────────────────────────────────────────
