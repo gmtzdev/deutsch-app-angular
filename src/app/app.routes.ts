@@ -70,6 +70,21 @@ export const routes: Routes = [
         ],
     },
     {
+        path: 'student-levels/:levelId',
+        loadComponent: () =>
+            import('./course/level-students/student-level/student-level').then((m) => m.StudentLevel),
+        canActivate: [authGuard],
+        title: 'Nivel — DeutschApp',
+        children: [
+            {
+                path: 'topics/:topicId/:subtopicId',
+                loadComponent: () =>
+                    import('./course/level-students/student-topic-view/student-topic-view').then((m) => m.StudentTopicView),
+                title: 'Tema — DeutschApp',
+            },
+        ],
+    },
+    {
         path: '**',
         redirectTo: 'dashboard',
     },
