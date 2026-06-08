@@ -4,23 +4,33 @@ import { AuthService } from '../../core/services/auth.service';
 import { CurriculumService } from '../../core/services/curriculum.service';
 import { Level } from '../../core/models/level.model';
 import { firstValueFrom } from 'rxjs';
+import { CardInfoAdminComponent } from "../../components/admin/card-info-adim/card-info-admin.component";
+import { UserService } from '../../core/services/user.service';
 
 @Component({
     selector: 'app-admin-index',
     templateUrl: './index.html',
     styleUrls: ['./index.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [RouterLink],
+    imports: [RouterLink, CardInfoAdminComponent],
 })
 export class AdminIndex {
     private readonly authService = inject(AuthService);
     private readonly curriculumService = inject(CurriculumService);
+    private readonly userService = inject(UserService);
 
     readonly currentUser = this.authService.currentUser;
     readonly sidebarCollapsed = signal(false);
 
     readonly levelsResource = resource<Level[], undefined>({
         loader: () => firstValueFrom(this.curriculumService.getAllLevels()),
+    });
+
+    readonly userInfo = resource<{ students: number; teachers: number }, undefined>({
+        loader: () =>
+            firstValueFrom(
+                this.userService.getUserStats(),
+            ),
     });
 
     // ── Delete level ──────────────────────────────────────────────
