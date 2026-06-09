@@ -1,0 +1,123 @@
+<div class="level-info-page">
+    <header class="page-header">
+        <div>
+            <h1 class="page-title text-title">Información del nivel</h1>
+            <p class="page-subtitle text-secondary">
+                Vista general del nivel, sus temas y subtemas.
+            </p>
+        </div>
+
+        <div class="page-actions">
+            <a routerLink="/admin" class="btn btn--ghost">Volver al panel</a>
+            <button type="button" class="btn btn--primary" (click)="refresh()">Actualizar</button>
+        </div>
+    </header>
+
+    @if (levelResource.isLoading()) {
+    <section class="state-card bg-card" aria-busy="true" aria-label="Cargando información del nivel">
+        Cargando información del nivel...
+    </section>
+    } @else if (levelResource.error()) {
+    <section class="state-card state-card--error" role="alert">
+        No se pudo cargar la información del nivel.
+    </section>
+    } @else if (!levelResource.value()) {
+    <section class="state-card bg-card">
+        No se encontró información para este nivel.
+    </section>
+    } @else {
+    <section class="hero-card bg-card" aria-label="Resumen principal del nivel">
+        <div class="hero-card__main">
+            <span class="level-tag" [style.background]="(levelResource.value()!.color || '#6366f1') + '22'"
+                [style.color]="levelResource.value()!.color || '#6366f1'">
+                {{ levelResource.value()!.tag }}
+            </span>
+            <h2 class="hero-title">{{ levelResource.value()!.title }}</h2>
+            <p class="hero-description">{{ levelResource.value()!.description || 'Sin descripción.' }}</p>
+        </div>
+
+        <div class="stats-grid" aria-label="Métricas del nivel">
+            <article class="stat-card">
+                <span class="stat-label">Temas</span>
+                <strong class="stat-value">{{ topicCount() }}</strong>
+            </article>
+            <article class="stat-card">
+                <span class="stat-label">Subtemas</span>
+                <strong class="stat-value">{{ subtopicCount() }}</strong>
+            </article>
+            <article class="stat-card">
+                <span class="stat-label">Lecciones</span>
+                <strong class="stat-value">{{ lessonCount() }}</strong>
+            </article>
+        </div>
+    </section>
+
+    <section class="content-card bg-card" aria-labelledby="topics-heading">
+        <div class="content-header">
+            <h3 id="topics-heading" class="content-title">Estructura del nivel</h3>
+            <span class="content-meta">{{ topicCount() }} tema@if (topicCount() !== 1) {s}</span>
+        </div>
+
+        @if (!levelResource.value()!.topics.length) {
+        <p class="empty-message">Este nivel todavía no tiene temas registrados.</p>
+        } @else {
+        <p-accordion class="topics-accordion" [multiple]="true">
+            @for (topic of levelResource.value()!.topics; track topic.id; let topicIndex = $index) {
+            <p-accordion-panel [value]="topic.id.toString()">
+                <p-accordion-header>
+                    <div class="topic-header-row">
+                        <span>{{ topicIndex + 1 }}. {{ topic.title }}</span>
+                        <label class="visibility-toggle" (click)="$event.stopPropagation()">
+                            <input type="checkbox" [checked]="isTopicVisible(topic)"
+                                [disabled]="isTopicVisibilityLoading(topic.id)"
+                                (change)="toggleTopicVisibility(topic, $event)" />
+                            <span>Visible</span>
+                        </label>
+                    </div>
+                </p-accordion-header>
+                <p-accordion-content>
+                    <div class="topic-card" role="listitem" [class.topic-card--hidden]="!isTopicVisible(topic)">
+                        <header class="topic-card__header">
+                            <h4 class="topic-title">{{ topic.title }}</h4>
+                            <span class="topic-count">{{ topic.subtopics.length }} subtema@if (topic.subtopics.length
+                                !== 1) {s}</span>
+                        </header>
+
+                        @if (topic.subtitle) {
+                        <p class="topic-subtitle">{{ topic.subtitle }}</p>
+                        }
+
+                        @if (!topic.subtopics.length) {
+                        <p class="empty-inline">Sin subtemas en este tema.</p>
+                        } @else {
+                        <ul class="subtopics-list">
+                            @for (subtopic of topic.subtopics; track subtopic.id; let subtopicIndex = $index) {
+                            <li class="subtopic-item" [class.subtopic-item--hidden]="!isSubtopicVisible(subtopic)">
+                                <span class="subtopic-index">{{ topicIndex + 1 }}.{{ subtopicIndex + 1 }}</span>
+                                <span class="subtopic-title">{{ subtopic.title }}</span>
+                                <label class="visibility-toggle visibility-toggle--subtopic">
+                                    <input type="checkbox" [checked]="isSubtopicVisible(subtopic)"
+                                        [disabled]="isSubtopicVisibilityLoading(subtopic.id)"
+                                        (change)="toggleSubtopicVisibility(topic.id, subtopic, $event)" />
+                                    <span>Visible</span>
+                                </label>
+                                <!-- <span class="subtopic-lesson">
+                                    @if (subtopic.lesson) {
+                                    Lección #{{ subtopic.lesson.id }}
+                                    } @else {
+                                    Sin lección
+                                    }
+                                </span> -->
+                            </li>
+                            }
+                        </ul>
+                        }
+                    </div>
+                </p-accordion-content>
+            </p-accordion-panel>
+            }
+        </p-accordion>
+        }
+    </section>
+    }
+</div>

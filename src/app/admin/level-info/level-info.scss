@@ -1,0 +1,296 @@
+.level-info-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 1.65rem;
+    font-weight: 700;
+}
+
+.page-subtitle {
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
+    opacity: 0.75;
+}
+
+.page-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+
+.btn--primary {
+    background: #6366f1;
+    color: #fff;
+
+    &:hover {
+        background: #4f46e5;
+    }
+}
+
+.btn--ghost {
+    background: transparent;
+    color: inherit;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+
+    &:hover {
+        background: rgba(128, 128, 128, 0.08);
+    }
+}
+
+.hero-card,
+.content-card,
+.state-card {
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+.hero-card {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.level-tag {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+}
+
+.hero-title {
+    margin: 0.5rem 0 0.35rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.hero-description {
+    margin: 0;
+    opacity: 0.75;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.stat-card {
+    border: 1px solid rgba(128, 128, 128, 0.18);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    display: grid;
+    gap: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+    font-weight: 600;
+}
+
+.stat-value {
+    font-size: 1.45rem;
+    line-height: 1;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.content-title {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.content-meta {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.topics-accordion {
+    display: block;
+}
+
+.topic-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+}
+
+.topic-card {
+    padding: 0.25rem 0.1rem 0.35rem;
+}
+
+.topic-card--hidden {
+    opacity: 0.65;
+}
+
+.topic-card__header {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+}
+
+.topic-title {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.topic-subtitle {
+    margin: 0.35rem 0 0;
+    font-size: 0.9rem;
+    opacity: 0.75;
+}
+
+.topic-count {
+    font-size: 0.8rem;
+    opacity: 0.65;
+}
+
+.subtopics-list {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+}
+
+.subtopic-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.65rem;
+    border-radius: 8px;
+    background: rgba(128, 128, 128, 0.07);
+}
+
+.subtopic-item--hidden {
+    opacity: 0.6;
+}
+
+.visibility-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0.85;
+    user-select: none;
+
+    input {
+        width: 1rem;
+        height: 1rem;
+        cursor: pointer;
+    }
+}
+
+.visibility-toggle--subtopic {
+    justify-self: end;
+}
+
+.subtopic-index {
+    font-size: 0.78rem;
+    font-weight: 700;
+    opacity: 0.7;
+}
+
+.subtopic-title {
+    font-size: 0.9rem;
+}
+
+.subtopic-lesson {
+    font-size: 0.8rem;
+    opacity: 0.68;
+}
+
+.empty-message,
+.empty-inline {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.state-card {
+    font-size: 0.95rem;
+}
+
+.state-card--error {
+    color: #b91c1c;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+@media (max-width: 900px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .page-actions {
+        width: 100%;
+    }
+
+    .page-actions>* {
+        flex: 1 1 auto;
+    }
+
+    .subtopic-item {
+        grid-template-columns: auto 1fr;
+    }
+
+    .visibility-toggle--subtopic {
+        grid-column: 1 / -1;
+        justify-self: start;
+        padding-left: 1.45rem;
+    }
+
+    .subtopic-lesson {
+        grid-column: 1 / -1;
+        padding-left: 1.45rem;
+    }
+}
