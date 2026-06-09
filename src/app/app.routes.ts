@@ -44,6 +44,12 @@ export const routes: Routes = [
                 canActivate: [adminGuard],
                 title: 'Pendientes por verificar — DeutschApp',
             },
+            {
+                path: 'level-info/:levelId',
+                loadComponent: () => import('./admin/level-info/level-info').then((m) => m.LevelInfo),
+                canActivate: [adminGuard],
+                title: 'Información del nivel — DeutschApp',
+            },
         ]
     },
     {
