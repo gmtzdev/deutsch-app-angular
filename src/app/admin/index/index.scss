@@ -222,6 +222,14 @@
         }
     }
 
+    &.btn-icon--info {
+        color: #000000;
+
+        &:hover {
+            background: #2563eb20;
+        }
+    }
+
     &.btn-icon--delete {
         color: #ef4444;
 
