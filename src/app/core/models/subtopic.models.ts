@@ -8,6 +8,7 @@ export class Subtopic {
     icon: string;
     path: string;
     order: number;
+    visible?: boolean;
     topic: Topic;
 
     constructor(subtopic: Subtopic) {
@@ -16,6 +17,7 @@ export class Subtopic {
         this.icon = subtopic.icon;
         this.path = subtopic.path;
         this.order = subtopic.order;
+        this.visible = subtopic.visible;
         this.topic = subtopic.topic;
     }
 }
