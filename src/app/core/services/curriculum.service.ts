@@ -59,6 +59,11 @@ export class CurriculumService {
         return this.http.get<LevelWithTopics>(`${API_BASE}/levels/${levelId}`);
     }
 
+    /** Obtiene un nivel con todos sus temas, subtemas y lecciones aunque no sea visibles. */
+    getAllLevelWithTopics(levelId: number | string): Observable<LevelWithTopics> {
+        return this.http.get<LevelWithTopics>(`${API_BASE}/levels/all/${levelId}`);
+    }
+
     /** Obtiene un tema con sus subtemas y lecciones. */
     getTopicWithSubtopics(topicId: number | string): Observable<TopicWithSubtopics> {
         return this.http.get<TopicWithSubtopics>(`${API_BASE}/topics/${topicId}`);

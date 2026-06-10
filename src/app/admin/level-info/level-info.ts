@@ -28,7 +28,7 @@ export class LevelInfo {
 
     readonly levelResource = resource<LevelWithTopics, string>({
         params: () => this.levelId(),
-        loader: ({ params }) => firstValueFrom(this.curriculumService.getLevelWithTopics(params)),
+        loader: ({ params }) => firstValueFrom(this.curriculumService.getAllLevelWithTopics(params)),
     });
 
     readonly topicCount = computed(() => this.levelResource.value()?.topics?.length ?? 0);
