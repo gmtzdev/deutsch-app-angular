@@ -4,5 +4,6 @@ export interface UpdateSubtopicDto {
     title: string
     icon?: string
     path?: string
+    visible?: boolean
     topic: Topic
 }

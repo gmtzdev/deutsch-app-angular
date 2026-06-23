@@ -44,6 +44,12 @@ export const routes: Routes = [
                 canActivate: [adminGuard],
                 title: 'Pendientes por verificar — DeutschApp',
             },
+            {
+                path: 'level-info/:levelId',
+                loadComponent: () => import('./admin/level-info/level-info').then((m) => m.LevelInfo),
+                canActivate: [adminGuard],
+                title: 'Información del nivel — DeutschApp',
+            },
         ]
     },
     {
@@ -65,6 +71,21 @@ export const routes: Routes = [
                 loadComponent: () =>
                     import('./levels/topic-view/topic-view').then((m) => m.TopicView),
                 canDeactivate: [unsavedChangesGuard],
+                title: 'Tema — DeutschApp',
+            },
+        ],
+    },
+    {
+        path: 'student-levels/:levelId',
+        loadComponent: () =>
+            import('./course/level-students/student-level/student-level').then((m) => m.StudentLevel),
+        canActivate: [authGuard],
+        title: 'Nivel — DeutschApp',
+        children: [
+            {
+                path: 'topics/:topicId/:subtopicId',
+                loadComponent: () =>
+                    import('./course/level-students/student-topic-view/student-topic-view').then((m) => m.StudentTopicView),
                 title: 'Tema — DeutschApp',
             },
         ],

@@ -12,8 +12,6 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from '../../core/services/user.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CreateUserModal } from './create-user-modal/create-user-modal';
-
-import { Header } from '../../components/header/header';
 import { User } from '../../core/models/user/User.model';
 
 const ROLES = ['user', 'admin'] as const;
@@ -21,7 +19,7 @@ type Role = (typeof ROLES)[number];
 
 @Component({
     selector: 'app-admin-users',
-    imports: [Header, RouterLink, ReactiveFormsModule, CreateUserModal],
+    imports: [RouterLink, ReactiveFormsModule, CreateUserModal],
     templateUrl: './users.html',
     styleUrl: './users.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,

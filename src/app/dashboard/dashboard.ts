@@ -1,5 +1,5 @@
 import { Component, inject, ChangeDetectionStrategy, resource } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../core/services/auth.service';
 import { CurriculumService } from '../core/services/curriculum.service';
@@ -18,7 +18,7 @@ const LEVEL_ACCENTS: Record<string, string> = {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [Header, RouterLink],
+  imports: [Header],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,6 +27,7 @@ export class Dashboard {
   private readonly authService = inject(AuthService);
   private readonly curriculumService = inject(CurriculumService);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly router = inject(Router);
 
   protected readonly currentUser = this.authService.currentUser;
   protected readonly levelsResource = resource<Level[], undefined>({
@@ -40,5 +41,14 @@ export class Dashboard {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  startLevel(levelId: number): void {
+    // Implement the logic to start the level
+    if (this.currentUser()?.role === 'admin') {
+      this.router.navigate(['/levels', levelId]);
+      return;
+    }
+    this.router.navigate(['/student-levels', levelId]);
   }
 }

@@ -46,13 +46,22 @@ export class CurriculumService {
     // ── Levels ─────────────────────────────────────────────────
 
     /** Obtiene todos los niveles disponibles (A1, A2, B1…). */
-    getLevels(): Observable<Level[]> {
+    getAllLevels(): Observable<Level[]> {
         return this.http.get<Level[]>(`${API_BASE}/levels`);
+    }
+
+    getLevels(): Observable<Level[]> {
+        return this.http.get<Level[]>(`${API_BASE}/levels/visibles`);
     }
 
     /** Obtiene un nivel con todos sus temas, subtemas y lecciones. */
     getLevelWithTopics(levelId: number | string): Observable<LevelWithTopics> {
         return this.http.get<LevelWithTopics>(`${API_BASE}/levels/${levelId}`);
+    }
+
+    /** Obtiene un nivel con todos sus temas, subtemas y lecciones aunque no sea visibles. */
+    getAllLevelWithTopics(levelId: number | string): Observable<LevelWithTopics> {
+        return this.http.get<LevelWithTopics>(`${API_BASE}/levels/all/${levelId}`);
     }
 
     /** Obtiene un tema con sus subtemas y lecciones. */

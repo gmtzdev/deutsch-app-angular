@@ -6,7 +6,7 @@ import {
     signal,
 } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 import { CurriculumService } from '../core/services/curriculum.service';
 import { Header } from '../components/header/header';
@@ -15,9 +15,9 @@ import { SidebarAdmin } from '../components/sidebar-admin/sidebar-admin';
 
 @Component({
     selector: 'app-admin',
-    imports: [Header, RouterLink, SidebarAdmin, RouterOutlet],
+    imports: [Header, SidebarAdmin, RouterOutlet],
     templateUrl: './admin.html',
-    styleUrl: './admin.scss',
+    styleUrls: ['./admin.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Admin {
@@ -35,8 +35,6 @@ export class Admin {
 
     readonly deletingLevelId = signal<number | null>(null);
     readonly deleteError = signal<string | null>(null);
-
-
 
     async deleteLevel(id: number): Promise<void> {
         if (this.deletingLevelId() !== null) return;
