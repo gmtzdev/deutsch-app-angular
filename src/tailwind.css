@@ -28,6 +28,9 @@
     --color-table-header-border: #e5e7eb;
     --color-table-row-border: #f3f4f6;
     /* valor por defecto (light) */
+
+    /* Modal */
+    --bg-card: #fff;
 }
 
 .dark {
@@ -58,4 +61,8 @@
     --color-table-header-border: #1e2d45;
     --color-table-row-border: #0f1829;
     /* sobreescribe en dark */
+
+
+    /* Modal */
+    --bg-card: #000000;
 }

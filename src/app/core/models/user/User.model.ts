@@ -1,9 +1,4 @@
-export enum UserRole {
-    ADMIN = 'admin',
-    USER = 'user',
-}
-
-
+import { UserRole } from '../../enum/user/user-rol.enum';
 export class User {
     id: number;
     email: string;
