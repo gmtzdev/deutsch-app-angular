@@ -30,7 +30,7 @@
     /* valor por defecto (light) */
 
     /* Modal */
-    --bg-card: #fff;
+    --bg-modal: #fff;
 }
 
 .dark {
@@ -64,5 +64,5 @@
 
 
     /* Modal */
-    --bg-card: #000000;
+    --bg-modal: #000000;
 }

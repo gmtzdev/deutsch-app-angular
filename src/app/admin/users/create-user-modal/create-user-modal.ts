@@ -19,8 +19,8 @@ function passwordStrengthValidator(control: AbstractControl): ValidationErrors |
     const valid =
         value.length >= 8 &&
         /[A-Z]/.test(value) &&
-        /[0-9]/.test(value) &&
-        /[!@#$%^&*()\-_=+[\]{};':",.<>/?\\|`~]/.test(value);
+        /[0-9]/.test(value)
+    // && /[!@#$%^&*()\-_=+[\]{};':",.<>/?\\|`~]/.test(value);
     return valid ? null : { weakPassword: true };
 }
 
