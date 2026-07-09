@@ -8,7 +8,7 @@ import {
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { UserService } from '../../../core/services/user.service';
-import { UserRole } from '../../../core/models/user/User.model';
+import { UserRole } from '../../../core/enum/user/user-rol.enum';
 import { Password } from 'primeng/password';
 import { InputText } from 'primeng/inputtext';
 import { CreateUserDto } from '../../../core/dto/user/create-user.dto';
@@ -19,8 +19,8 @@ function passwordStrengthValidator(control: AbstractControl): ValidationErrors |
     const valid =
         value.length >= 8 &&
         /[A-Z]/.test(value) &&
-        /[0-9]/.test(value) &&
-        /[!@#$%^&*()\-_=+[\]{};':",.<>/?\\|`~]/.test(value);
+        /[0-9]/.test(value)
+    // && /[!@#$%^&*()\-_=+[\]{};':",.<>/?\\|`~]/.test(value);
     return valid ? null : { weakPassword: true };
 }
 

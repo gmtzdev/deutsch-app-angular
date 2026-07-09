@@ -13,8 +13,9 @@ import { UserService } from '../../core/services/user.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CreateUserModal } from './create-user-modal/create-user-modal';
 import { User } from '../../core/models/user/User.model';
+import { UserRole } from '../../core/enum/user/user-rol.enum';
 
-const ROLES = ['user', 'admin'] as const;
+const ROLES = Object.values(UserRole);
 type Role = (typeof ROLES)[number];
 
 @Component({
