@@ -28,44 +28,71 @@
     <app-card-info-admin [icon]="'pi-desktop'" [label]="'Niveles'" [color]="'blue'"
         [info]="levelsResource.value()?.length?.toString()" />
 
-    <app-card-info-admin [icon]="'pi-file'" [label]="'Temas'" [color]="'purple'" [info]="totalTopics().toString()" />
+    <app-card-info-admin [icon]="'pi-file'" [label]="'Grupos'" [color]="'purple'" [info]="totalTopics().toString()" />
 
 </section>
 
 <!-- ── Levels table ────────────────────────────────────── -->
-<section class="section bg-card" aria-labelledby="levels-heading">
+<section class="section bg-card flex flex-col gap-3" aria-labelledby="levels-heading">
 
-    <!-- ── Users section ──────────────────────────────────── -->
-    <section class="section bg-card" aria-labelledby="users-heading">
-        <div class="section-header">
-            <h2 id="users-heading" class="section-title">Usuarios</h2>
-            <div class="section-actions">
-                <a routerLink="/admin/pending-users" class="btn btn--ghost">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                        aria-hidden="true">
-                        <path d="M12 8v4l3 3" />
-                        <circle cx="12" cy="12" r="9" />
-                    </svg>
-                    Pendientes por verificar
-                </a>
-                <a routerLink="/admin/users" class="btn btn--primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                        aria-hidden="true">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                    </svg>
-                    Administrar usuarios
-                </a>
+    <section class="flex justify-between gap-2">
+
+        <!-- ── Users section ──────────────────────────────────── -->
+        <section class="section bg-card w-full" aria-labelledby="users-heading">
+            <div class="section-header">
+                <h2 id="users-heading" class="section-title">Usuarios</h2>
+                <div class="section-actions">
+                    <a routerLink="/admin/pending-users" class="btn btn--ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M12 8v4l3 3" />
+                            <circle cx="12" cy="12" r="9" />
+                        </svg>
+                        Pendientes por verificar
+                    </a>
+                    <a routerLink="/admin/users" class="btn btn--primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        Administrar usuarios
+                    </a>
+                </div>
             </div>
-        </div>
-        <p class="section-desc">
-            Gestiona las cuentas de usuario: consulta, edita roles y desactiva accesos desde la sección de
-            usuarios.
-        </p>
+            <p class="section-desc">
+                Gestiona las cuentas de usuario: consulta, edita roles y desactiva accesos desde la sección de
+                usuarios.
+            </p>
+        </section>
+
+        <!-- ── groups section ──────────────────────────────────── -->
+        <section class="section bg-card w-full" aria-labelledby="groups-heading">
+            <div class="section-header">
+                <h2 id="groups-heading" class="section-title">Grupos</h2>
+                <div class="section-actions">
+                    <a routerLink="/admin/groups" class="btn btn--primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        Administrar grupos
+                    </a>
+                </div>
+            </div>
+            <p class="section-desc">
+                Gestiona las cuentas de usuario: consulta, edita roles y desactiva accesos desde la sección de
+                usuarios.
+            </p>
+        </section>
     </section>
 
     <!-- ── Levels table ────────────────────────────────────── -->
