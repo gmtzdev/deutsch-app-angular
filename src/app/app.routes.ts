@@ -45,6 +45,12 @@ export const routes: Routes = [
                 title: 'Pendientes por verificar — DeutschApp',
             },
             {
+                path: 'groups',
+                loadComponent: () => import('./admin/groups/groups').then((m) => m.AdminGroups),
+                canActivate: [adminGuard],
+                title: 'Grupos — DeutschApp',
+            },
+            {
                 path: 'level-info/:levelId',
                 loadComponent: () => import('./admin/level-info/level-info').then((m) => m.LevelInfo),
                 canActivate: [adminGuard],
