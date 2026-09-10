@@ -142,6 +142,13 @@
 
             </article>
             }
+
+            @if (!subtopicResource.isLoading() && !subtopicResource.error() && !subtopicResource.value()) {
+            <section class="topic-card topic-card--empty px-2.5 py-5" aria-labelledby="empty-topic-title">
+                <h2 id="empty-topic-title" class="topic-card__title">Este tema todavía no tiene subtemas</h2>
+                <p>Agrega un subtema desde la barra lateral para comenzar a crear contenido.</p>
+            </section>
+            }
         </div>
 
         <!-- ── RIGHT: AI chat panel ──────────────────────────────── -->

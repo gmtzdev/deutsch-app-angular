@@ -6,4 +6,5 @@ export interface CreateTopicDto {
     title: string;
     subtitle: string;
     level: Level;
+    visible: boolean;
 }
