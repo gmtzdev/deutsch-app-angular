@@ -1,0 +1,77 @@
+<div class="modal-backdrop" (click)="onCancel()" aria-hidden="true"></div>
+
+<div class="modal" role="dialog" aria-modal="true" aria-labelledby="level-modal-title">
+    <header class="modal-header">
+        <div>
+            <p class="modal-eyebrow">{{ group().name }}</p>
+            <h2 id="level-modal-title" class="modal-title">Administrar niveles</h2>
+        </div>
+        <button class="modal-close" type="button" (click)="onCancel()" aria-label="Cerrar">×</button>
+    </header>
+
+    <form (submit)="onSubmit($event)" novalidate class="modal-form" aria-label="Administrar niveles del grupo">
+        <section>
+            <span class="user-list-title">Niveles actuales</span>
+            <div class="user-list current px-2" role="group" aria-label="Niveles actuales">
+                @if (!levels().length) {
+                <p class="empty-state">No hay niveles asociados.</p>
+                } @else {
+                @for (level of levels(); track level.id) {
+                <div class="user-option">
+                    <span class="user-avatar" aria-hidden="true">{{ level.tag.slice(0, 2).toUpperCase() }}</span>
+                    <span class="user-details">
+                        <strong>{{ level.title }}</strong>
+                        <small>{{ level.description || level.tag }}</small>
+                    </span>
+                    <button type="button" class="text-red-600" (click)="removeLevel(level.id)" [disabled]="isLoading()">
+                        Quitar
+                    </button>
+                </div>
+                }
+                }
+            </div>
+        </section>
+
+        <section>
+            <span class="user-list-title">Niveles disponibles</span>
+            <div class="selection-toolbar pb-1.5">
+                <label for="level-search">Buscar niveles</label>
+                <input id="level-search" type="search" [value]="searchQuery()"
+                    (input)="searchQuery.set($any($event.target).value)" placeholder="Título, etiqueta o descripción"
+                    autocomplete="off" />
+            </div>
+
+            <div class="user-list px-2" role="group" aria-label="Niveles disponibles">
+                @if (!availableLevels().length) {
+                <p class="empty-state">No hay niveles disponibles para añadir.</p>
+                } @else {
+                @for (level of availableLevels(); track level.id) {
+                <label class="user-option" [class.user-option--selected]="selectedLevelIds().includes(level.id)">
+                    <input type="checkbox" [checked]="selectedLevelIds().includes(level.id)"
+                        (change)="toggleLevel(level.id)" />
+                    <span class="user-avatar" aria-hidden="true">{{ level.tag.slice(0, 2).toUpperCase() }}</span>
+                    <span class="user-details">
+                        <strong>{{ level.title }}</strong>
+                        <small>{{ level.description || level.tag }}</small>
+                    </span>
+                    <span class="user-role">{{ level.tag }}</span>
+                </label>
+                }
+                }
+            </div>
+        </section>
+
+        @if (errorMessage()) {
+        <p class="form-error" role="alert">{{ errorMessage() }}</p>
+        }
+
+        <footer class="modal-footer">
+            <span class="selection-count" aria-live="polite">{{ selectedCount() }} seleccionados</span>
+            <button type="button" class="btn btn--ghost" (click)="onCancel()">Cancelar</button>
+            <button type="submit" class="btn btn--primary" [disabled]="!selectedCount() || isLoading()"
+                [attr.aria-busy]="isLoading()">
+                {{ isLoading() ? 'Añadiendo...' : 'Añadir niveles' }}
+            </button>
+        </footer>
+    </form>
+</div>

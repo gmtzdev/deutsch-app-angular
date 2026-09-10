@@ -109,7 +109,15 @@
                     </td>
                     <td>{{ group.teacherName }}</td>
                     <td>
-                        <span class="level-tag">{{ group.level }}</span>
+                        <div class="level-tags">
+                            @if (group.levels?.length) {
+                            @for (level of group.levels; track level.id) {
+                            <span class="level-tag">{{ level.tag || level.title }}</span>
+                            }
+                            } @else {
+                            <span class="level-tag">{{ group.level }}</span>
+                            }
+                        </div>
                     </td>
                     <td>{{ group.users.length }}</td>
                     <td>
@@ -130,7 +138,13 @@
                             <button class="btn-icon btn-icon--add" [disabled]="deletingGroupId() === group.id"
                                 [attr.aria-busy]="deletingGroupId() === group.id" (click)="openAddUserModal(group)"
                                 [attr.aria-label]="'Agregar miembros a grupo ' + group.name" type="button">
-                                <i class="pi pi-user-plus"></i>
+                                <i class="pi pi-users"></i>
+                            </button>
+
+                            <button class="btn-icon btn-icon--add" [disabled]="deletingGroupId() === group.id"
+                                (click)="openAddLevelModal(group)"
+                                [attr.aria-label]="'Administrar niveles del grupo ' + group.name" type="button">
+                                <i class="pi pi-book"></i>
                             </button>
 
 
@@ -176,4 +190,8 @@
 
 @if (isAddUserModalOpen()) {
 <app-add-user-modal [group]="addUserGroup()!" (added)="onUsersAdded()" (cancelled)="closeAddUserModal()" />
+}
+
+@if (isAddLevelModalOpen()) {
+<app-add-level-modal [group]="addLevelGroup()!" (added)="onLevelsChanged()" (cancelled)="closeAddLevelModal()" />
 }

@@ -30,9 +30,10 @@ export class Dashboard {
   private readonly router = inject(Router);
 
   protected readonly currentUser = this.authService.currentUser;
-  protected readonly levelsResource = resource<Level[], undefined>({
-    loader: () =>
-      firstValueFrom(this.curriculumService.getLevels()),
+  protected readonly levelsResource = resource<Level[], string | undefined>({
+    params: () => this.currentUser()?.id,
+    loader: ({ params }) =>
+      firstValueFrom(this.curriculumService.getLevels(params)),
   });
 
   protected safeIcon(icon: string): SafeHtml {

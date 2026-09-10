@@ -54,6 +54,10 @@ export class GroupService {
         return this.http.patch<Group>(`${this.url}/groups/${groupId}/add-users`, dto);
     }
 
+    updateGroupAddLevels(groupId: number, dto: { levelIds: number[] }): Observable<Group> {
+        return this.http.patch<Group>(`${this.url}/groups/${groupId}/levels`, dto);
+    }
+
     updateGroupRemoveUser(groupId: number, userId: number): Observable<Group> {
         return this.http.delete<Group>(`${this.url}/groups/${groupId}/remove-user/${userId}`);
     }

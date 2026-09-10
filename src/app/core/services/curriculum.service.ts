@@ -50,8 +50,10 @@ export class CurriculumService {
         return this.http.get<Level[]>(`${API_BASE}/levels`);
     }
 
-    getLevels(): Observable<Level[]> {
-        return this.http.get<Level[]>(`${API_BASE}/levels/visibles`);
+    getLevels(userId?: number | string): Observable<Level[]> {
+        return this.http.get<Level[]>(`${API_BASE}/levels/visibles`, {
+            params: userId === undefined ? {} : { userId: String(userId) },
+        });
     }
 
     /** Obtiene un nivel con todos sus temas, subtemas y lecciones. */
