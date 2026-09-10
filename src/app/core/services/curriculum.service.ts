@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Level, LevelWithTopics } from '../models/level.model';
 import { Topic, TopicWithSubtopics } from '../models/topic.model';
 import { Subtopic, SubtopicWithLessons } from '../models/subtopic.models';
@@ -430,6 +430,15 @@ export class CurriculumService {
         return this.http.post<{ elements: ElementTypeObj[]; message: string; chatHistory: unknown[] }>(
             `${API_BASE}/ai/generate-lesson`,
             { prompt, currentElements, chatHistory },
+        );
+    }
+
+
+    getGroupsCount(): Observable<number> {
+        return this.http.get<number | { groupsCount?: number; count?: number }>(`${API_BASE}/groups/count`).pipe(
+            map((response) => typeof response === 'number'
+                ? response
+                : response.groupsCount ?? response.count ?? 0),
         );
     }
 

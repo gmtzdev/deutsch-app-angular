@@ -26,6 +26,10 @@ export class AdminIndex {
         loader: () => firstValueFrom(this.curriculumService.getAllLevels()),
     });
 
+    readonly groupsResource = resource<number, undefined>({
+        loader: () => firstValueFrom(this.curriculumService.getGroupsCount()),
+    });
+
     readonly userInfo = resource<{ students: number; teachers: number }, undefined>({
         loader: () =>
             firstValueFrom(
