@@ -175,6 +175,5 @@
 }
 
 @if (isAddUserModalOpen()) {
-<app-add-user-modal [group]="addUserGroup()!" [users]="usersResource.value() ?? []" (added)="onUsersAdded()"
-    (cancelled)="closeAddUserModal()" />
+<app-add-user-modal [group]="addUserGroup()!" (added)="onUsersAdded()" (cancelled)="closeAddUserModal()" />
 }
