@@ -17,13 +17,14 @@ import type { GroupStatus } from '../../core/types/groups.types';
 import type { Group } from '../../core/interfaces/groups/group.interface';
 import { CreateGroupModal } from './create-group-modal/create-group-modal';
 import { AddUserModal } from './add-user-modal/add-user-modal';
+import { AddLevelModal } from './add-level-modal/add-level-modal';
 
 
 const STATUS_OPTIONS: GroupStatus[] = ['active', 'paused', 'archived'];
 
 @Component({
     selector: 'app-admin-groups',
-    imports: [RouterLink, ReactiveFormsModule, CreateGroupModal, AddUserModal],
+    imports: [RouterLink, ReactiveFormsModule, CreateGroupModal, AddUserModal, AddLevelModal],
     templateUrl: './groups.html',
     styleUrl: './groups.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -251,9 +252,24 @@ export class AdminGroups {
     closeAddUserModal(): void { this.isAddUserModalOpen.set(false); }
 
     onUsersAdded(): void {
-        // this.closeAddUserModal();
-        // this.addUserGroup.set(null);
-        // this.groupsResource.reload();
+        this.groupsResource.reload();
+    }
+
+    readonly isAddLevelModalOpen = signal(false);
+    readonly addLevelGroup = signal<Group | null>(null);
+
+    openAddLevelModal(group: Group): void {
+        this.addLevelGroup.set(group);
+        this.isAddLevelModalOpen.set(true);
+    }
+
+    closeAddLevelModal(): void {
+        this.isAddLevelModalOpen.set(false);
+        this.addLevelGroup.set(null);
+    }
+
+    onLevelsChanged(): void {
+        this.groupsResource.reload();
     }
 
     onGroupCreated(): void {
