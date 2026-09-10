@@ -26,10 +26,6 @@
         </nav>
 
         <nav class="admin-sidebar__nav">
-            <a href="#admin-overview" class="admin-sidebar__link">
-                <i class="pi pi-inbox" aria-hidden="true"></i>
-                <span class="admin-sidebar__link-text">Inbox</span>
-            </a>
             <a href="#users-heading" class="admin-sidebar__link">
                 <i class="pi pi-bell" aria-hidden="true"></i>
                 <span class="admin-sidebar__link-text">Notificaciones</span>
@@ -81,8 +77,10 @@
                     <app-user-avatar />
                 </div>
                 <div class="admin-sidebar__user-info">
-                    <span class="admin-sidebar__link-text">Gerardo</span>
-                    <span class="admin-sidebar__link-subtext">Administrador</span>
+                    <span class="admin-sidebar__link-text">{{ currentUser()?.username ?? 'Usuario' }}</span>
+                    <span class="admin-sidebar__link-subtext">
+                        {{ currentUser()?.role === 'admin' ? 'Administrador' : currentUser()?.role ?? 'Sin rol' }}
+                    </span>
                 </div>
             </a>
         </nav>
