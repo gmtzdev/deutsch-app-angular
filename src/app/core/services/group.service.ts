@@ -47,23 +47,15 @@ export class GroupService {
     }
 
     updateGroup(groupId: number, dto: Partial<CreateGroupDto>): Observable<Group> {
-        const existing = null; // Since FALLBACK_GROUPS is removed, set existing to null
-
         return this.http.patch<Group>(`${this.url}/groups/${groupId}`, dto);
-        // .pipe(
-        //     catchError(() =>
-        //         of({
-        //             ...dto,
-        //             name: dto.name?.trim() ?? '',
-        //             teacherName: dto.teacherName?.trim() ?? '',
-        //             level: dto.level?.trim() ?? '',
-        //             description: dto.description?.trim() ?? '',
-        //             status: dto.status ?? 'active',
-        //             memberIds: dto.users ? Array.from(new Set(dto.users)) : [],
-        //             members: dto.users ? Array.from(new Set(dto.users)).length : 0,
-        //         }),
-        //     ),
-        // );
+    }
+
+    updateGroupAddUsers(groupId: number, dto: { users: number[] }): Observable<Group> {
+        return this.http.patch<Group>(`${this.url}/groups/${groupId}/add-users`, dto);
+    }
+
+    updateGroupRemoveUser(groupId: number, userId: number): Observable<Group> {
+        return this.http.delete<Group>(`${this.url}/groups/${groupId}/remove-user/${userId}`);
     }
 
     deleteGroup(groupId: number): Observable<void> {

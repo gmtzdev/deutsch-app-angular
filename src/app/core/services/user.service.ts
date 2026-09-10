@@ -27,6 +27,10 @@ export class UserService {
         return this.http.get<User[]>(`${this.url}/users`);
     }
 
+    getUsersByGroup(groupId: number): Observable<User[]> {
+        return this.http.get<User[]>(`${this.url}/groups/${groupId}/users`);
+    }
+
     getPendingVerificationUsers(): Observable<User[]> {
         return this.http.get<User[]>(`${this.url}/users/pending-verification`);
     }

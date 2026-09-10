@@ -92,8 +92,23 @@ export class LevelShell {
         effect(() => {
             const level = this.levelResource.value();
             if (!level?.topics?.length) return;
+
             if (!this.route.firstChild) {
-                this.router.navigate(['topics', level.topics[0].id, level.topics[0].subtopics[0]?.id ?? 0], {
+                const firstTopic = level.topics[0];
+                if (firstTopic === undefined) return;
+                if (firstTopic.subtopics === null || firstTopic.subtopics === undefined) {
+                    const commands = ['topics', firstTopic.id];
+                    this.router.navigate(commands, {
+                        relativeTo: this.route,
+                        replaceUrl: true,
+                    });
+                    return;
+                }
+
+                const commands = firstTopic.subtopics.length > 0
+                    ? ['topics', firstTopic.id, firstTopic.subtopics[0].id]
+                    : ['topics', firstTopic.id];
+                this.router.navigate(commands, {
                     relativeTo: this.route,
                     replaceUrl: true,
                 });

@@ -16,27 +16,28 @@
         </button>
     </header>
 
-    <form (ngSubmit)="onSubmit()" novalidate class="modal-form" aria-label="Agregar usuarios al grupo">
+    <form (submit)="onSubmit($event)" novalidate class="modal-form" aria-label="Agregar usuarios al grupo">
 
-        <section class="flex justify-between">
+        <section class="grid grid-cols-2 gap-4">
             <div>
                 <span class="user-list-title">Integrantes actuales</span>
 
                 <div class="user-list current  px-2" role="group" aria-label="Integrantes actuales">
-                    @if (!availableUsers().length) {
+                    @if (!users().length) {
                     <p class="empty-state">No hay usuarios disponibles para añadir.</p>
                     } @else {
-                    @for (user of availableUsers(); track user.id) {
-                    <label class="user-option" [class.user-option--selected]="selectedUserIds().includes(user.id)">
-                        <input type="checkbox" [checked]="selectedUserIds().includes(user.id)"
-                            (change)="toggleUser(user.id)" />
+                    @for (user of users(); track user.id) {
+                    <div class="user-option cursor-none">
                         <span class="user-avatar" aria-hidden="true">{{ user.name.slice(0, 1).toUpperCase() }}</span>
                         <span class="user-details">
                             <strong>{{ user.name }}</strong>
                             <small>{{ user.email }}</small>
                         </span>
-                        <span class="text-red-600">Quitar</span>
-                    </label>
+                        <button type="button" class="text-red-600 cursor-pointer" (click)="removeUser(user.id)"
+                            [disabled]="isLoading()">
+                            Quitar
+                        </button>
+                    </div>
                     }
                     }
                 </div>

@@ -73,6 +73,13 @@ export const routes: Routes = [
         title: 'Nivel — DeutschApp',
         children: [
             {
+                path: 'topics/:topicId',
+                loadComponent: () =>
+                    import('./levels/topic-view/topic-view').then((m) => m.TopicView),
+                canDeactivate: [unsavedChangesGuard],
+                title: 'Tema — DeutschApp',
+            },
+            {
                 path: 'topics/:topicId/:subtopicId',
                 loadComponent: () =>
                     import('./levels/topic-view/topic-view').then((m) => m.TopicView),

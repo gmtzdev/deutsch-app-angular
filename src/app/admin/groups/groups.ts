@@ -251,9 +251,9 @@ export class AdminGroups {
     closeAddUserModal(): void { this.isAddUserModalOpen.set(false); }
 
     onUsersAdded(): void {
-        this.closeAddUserModal();
-        this.addUserGroup.set(null);
-        this.groupsResource.reload();
+        // this.closeAddUserModal();
+        // this.addUserGroup.set(null);
+        // this.groupsResource.reload();
     }
 
     onGroupCreated(): void {

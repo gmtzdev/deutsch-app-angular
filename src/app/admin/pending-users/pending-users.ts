@@ -39,7 +39,6 @@ export class AdminPendingUsers {
     readonly usersResource = resource<PendingVerificationUser[], undefined>({
         loader: async () => {
             const users = await firstValueFrom(this.userService.getPendingVerificationUsers());
-            console.log('Pending verification users:', users);
             return users;
         },
     });

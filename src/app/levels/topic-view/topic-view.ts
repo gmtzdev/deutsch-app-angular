@@ -83,7 +83,7 @@ import { ChatMessage } from '../../core/dto/ai/chat-message.dto';
 })
 export class TopicView implements HasUnsavedChanges {
     readonly topicId = input.required<string>();
-    readonly subtopicId = input.required<string>();
+    readonly subtopicId = input<string>();
 
     private readonly curriculumService = inject(CurriculumService);
 
@@ -167,11 +167,15 @@ export class TopicView implements HasUnsavedChanges {
         loader: ({ params }) => firstValueFrom(this.curriculumService.getTopicWithSubtopics(params)),
     });
 
-    protected readonly subtopicResource = resource<SubtopicWithLessons, string>({
+
+    // TODO Investigar que es lo que esta pasando aqui
+    protected readonly subtopicResource = resource<SubtopicWithLessons | null, string | undefined>({
         params: () => this.subtopicId(),
-        loader: ({ params }) => firstValueFrom(this.curriculumService.getSubtopicWithLessons(params).pipe(
-            tap(subtopic => { console.log(subtopic) })
-        )),
+        loader: ({ params }) => params === undefined
+            ? Promise.resolve(null)
+            : firstValueFrom(this.curriculumService.getSubtopicWithLessons(params).pipe(
+                tap(subtopic => { console.log(subtopic) })
+            )),
     });
 
     protected onElementAdded(element: ElementTypeObj): void {

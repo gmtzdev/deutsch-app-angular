@@ -87,6 +87,7 @@ export class CurriculumService {
             title,
             subtitle: subtitle || '',
             level: { id: Number(levelId) } as Level,
+            visible: true,
         };
         return this.http.post<Topic>(`${API_BASE}/topics`, payload);
     }
