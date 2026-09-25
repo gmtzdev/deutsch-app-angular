@@ -1,0 +1,17 @@
+<!-- ── Block type picker ─────────────────────────────── -->
+<p class="editor-panel__hint">Elige un tipo de bloque</p>
+<div class="block-picker" role="listbox" aria-label="Tipos de bloque">
+    @for (opt of blockOptions; track opt.type) {
+    <button type="button" class="block-option" role="option" [attr.aria-selected]="false"
+        (click)="selectType(opt.type)">
+        <span class="block-option__icon" aria-hidden="true">{{ opt.icon }}</span>
+        <span class="block-option__info">
+            <span class="block-option__label">{{ opt.label }}</span>
+            <span class="block-option__desc">{{ opt.description }}</span>
+        </span>
+    </button>
+    }
+</div>
+<div class="editor-panel__footer">
+    <button type="button" class="cancel-btn" (click)="closePicker()">Cancelar</button>
+</div>

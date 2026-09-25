@@ -57,8 +57,11 @@ import { CurriculumService } from '../../../core/services/curriculum.service';
 import { environment } from '../../../../environments/environment';
 import { TextQuestionComponent } from './element-editor/textQuestion/textQuestion.component';
 import { MultipleChoiceComponent } from './element-editor/multipleChoice/multipleChoice.component';
+import { SeparatorComponent, SeparatorStyle } from './element-editor/separator/separator.component';
+import { BlockTypePicker } from './components/block-type-picker/block-type-picker';
+import { LessonSeparator } from '../elements/lesson-separator';
 
-type BlockType = 'title' | 'subtitle' | 'element' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'alphabetBlock' | 'pronunciationBlock' | 'fillBlank' | 'fillBlankTable' | 'textQuestion' | 'multipleChoice';
+type BlockType = 'title' | 'subtitle' | 'element' | 'separator' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'alphabetBlock' | 'pronunciationBlock' | 'fillBlank' | 'fillBlankTable' | 'textQuestion' | 'multipleChoice';
 type TipColor = 'info' | 'warning' | 'success' | 'danger';
 type TagColor = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'gray';
 
@@ -109,25 +112,6 @@ interface FillBlankTableStoredStyle {
     headers: string[];
 }
 
-const BLOCK_OPTIONS: BlockOption[] = [
-    { type: 'title', label: 'Título', icon: 'H1', description: 'Encabezado principal de sección' },
-    { type: 'subtitle', label: 'Subtítulo', icon: 'H2', description: 'Encabezado secundario' },
-    { type: 'element', label: 'Párrafo', icon: '¶', description: 'Texto de contenido' },
-    { type: 'unorderedList', label: 'Lista', icon: '≡', description: 'Lista de ítems' },
-    { type: 'table', label: 'Tabla', icon: '⊞', description: 'Tabla con filas y columnas' },
-    { type: 'tip', label: 'Consejo', icon: '💡', description: 'Bloque de consejo o nota' },
-    { type: 'tag', label: 'Etiqueta', icon: '🏷', description: 'Etiqueta corta de 1 a 3 palabras' },
-    { type: 'conjugation', label: 'Conjugación', icon: '📝', description: 'Tabla de conjugación verbal (alemán)' },
-    { type: 'quiz', label: 'Quiz', icon: '❓', description: 'Preguntas de comprensión' },
-    { type: 'image', label: 'Imagen', icon: '🖼', description: 'Imagen desde una URL' },
-    { type: 'dragDrop', label: 'Arrastrar y soltar', icon: '🎯', description: 'Completar espacios arrastrando palabras' },
-    { type: 'alphabetBlock', label: 'Alfabeto alemán', icon: '🔤', description: 'Cuadrícula interactiva del alfabeto alemán con pronunciación' },
-    { type: 'pronunciationBlock', label: 'Pronunciación', icon: '🔊', description: 'Cuadrícula de textos reproducibles con voz alemana' },
-    { type: 'fillBlank', label: 'Completar oración', icon: '✍️', description: 'Rellenar los espacios en blanco de una oración' },
-    { type: 'fillBlankTable', label: 'Tabla completar espacios', icon: '🧩', description: 'Ejercicio en tabla para completar espacios en blanco' },
-    { type: 'textQuestion', label: 'Pregunta abierta', icon: '💬', description: 'Preguntas con respuesta en texto libre' },
-    { type: 'multipleChoice', label: 'Opción múltiple', icon: '✅', description: 'Preguntas con opciones y una respuesta correcta' },
-];
 
 const TIP_COLOR_OPTIONS: TipColorOption[] = [
     { value: 'info', label: 'Información', bg: 'rgba(74, 144, 217, 0.15)', border: '#4a90d9' },
@@ -149,8 +133,13 @@ const TAG_COLOR_OPTIONS: TagColorOption[] = [
     selector: 'app-lesson-editor',
     templateUrl: './lesson-editor.html',
     styleUrl: './lesson-editor.scss',
-    imports: [LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonFillBlankTable, LessonTextQuestion, LessonMultipleChoice,
-        TextQuestionComponent, MultipleChoiceComponent,
+    imports: [
+        LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable,
+        LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop,
+        LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonFillBlankTable,
+        LessonTextQuestion, LessonMultipleChoice, TextQuestionComponent, MultipleChoiceComponent,
+        SeparatorComponent, BlockTypePicker, LessonSeparator
+
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -171,8 +160,6 @@ export class LessonEditor {
     private readonly doc = inject(DOCUMENT);
     private readonly curriculumService = inject(CurriculumService);
 
-    protected readonly blockOptions = BLOCK_OPTIONS;
-
     protected readonly pickerOpen = signal(false);
     protected readonly activeType = signal<BlockType | null>(null);
     protected readonly inputText = signal('');
@@ -182,6 +169,7 @@ export class LessonEditor {
     protected readonly tipTitle = signal('');
     protected readonly tipColor = signal<TipColor>('info');
     protected readonly tagColor = signal<TagColor>('blue');
+    protected readonly separatorStyle = signal<SeparatorStyle>('line');
 
     // ── Conjugation signals ─────────────────────────────────
     protected readonly conjVerbs = signal<VerbData[]>([{ name: '', rows: this.defaultConjRows() }]);
@@ -281,6 +269,7 @@ export class LessonEditor {
         this.tipTitle.set('');
         this.tipColor.set('info');
         this.tagColor.set('blue');
+        this.separatorStyle.set('line');
         this.conjVerbs.set([{ name: '', rows: this.defaultConjRows() }]);
         this.conjActiveVerb.set(0);
         this.quizQuestions.set([{ id: 1, question: '', answer: '', hint: '' }]);
@@ -308,6 +297,9 @@ export class LessonEditor {
         this.activeType.set(type);
         this.inputText.set('');
         this.listItems.set(['']);
+        if (type === 'separator') {
+            this.separatorStyle.set('line');
+        }
         setTimeout(() => {
             const id = type === 'tip' ? 'editor-tip-title' : 'editor-main-input';
             (this.doc.getElementById(id) as HTMLElement | null)?.focus();
@@ -323,6 +315,7 @@ export class LessonEditor {
         this.tipTitle.set('');
         this.tipColor.set('info');
         this.tagColor.set('blue');
+        this.separatorStyle.set('line');
         this.conjVerbs.set([{ name: '', rows: this.defaultConjRows() }]);
         this.conjActiveVerb.set(0);
         this.quizQuestions.set([{ id: 1, question: '', answer: '', hint: '' }]);
@@ -366,6 +359,8 @@ export class LessonEditor {
         } else if (type === 'tag') {
             this.inputText.set(element.text);
             this.tagColor.set((element.style || 'blue') as TagColor);
+        } else if (type === 'separator') {
+            this.separatorStyle.set((element.style as SeparatorStyle) || 'line');
         } else if (type === 'conjugation') {
             const conj = element as Conjugation;
             this.conjVerbs.set(conj.verbs.map((v) => ({
@@ -1092,7 +1087,18 @@ export class LessonEditor {
                 delete: false,
                 questions,
             });
-        } else {
+        } else if (type === 'separator') {
+            draft = new Element({
+                id: -Date.now(),
+                text: '',
+                style: this.separatorStyle(),
+                type,
+                order: 0,
+                lesson: null!,
+                delete: false,
+            });
+        }
+        else {
             const text = this.inputText().trim();
             if (!text) return;
             switch (type) {
@@ -1131,6 +1137,7 @@ export class LessonEditor {
                         delete: false,
                     });
                     break;
+
                 case 'tag': {
                     const wordCount = text.split(/\s+/).filter(Boolean).length;
                     if (wordCount > 3) return;
@@ -1160,6 +1167,7 @@ export class LessonEditor {
             draft!.gridId = null;
             draft!.gridCols = 1;
         }
+        // Add draft element to the list or update existing one
         if (idx !== null) {
             this.elementEdited.emit({ index: idx, element: draft });
         } else {
