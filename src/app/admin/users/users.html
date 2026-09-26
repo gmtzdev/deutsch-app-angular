@@ -126,7 +126,8 @@
                             [attr.aria-label]="'Rol de ' + user.name" [attr.aria-busy]="updatingRoleId() === user.id">
                             @for (role of roles; track role) {
                             <option [value]="role" [selected]="user.role === role">
-                                {{ role }}
+                                {{ role === 'admin' ? 'Administrador' : role === 'coursecreator' ? 'Creador de cursos' :
+                                role === 'professor' ? 'Profesor' : role === 'student' ? 'Estudiante' : 'Usuario' }}
                             </option>
                             }
                         </select>
