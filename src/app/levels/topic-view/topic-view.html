@@ -69,6 +69,8 @@
                             @switch (element.type) {
                             @case ('title') { <app-lesson-title [element]="element" /> }
                             @case ('subtitle') { <app-lesson-subtitle [element]="element" /> }
+                            @case ('separator') {
+                            <app-lesson-separator [element]="element" /> }
                             @case ('unorderedList') { <app-lesson-unordered-list [element]="element" /> }
                             @case ('table') { <app-lesson-table [element]="element" /> }
                             @case ('tip') { <app-lesson-tip [element]="element" /> }
@@ -92,6 +94,8 @@
                     @switch (group.element.type) {
                     @case ('title') { <app-lesson-title [element]="group.element" /> }
                     @case ('subtitle') { <app-lesson-subtitle [element]="group.element" /> }
+                    @case ('separator') {
+                    <app-lesson-separator [element]="group.element" /> }
                     @case ('unorderedList') { <app-lesson-unordered-list [element]="group.element" /> }
                     @case ('table') { <app-lesson-table [element]="group.element" /> }
                     @case ('tip') { <app-lesson-tip [element]="group.element" /> }

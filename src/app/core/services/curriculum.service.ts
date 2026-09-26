@@ -150,12 +150,13 @@ export class CurriculumService {
         let elements: LessonElementDto[] = [];
         for (const [order, el] of preview.entries()) {
             switch (el.type) {
-                case 'element': {
+                case 'element':
+                case 'separator': {
                     elements.push({
                         id: el.id,
                         text: el.text,
                         style: el.style,
-                        type: 'element',
+                        type: el.type,
                         order,
                         lesson: { id: Number(lessonId) } as Lesson,
                         delete: el.delete,

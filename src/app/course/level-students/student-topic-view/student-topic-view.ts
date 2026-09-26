@@ -81,11 +81,12 @@ import { LessonFillBlank } from '../../../levels/topic-view/elements/lesson-fill
 import { LessonFillBlankTable } from '../../../levels/topic-view/elements/lesson-fill-blank-table-simple';
 import { LessonTextQuestion } from '../../../levels/topic-view/elements/lesson-text-question';
 import { LessonMultipleChoice } from '../../../levels/topic-view/elements/lesson-multiple-choice';
+import { LessonSeparator } from '../../../levels/topic-view/elements/lesson-separator';
 
 
 @Component({
     selector: 'app-student-topic-view',
-    imports: [FormsModule, LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonFillBlankTable, LessonTextQuestion, LessonMultipleChoice],
+    imports: [FormsModule, LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonFillBlankTable, LessonTextQuestion, LessonMultipleChoice, LessonSeparator],
     templateUrl: './student-topic-view.html',
     styleUrls: ['./student-topic-view.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

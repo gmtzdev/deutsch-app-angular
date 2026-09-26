@@ -24,7 +24,7 @@ import { DragDropExercise } from "../models/elements/drag-drop-exercise.model";
 
 export type LessonElementDto = CreateElementDto | CreateTitleDto | CreateSubtitleDto | CreateListItemDto | CreateUnorderedListDto;
 
-export type ElementType = 'element' | 'title' | 'subtitle' | 'listItem' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'pronunciationBlock' | 'alphabetBlock' | 'fillBlank' | 'fillBlankTable' | 'textQuestion' | 'multipleChoice';
+export type ElementType = 'element' | 'separator' | 'title' | 'subtitle' | 'listItem' | 'unorderedList' | 'table' | 'tip' | 'tag' | 'conjugation' | 'quiz' | 'image' | 'dragDrop' | 'pronunciationBlock' | 'alphabetBlock' | 'fillBlank' | 'fillBlankTable' | 'textQuestion' | 'multipleChoice';
 export type ElementTypeObj = Element | Title | Subtitle | ListItem | UnorderedList | Table | Tip | Tag | Conjugation | Quiz | ImageBlock | DragDropExercise | AlphabetBlock | PronunciationBlock | FillBlankExercise | FillBlankTableExercise | TextQuestionExercise | MultipleChoiceExercise;
 
-export const elementTypes: ElementType[] = ['element', 'title', 'subtitle', 'listItem', 'unorderedList', 'table', 'tip', 'tag', 'conjugation', 'quiz', 'image', 'dragDrop', 'alphabetBlock', 'pronunciationBlock', 'fillBlank', 'fillBlankTable', 'textQuestion', 'multipleChoice'];
+export const elementTypes: ElementType[] = ['element', 'separator', 'title', 'subtitle', 'listItem', 'unorderedList', 'table', 'tip', 'tag', 'conjugation', 'quiz', 'image', 'dragDrop', 'alphabetBlock', 'pronunciationBlock', 'fillBlank', 'fillBlankTable', 'textQuestion', 'multipleChoice'];

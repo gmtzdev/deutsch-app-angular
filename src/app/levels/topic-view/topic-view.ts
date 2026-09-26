@@ -73,10 +73,13 @@ import { LessonTextQuestion } from './elements/lesson-text-question';
 import { LessonMultipleChoice } from './elements/lesson-multiple-choice';
 import { LessonEditor } from './lesson-editor/lesson-editor';
 import { ChatMessage } from '../../core/dto/ai/chat-message.dto';
+import { LessonSeparator } from './elements/lesson-separator';
 
 @Component({
     selector: 'app-topic-view',
-    imports: [FormsModule, LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonFillBlankTable, LessonTextQuestion, LessonMultipleChoice, LessonEditor],
+    imports: [FormsModule, LessonTitle, LessonSubtitle, LessonParagraph, LessonUnorderedList, LessonTable, LessonTip, LessonTag, LessonConjugation, LessonQuiz, LessonImage, LessonDragDrop, LessonAlphabet, LessonPronunciation, LessonFillBlank, LessonFillBlankTable, LessonTextQuestion, LessonMultipleChoice, LessonEditor,
+        LessonSeparator
+    ],
     templateUrl: './topic-view.html',
     styleUrls: ['./topic-view.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
