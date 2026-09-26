@@ -1,6 +1,7 @@
 <div class="modal-backdrop" (click)="onCancel()" aria-hidden="true"></div>
 
 <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+
     <header class="modal-header">
         <h2 id="modal-title" class="modal-title">{{ group() ? 'Editar grupo' : 'Crear grupo' }}</h2>
         <button class="modal-close" type="button" (click)="onCancel()" aria-label="Cerrar">
@@ -12,74 +13,6 @@
             </svg>
         </button>
     </header>
-
-    <!-- <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="modal-form">
-
-        <div class="field">
-            <label for="cu-name">Nombre</label>
-            <input pInputText id="cu-name" type="text" formControlName="name" placeholder="Nombre completo"
-                class="w-full"
-                [attr.aria-invalid]="form.controls.name.invalid && form.controls.name.touched ? 'true' : null"
-                aria-describedby="cu-name-error" />
-            @if (form.controls.name.invalid && form.controls.name.touched) {
-            <small id="cu-name-error" class="field-error" role="alert">
-                @if (form.controls.name.errors?.['required']) { El nombre es requerido. }
-                @else if (form.controls.name.errors?.['minlength']) { Mínimo 3 caracteres. }
-            </small>
-            }
-        </div>
-
-        <div class="field">
-            <label for="cu-email">Correo electrónico</label>
-            <input pInputText id="cu-email" type="email" formControlName="email" placeholder="correo@ejemplo.com"
-                class="w-full"
-                [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched ? 'true' : null"
-                aria-describedby="cu-email-error" />
-            @if (form.controls.email.invalid && form.controls.email.touched) {
-            <small id="cu-email-error" class="field-error" role="alert">
-                @if (form.controls.email.errors?.['required']) { El correo es requerido. }
-                @else if (form.controls.email.errors?.['email']) { Correo inválido. }
-            </small>
-            }
-        </div>
-
-        <div class="field">
-            <label for="cu-password">Contraseña</label>
-            <p-password inputId="cu-password" formControlName="password" [feedback]="true" [toggleMask]="true"
-                placeholder="Mínimo 8 caracteres" styleClass="w-full" inputStyleClass="w-full"
-                aria-describedby="cu-password-error" promptLabel="Ingresa una contraseña" weakLabel="Débil"
-                mediumLabel="Media" strongLabel="Fuerte" />
-            @if (form.controls.password.invalid && form.controls.password.touched) {
-            <small id="cu-password-error" class="field-error" role="alert">
-                @if (form.controls.password.errors?.['required']) { La contraseña es requerida. }
-                @else if (form.controls.password.errors?.['minlength']) { Mínimo 8 caracteres. }
-                @else if (form.controls.password.errors?.['weakPassword']) { Debe incluir mayúscula, número y carácter
-                especial. }
-            </small>
-            }
-        </div>
-
-        <div class="field">
-            <label for="cu-role">Rol</label>
-            <select id="cu-role" formControlName="role" class="role-select-input" aria-describedby="cu-role-error">
-                @for (role of roles; track role) {
-                <option [value]="role">{{ role }}</option>
-                }
-            </select>
-        </div>
-
-        @if (errorMessage()) {
-        <p class="form-error" role="alert">{{ errorMessage() }}</p>
-        }
-
-        <footer class="modal-footer">
-            <button type="button" class="btn btn--ghost" (click)="onCancel()">Cancelar</button>
-            <button type="submit" class="btn btn--primary" [disabled]="isLoading()" [attr.aria-busy]="isLoading()">
-                @if (isLoading()) { Creando… } @else { Crear usuario }
-            </button>
-        </footer>
-    </form> -->
-
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="modal-form"
         [attr.aria-label]="group() ? 'Editar grupo' : 'Crear grupo'">
@@ -98,8 +31,10 @@
 
             <div class="field">
                 <label for="group-teacher">Profesor</label>
-                <input pInputText id="group-teacher" type="text" formControlName="teacherName" class="text-input"
-                    [attr.aria-invalid]="form.controls.teacherName.invalid && form.controls.teacherName.touched ? 'true' : null" />
+                <p-select [options]="teachers()" optionLabel="name" optionValue="name" formControlName="teacherName"
+                    inputId="group-teacher" placeholder="Selecciona el profesor"
+                    [loading]="teachersResource.isLoading()" [filter]="true" filterBy="name" appendTo="body"
+                    styleClass="w-full" />
                 @if (form.controls.teacherName.invalid && form.controls.teacherName.touched) {
                 <small class="field-error" role="alert">
                     @if (form.controls.teacherName.errors?.['required']) { El profesor es obligatorio. }

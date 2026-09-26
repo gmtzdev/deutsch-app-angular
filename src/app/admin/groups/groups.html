@@ -147,6 +147,12 @@
                                 <i class="pi pi-book"></i>
                             </button>
 
+                            <button class="btn-icon btn-icon--edit" [disabled]="deletingGroupId() === group.id"
+                                (click)="openEditModal(group)" [attr.aria-label]="'Editar grupo ' + group.name"
+                                type="button">
+                                <i class="pi pi-pencil"></i>
+                            </button>
+
 
                             @if (confirmDeleteId() === group.id) {
                             <div class="confirm-delete">
@@ -185,7 +191,7 @@
 </section>
 
 @if (isCreateModalOpen()) {
-<app-create-group-modal (created)="onGroupCreated()" (cancelled)="closeCreateModal()" />
+<app-group-modal [group]="editingGroup()" (created)="onGroupCreated()" (cancelled)="closeCreateModal()" />
 }
 
 @if (isAddUserModalOpen()) {

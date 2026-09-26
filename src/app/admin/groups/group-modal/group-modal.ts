@@ -1,36 +1,27 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    computed,
     effect,
     inject,
     input,
     output,
+    resource,
     signal,
 } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { UserService } from '../../../core/services/user.service';
-import { UserRole } from '../../../core/enum/user/user-rol.enum';
+
 import { Select } from 'primeng/select';
 import { InputText } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
-import { CreateUserDto } from '../../../core/dto/user/create-user.dto';
 import { GroupStatus } from '@app/core/types/groups.types';
 import type { CreateGroupDto } from '@app/core/dto/groups/create-group.dto';
 import { GroupService } from '@app/core/services/group.service';
 import type { Group } from '@app/core/interfaces/groups/group.interface';
-
-const STATUS_OPTIONS: GroupStatus[] = ['active', 'paused', 'archived'];
-function passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
-    const value: string = control.value ?? '';
-    if (!value) return null;
-    const valid =
-        value.length >= 8 &&
-        /[A-Z]/.test(value) &&
-        /[0-9]/.test(value)
-    // && /[!@#$%^&*()\-_=+[\]{};':",.<>/?\\|`~]/.test(value);
-    return valid ? null : { weakPassword: true };
-}
+import { UserService } from '@app/core/services/user.service';
+import { UserRole } from '@app/core/enum/user/user-rol.enum';
+import type { User } from '@app/core/models/user/User.model';
 
 interface GroupStatusOption {
     label: string;
@@ -38,30 +29,36 @@ interface GroupStatusOption {
 }
 
 @Component({
-    selector: 'app-create-group-modal',
+    selector: 'app-group-modal',
     imports: [ReactiveFormsModule, InputText, TextareaModule, Select],
-    templateUrl: './create-group-modal.html',
-    styleUrls: ['./create-group-modal.scss'],
+    templateUrl: './group-modal.html',
+    styleUrls: ['./group-modal.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateGroupModal {
     private readonly groupService = inject(GroupService);
+    private readonly userService = inject(UserService);
     private readonly fb = inject(FormBuilder);
 
     readonly group = input<Group | null>(null);
 
-    readonly roles = Object.values(UserRole);
-
     readonly created = output<void>();
     readonly cancelled = output<void>();
+
 
     readonly isLoading = signal(false);
     readonly errorMessage = signal<string | null>(null);
     readonly createError = signal<string | null>(null);
 
+    readonly teachersResource = resource<User[], undefined>({
+        loader: () => firstValueFrom(this.userService.getUsers()),
+    });
 
+    readonly teachers = computed(() =>
+        (this.teachersResource.value() ?? []).filter((user) => user.role === UserRole.PROFESSOR),
+    );
 
-
+    readonly roles = Object.values(UserRole);
     readonly statusOptions: GroupStatusOption[] = [
         { label: 'Activo', value: 'active' },
         { label: 'Pausado', value: 'paused' },

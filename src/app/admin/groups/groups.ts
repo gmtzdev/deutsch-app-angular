@@ -15,7 +15,7 @@ import type { CreateGroupDto } from '../../core/dto/groups/create-group.dto';
 import { GroupService } from '../../core/services/group.service';
 import type { GroupStatus } from '../../core/types/groups.types';
 import type { Group } from '../../core/interfaces/groups/group.interface';
-import { CreateGroupModal } from './create-group-modal/create-group-modal';
+import { CreateGroupModal } from './group-modal/group-modal';
 import { AddUserModal } from './add-user-modal/add-user-modal';
 import { AddLevelModal } from './add-level-modal/add-level-modal';
 
@@ -240,8 +240,19 @@ export class AdminGroups {
 
 
     readonly isCreateModalOpen = signal(false);
-    openCreateModal(): void { this.isCreateModalOpen.set(true); }
-    closeCreateModal(): void { this.isCreateModalOpen.set(false); }
+    readonly editingGroup = signal<Group | null>(null);
+    openCreateModal(): void {
+        this.editingGroup.set(null);
+        this.isCreateModalOpen.set(true);
+    }
+    openEditModal(group: Group): void {
+        this.editingGroup.set(group);
+        this.isCreateModalOpen.set(true);
+    }
+    closeCreateModal(): void {
+        this.isCreateModalOpen.set(false);
+        this.editingGroup.set(null);
+    }
 
     readonly isAddUserModalOpen = signal(false);
     readonly addUserGroup = signal<Group | null>(null);
